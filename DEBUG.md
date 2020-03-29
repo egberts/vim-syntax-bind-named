@@ -147,10 +147,10 @@ Now in your "viewing" (2nd) terminal session, the F10 key will show you
 which highlight syntax got used exactly where your cursor is currently at 
 in your `named.conf` file.
 
-Curious about a highlight that looks strange?  Move the cursor to where that
-strange highlighting occurs at:
+Curious about a highlight that looks strange?  Move the cursor to where are
+no highlighting at:
 
-[[https://github.com/egberts/gist/blob/master/vim-syntax-bind-name-first-debug-F10.png|alt=Initial Vim session]]
+[[https://raw.githubusercontent.com/egberts/gist/master/vim-syntax-bind-name-first-debug.png|Initial session]]
 
 then press F10, and the status bar (at the
 bottom of 2nd terminal screen) comes alive
@@ -166,9 +166,13 @@ where the cursor is at.
 Let's move the cursor around a bit more, until the cursor is over the word
 `acl`, a well-known Bind9 keyword: 
 
-[[https://github.com/egberts/gist/blob/master/vim-syntax-bind-name-first-debug-F10-after.png|alt=After]]
+[[https://github.com/egberts/gist/blob/master/vim-syntax-bind-name-first-debug-F10.png|alt=Initial Screen]]
 
 then press F10 again:
+
+You get this:
+
+[[https://github.com/egberts/gist/blob/master/vim-syntax-bind-name-first-debug-F10-after.png|alt=After Screen]]
 
 ```console
 hi<namedStmtKeyword> trans<namedStmtKeyword> lo<Statement>
