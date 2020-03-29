@@ -1,8 +1,7 @@
 Debugging Vim Syntax File
 =========================
 
-Of all the things that I have tried to do in order to debug a brand 
-new syntax file for Vim editor, the following steps are my best and 
+Of all the things that I have tried to do in order to debug a brand-new syntax file for Vim editor, the following steps are my best and 
 easiest to use and I hope they are to you as well.
 
 this simple `vim named.conf` command will perform the following steps:
@@ -149,7 +148,11 @@ which highlight syntax got used exactly where your cursor is currently at
 in your `named.conf` file.
 
 Curious about a highlight that looks strange?  Move the cursor to where that
-strange highlighting occurs at then press F10, and the status bar (at the
+strange highlighting occurs at:
+
+[[https://github.com/egberts/gist/blob/master/vim-syntax-bind-name-first-debug-F10.png|alt=Initial Vim session]]
+
+then press F10, and the status bar (at the
 bottom of 2nd terminal screen) comes alive
 with information showing:
 
@@ -160,7 +163,12 @@ hi<> trans<> lo<>
 This means none of the entire system's syntax file found a syntax match to 
 where the cursor is at.
 
-Let's move the cursor around a bit more, then press F10 again:
+Let's move the cursor around a bit more, until the cursor is over the word
+`acl`, a well-known Bind9 keyword: 
+
+[[https://github.com/egberts/gist/blob/master/vim-syntax-bind-name-first-debug-F10-after.png|alt=After]]
+
+then press F10 again:
 
 ```console
 hi<namedStmtKeyword> trans<namedStmtKeyword> lo<Statement>
