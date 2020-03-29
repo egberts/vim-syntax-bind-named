@@ -19,7 +19,7 @@ All that with just `vim <your-test-file>` command.
 Preparing Your Home Settings
 ----------------------------
 
-I use Dr. Chip `hilinks.vim` to support my debugging effort during this Vim syntax development.
+I use Dr. Chip [`hilinks.vim`](https://github.com/kergoth/vim-hilinks) to support my debugging effort during this Vim syntax development.
 
 Starting Out Debugging
 ----------------------

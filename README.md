@@ -1,15 +1,15 @@
 vim-syntax-bind-named
 =====================
 
-This project aims to replace the stock Vim syntax hilighting for ISC Bind
-(named.vim), by updating it to recognize the new RRs that came out in 
-the last few decade and also to highlight more keywords that ISC Bind9/10 has 
+This project aims to replace the stock Vim syntax highlighting for ISC Bind
+(`named.vim`), by updating it to recognize the new RRs that came out in
+the last few decade and also to highlight more keywords that ISC Bind9/10 has
 incorporated as of late.
 
-As comment lines throughout this `bind-named.vim` syntax file, I incorporate 
-nearly all the revised psuedo-BNF syntaxes for every `named.conf` statement
-keywords encountered.  These psuedo-BNF syntaxes may (often) not match the 
-official ISC Bind documentation because its C source code 
+As comment lines throughout this `bind-named.vim` syntax file, I incorporate
+nearly all the revised psuedo-BNF syntax for every `named.conf` statement
+keywords encountered.  These psuedo-BNF syntax may (often) not match the
+official ISC Bind documentation because its C source code
 takes final precedence here.
 
 FEATURES
@@ -28,7 +28,7 @@ FEATURES
  * `rndc.conf` Filetype detection
  * supports `rndc.key`
  * Still supports named.conf
-* Filetype detection, both expanded (and constrained) 
+* Filetype detection, both expanded (and constrained)
  * Constrained to `named-*.conf` from `named*.conf`
  * Constrained to `named_*.conf` from `named*.conf`
  * Constrained to `named.*.conf` from `named*.conf`
@@ -49,11 +49,11 @@ The `rndc.conf` is now supported (along with its filename variants, as long as
 as the filename portion begins with `rndcX` or ends with `Xrndc` and the letter
 X signifies a period, an underscore, or a dash/minus symbol.
 
-There's a namedXXXXX.conf out there being used by a database so I figured 
+There's a namedXXXXX.conf out there being used by a database so I figured
 we constrained it a bit with a dash, an underscore, or a period symbol.
 
-In my huge internal whitelab bastion server, I run two separate named daemon 
-and its configuration files, they all get included into their respective 
+In my huge internal whitelab bastion server, I run two separate named daemon
+and its configuration files, they all get included into their respective
 `named-XXXX.conf`:
 
     /etc/bind/named-public.conf
@@ -82,7 +82,7 @@ and its configuration files, they all get included into their respective
 
 Array-Type ACL Names
 --------------------
-Imagine my surprise in the current Bind version that ACL names can 
+Imagine my surprise in the current Bind version that ACL names can
 support some form of Python/C/C++ language array naming convention.
 
 Yeah, ACL names like:
@@ -105,8 +105,8 @@ The following patterns for IPv6 addresses are supported:
  * 1::6:7:8  1:2:3:4::6:7:8  1:2:3:4::8
  * 1::5:6:7:8  1:2:3::5:6:7:8  1:2:3::8
  * 1::4:5:6:7:8  1:2::4:5:6:7:8  1:2::8
- * 1::3:4:5:6:7:8  1::3:4:5:6:7:8  1::8  
- * ::2:3:4:5:6:7:8  ::2:3:4:5:6:7:8 ::8  ::     
+ * 1::3:4:5:6:7:8  1::3:4:5:6:7:8  1::8
+ * ::2:3:4:5:6:7:8  ::2:3:4:5:6:7:8 ::8  ::
  * fe80::7:8%eth0  fe80::7:8%1
  * ::255.255.255.255  ::ffff:255.255.255.255  ::ffff:0:255.255.255.255
  * 2001:db8:3:4::192.0.2.33  64:ff9b::192.0.2.33
@@ -116,29 +116,29 @@ PLANS
 
 I plan to:
 
-* replace the bindzone.vim, but that is something that I 
-  would welcome anyone to submit ... easily.  
+* replace the stock Vim `bindzone.vim`, but that is something that I
+  would welcome anyone to submit ... easily.
   Instead, I'm focused on doing this hard problem of creating these
   syntaxes for `bind-named.vim` (Bind named configuration file).
 
 * make this work steadily across ALL versions of Bind, but in
-  starting with the current v9.15 and then OUTWARD toward v4 and 
+  starting with the current v9.16 and then OUTWARD toward v4 and
   v10: I managed to do this mostly.
 
-* NOT to make a Vim bundle zip file (for remote upgrading/downloading): 
+* NOT to make a Vim bundle zip file (for remote upgrading/downloading):
   I work offline and my whitelab is offline, so someone else is more than
   welcome to do the bunzip'ing.
 
-* make the FINAL CALL here for this syntax development using its C source 
-  code.  Mistakes will be made: I'm human too.  ISC Bind9 documentation 
-  project is not something to rely on when devising this VIM syntax for 
-  its named configuration file.  
-  I do have ALL released (and some minor) versions of Bind4, Bind8, 
+* make the FINAL CALL here for this syntax development using its C source
+  code.  Mistakes will be made: I'm human too.  ISC Bind9 documentation
+  project is not something to rely on when devising this VIM syntax for
+  its named configuration file.
+  I do have ALL released (and some minor) versions of Bind4, Bind8,
   Bind9, and Bind10 documentation as well as its source code.
 
-I maintain those lifetime of keywords for named.conf and its many 
-characteristics into my Pythonized ISC Bind keyword dictionary maintained over 
-at [egberts' repo at Github](https://github.com/egberts/bind_parser/bind_parser/examples/rough-drafts/namedconfglobal.py). 
+I maintain those lifetime of keywords for `named.conf` and its many
+characteristics into my Pythonized ISC Bind keyword dictionary maintained over
+at [egberts' repo at Github](https://github.com/egberts/bind9_parser/blob/master/examples/rough-draft/namedconfglobal.py).  
 Some Python database characteristics for each keywords are:
 
 * statement occurance count
@@ -152,7 +152,7 @@ Some Python database characteristics for each keywords are:
 * output ordering ID
 * introduced in which version
 * obsoleted by which version
-* keyword topic 
+* keyword topic
 * server-type
 * required statement flag
 * subordering matter flag
@@ -164,29 +164,34 @@ Bug Reporting
 If you have any issues with this syntax file, see if you can:
 
 * keep narrowing down the offending line until it stopped offending, hopefully
-  it is just to just one (or few) lines.  No need for your entire named.conf
+  it is just to just one (or few) lines.  No need to expose your entire `named.conf`
   Don't forget to change all IP addresses (unless that breaks too) for
   your privacy sake.
- 
-* post/file the offending line over at my [Github issue](https://github.com/egberts/vim-syntax-bind-named).
 
-* detail the wrong highlight and state what you think is to be its 
+* post/file the offending line over at my [Github issue](https://github.com/egberts/vim-syntax-bind-named/issues). 
+
+* detail the wrong highlight and state what you think is to be its
   correct highlight, if applicable.
 
 
 Debugging Vim Syntax
 --------------------
-If you are bold enough to try your hand on debugging Vim syntax file, 
-see my DEBUG.md on how to debug a Vim syntax file. 
+If you are bold enough to try your hand on debugging Vim syntax file,
+see my [DEBUG.md](https://github.com/egberts/vim-syntax-bind-named/blob/master/DEBUG.md) on how to debug a Vim syntax file.
 
+Install
+-------
+See [INSTALL.md](https://github.com/egberts/vim-syntax-bind-named/blob/master/INSTALL.md) on how to install this Vim syntax to your local Vim settings.
 
 To Vim Developers
 -----------------
-Note to Vim developers:  During the prototyping of my IPv6 address 
-syntax matching, I noticed that vim 8.1 can only support a maximum 
-of 9 groupings of parenthesises, even if I used the "\%( ... \)" 
-notation (instead of "\( ...\)").  
-As a result of this Vim limitation, I've had to 
-duplicate IPv6 match patterns through this syntax file to get around 
+Note to Vim developers:  During the prototyping of my IPv6 address
+syntax matching, I noticed that vim 8.1 can only support a maximum
+of 9 groupings of parenthesis, even if I used the "\%( ... \)"
+notation (instead of "\( ...\)").
+
+As a result of this Vim limitation, I've had to
+duplicate IPv6 match patterns through this syntax file to get around
 this vim 8.1 limitation.  But it works and faster so.
+
 
