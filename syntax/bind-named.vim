@@ -17,42 +17,91 @@
 " This file could do with a lot of improvements, so comments are welcome.
 " Please submit the named.conf (segment) with any comments.
 "
-" Basic highlighting is covered for all Bind configuration options.
-" Only normal (default to white) highlighting is used to 
-" show 'undetected' Bind syntax.  Every valid words get colorized.
-" Every character-valid values get colorized, no range-checking here.
+" Basic highlighting is covered for all Bind configuration 
+" options.  Only normal (defaults is white) highlight gets 
+" used to show 'undetected' Bind syntax.  
+"
+" Every valid keywords get colorized. Every character-valid 
+" values get colorized, some range-checking here.
 "
 " New Bind 9.13+ terminologies here:
-"    Stmt - top-level statement (formerly 'clause' in Bind 4 to 9.11)
-"    Opt  - an option statement within each of its top-level statement
-"    Clause - keyword used within each of its option statement
+"    Stmt   - top-level keyword (formerly 'clause' from Bind 4 
+"             to 9.11)
+"    Opt    - an option keyword found within each of its 
+"             top-level keywords.
+"    Clause - very specific keywords used within each of its 
+"             option statement
 "
-" Clarification; There is an 'Options' notation for just one of 
-" the top-level statements, and then there is an 'Opt' notation 
-" under each top-level statement. Opt <> Options.
+" Syntax Naming Convention: 
+"    All macro names that are defined here start with 
+"    'named' prefix. This is a Vim standard.
 "
-" iskeyword is used for Bind builtins ONLY because they transcend all syntax
-" processing (including nested curly-braces sections, so you don't want to 
-" be using the bruteforce above-all-syntax Vim keyword for too much else 
-" other than Bind 'builtins'.
-" Bind builtins are 'any', 'none', 'localhost', 'localnets' because we shouldn't
-" be using those builtins anywhere else as an identifier or a label names 
-" either.  ACL names are identifier and are not tracked nor correlated within 
-" Vim syntax highlighting effort, just highlighted.  Another reason why you
-" shouldn't use period or semicolon in ACL names because it confuses IP 
-" address syntax processing.
+"    Each macro name contains a camel-case notation to 
+"    denote each shorten word that identifies the:
 "
-" isident is used for the most-lax naming convention of all Bind identifiers, 
-" which is ordered from VIEW_name, Zone_name, ACL_name, master_name, and then 
-" to the most strictest naming convention, domain_name.
+"      -  its statement (top-level keyword), 
+"        - any ONE of its options used, then 
+"          - any ONE of its clauses used.  
+"
+"    For example, 'ControlsInetSection' represents the 
+"    curly braces region of a particular 'inet' of that 
+"    'controls' statement
+"
+"        controls xxx { inet { ... }; };
+"                            ^^^^^^^
+"
+"    Additionally, following sub-notations may be used 
+"    within each of the camel-cased macro names:
+"    Section - Surrounded by curly braces, followed by an
+"              ending semicolon.
+"    Element - entire item(s) that must have an ending
+"              semicolon terminators.  
+"              Element are used one or more times within 
+"              a Section.
+"    Ident   - the declaration of an identifier
+"    Name    - the usage of an Ident identifier
+"    Error   - denotes that Vim Error color is used
+"    Not     - an inverse pattern, useful for Errors
+"
+" Clarification: In the following Vim syntax macros, 
+" there is an 'Options' notation as one of the 
+" top-level Bind keyword statements, and then there 
+" is an 'Opt' notation for those 'option' used under 
+" each (top-level) statement: 
+" Opt <> Options.
+"
+" 'iskeyword' is a Vim script function used here or ONLY 
+" for Bind-builtins because such keywords transcend all 
+" syntax processing (including nested curly-braces 
+" sections; so you don't want to be using the bruteforce 
+" absolute Vim '\k'\keyword\iskeyword too much
+" other than Bind 'builtins'; 
+" Same deal for '\i'/isident/identifiers.
+"
+" Bind builtins are 'any', 'none', 'localhost', 
+" 'localnets' because we shouldn't be using those builtins 
+" anywhere else as an identifier or a label names either.  
+"
+" ACL names are like identifier but will not be treated
+" like Vim identifier here.
+" Another reason why you shouldn't use period or slashes 
+" in ACL names because it would only confuses our 
+" simplistic IP address syntax processing here.
+"
+" isident is used for the most-lax naming convention of 
+" all Bind identifiers combined.  Those naming convention
+" are ordered from VIEW_name, Zone_name, ACL_name, 
+" master_name, and then to the most strictest naming 
+" convention, domain_name.  
+"
+" I'm moving away from isident within this syntax file.
+"
 " charset_view_name_base = alphanums + '_-.+~@$%^&*()=[]\\|:<>`?'  # no semicolon nor curly braces allowed
 " charset_zone_name_base = alphanums + '_-.+~@$%^&*()=[]\\|:<>`?'  # no semicolon nor curly braces allowed
 
 " charset_acl_name_base =  alphanums + '_-.+~@$%^&*()=[]\\|:<>`?'  # no semicolon nor curly braces allowed
 " charset_master_name = alphanums + '_-.'
 " charset_fqdn_name_base = alphanums + '_-.'
-
-
 
 
 " quit when a syntax file was already loaded
@@ -66,11 +115,12 @@ endif
 syn case match
 
 setlocal iskeyword=.,-,48-58,A-Z,a-z
-
-" ACL name : alphanums + '_-.+~@$%^&*()=[]\\|:<>`?'  # no semicolon nor curly braces allowed 
-
 setlocal isident=.,-,48-58,A-Z,a-z,_
 
+" I've got the largest named.conf possible.
+" it's a heavily commented named.cnf file containing every 
+" valid statements, options, and clauses.
+" sync is barely triggered here.
 syn sync match namedSync grouphere NONE "^(zone|controls|acl|key)"
 
 let s:save_cpo = &cpoptions
@@ -78,13 +128,10 @@ set cpoptions-=C
 
 " First-level highlighting
 
-hi link namedComment	namedHLComment
-hi link namedInclude	namedHLInclude
+hi link namedComment	Comment
+hi link namedInclude	Include
 
-" Bind Statements 
-" (used to be called 'clause' back in Bind 4,
-"  Bind 8, and some earlier Bind 9 days
-"  but that has been swapped with 'statement')
+" Bind Statements (top-level)
 hi link namedACLKeyword	namedHLStatement
 hi link namedControlsKeyword	namedHLStatement
 hi link namedDLZKeyword	namedHLStatement
@@ -193,16 +240,19 @@ hi link namedHLBuiltin	namedHLSpecial
 hi link namedTypeBool_SC	namedHLTBool
 
 
-" BIND configuration file
 " Down-Top syntax approach.
 " Smallest granular definition starts here.
 " Largest granular definition goes at the bottom.
-" Pay attention to tighest-pattern-first ordering of syntax 
-" match/region/keyword having same identifers (First-match method used).
+" Pay attention to tighest-pattern-first ordering of syntax.
+"
+" Many Vim-match/region/keyword are mixed together here by
+" reusing its same macro name, to attain that desired 
+" First-match method.
 
-" 'uncontained' statements are the ones used GLOBALLY
+" 'Vim-uncontained' statements are the ones used GLOBALLY
 
-" Builtins are global as to ensure non-accidential re-usage
+" Builtins are not Vim-'contained' as to prevent 
+" its re-use as a Vim-String or Bind-identifier.
 hi link namedBuiltinsKeyword namedHLSpecial
 syn keyword namedBuiltinsKeyword any none localhost localnets
 
@@ -219,6 +269,7 @@ syn match namedInclude /\_s*include/
 " 'contained' statements are confined to within their parent's region
 
 syn match namedSemicolon contained /\(;\+\s*\)\+/ skipwhite
+" We need a better NotSemicolon pattern here
 syn match namedNotSemicolon contained /[^;]\+/he=e-1 skipwhite
 syn match namedError /[^;{#]$/
 
@@ -451,7 +502,7 @@ syn match namedTypeCacheSize contained /\d\{1,3}\s*;/he=e-1 skipwhite
 " --- syntax errors
 syn match namedIllegalDom contained /"\S*[^-A-Za-z0-9.[:space:]]\S*"/ms=s+1,me=e-1
 syn match namedIPerror contained /\<\S*[^0-9.[:space:];]\S*/
-syn match namedNotParenError contained +\([^{]\|$\)+
+syn match namedNotParenError contained +\([^{]\|$\)+ skipwhite
 syn match namedEParenError contained +{+
 syn match namedParenError +}\([^;]\|$\)+
 
@@ -501,8 +552,7 @@ syn region namedElementAMLSection contained start=+{+ end=+}+
 \    namedElementACLName
 \ nextgroup=
 \    namedSemicolon,
-\    namedParenError,
-\    namedError
+\    namedParenError
 
 syn region namedAMLSection contained start=/{/ end=/}/
 \ contains=
@@ -584,8 +634,7 @@ syn region namedControlsUnixOptKeysSection start=+{+ end=+}+
 \ contains=namedControlsUnixOptKeysElement
 \ nextgroup=
 \    namedControlsOptReadonlyKeyword,
-\    namedSemicolon,
-\    namedError
+\    namedSemicolon
 
 hi link namedControlsUnixOptKeysKeyword namedHLOption
 syn match namedControlsUnixOptKeysKeyword /keys/ contained skipwhite
@@ -722,7 +771,7 @@ syn region namedStmtControlsSection contained start=+{+ end=+}+
 \    namedComment,
 \    namedInclude
 \ nextgroup=
-\    namedSemicolon,
+\    namedSemicolon
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within top-level 'key' statement
@@ -752,8 +801,7 @@ syn region namedStmtKeySection start=+{+ end=+}+
 \    namedKeyElementAlgorithmKeyword
 \ nextgroup=
 \    namedSemicolon,
-\    namedNotSemicolon,
-\    namedError
+\    namedNotSemicolon
 
 hi link namedStmtKeyIdent namedHLIdentifier
 syn match namedStmtKeyIdent contained skipwhite /\i/
@@ -805,8 +853,7 @@ syn region namedStmtManagedKeysSection start=+{+ end=+}+
 \ contains=namedManagedKeysElementDomainName
 \ nextgroup=
 \    namedSemicolon,
-\    namedNotSemicolon,
-\    namedError
+\    namedNotSemicolon
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within 'logging' statement
@@ -1022,36 +1069,40 @@ syn match namedLoggingChannelFileOptSize /size/
 
 hi link namedLoggingChannelFileSuffixOpt namedHLBuiltin
 syn match namedLoggingChannelFileSuffixOpt /\(\(increment\)\|\(timestamp\)\)/
-\ contained skipwhite
-\ nextgroup=namedLoggingChannelFileOptSize,
-\           namedLoggingChannelFileOptVersions,
-\           namedSemicolon
+\ contained 
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedLoggingChannelFileOptSize,
+\    namedLoggingChannelFileOptVersions,
+\    namedSemicolon
 
 hi link namedLoggingChannelFileOptSuffix namedHLOption
-syn match namedLoggingChannelFileOptSuffix /suffix/
-\ contained  skipwhite
-\ nextgroup=namedLoggingChannelFileSuffixOpt
+syn match namedLoggingChannelFileOptSuffix contained /suffix/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedLoggingChannelFileSuffixOpt,
+\    namedEParenError
 
-hi link namedLoggingChannelFileIdent namedHLIdentifier
-" syn match namedLoggingChannelFileIdent /\S\+\(\s\+;\)\{0,1}/he=e-1 contained skipwhite
-syn match namedLoggingChannelFileIdent /\S\+/ contained skipwhite
-\ contains=namedFilespec
-\ nextgroup=namedLoggingChannelFileOptSuffix,
-\           namedLoggingChannelFileOptSize,
-\           namedLoggingChannelFileOptVersions,
-\           namedSemicolon
+hi link namedLoggingChannelFileIdent namedHLString
+syn match namedLoggingChannelFileIdent /[{}<>\|:;"'a-zA-Z0-9_\.\-\/\\]\+[^;]/ 
+\ contained
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedLoggingChannelFileOptSuffix,
+\    namedLoggingChannelFileOptSize,
+\    namedLoggingChannelFileOptVersions,
+\    namedSemicolon
 
 " file <namedLoggingChannelOptFile> [ ... ];
 hi link namedLoggingChannelOptFile namedHLOption
-syn match namedLoggingChannelOptFile /file/ contained skipwhite
+syn match namedLoggingChannelOptFile /file/ contained 
+\ skipwhite skipempty
 \ nextgroup=
 \    namedLoggingChannelFileIdent,
-\    namedInclude,
-\    namedComment,
-\    namedParenError,
-\    namedError
+\    namedParenError
 
-syn region namedLoggingChannelSection contained start=+{+ end=+}\s*;+ 
+syn region namedLoggingChannelSection contained start=+{+ end=+}+ 
+\ skipwhite skipnl skipempty
 \ contains=
 \    namedLoggingChannelOpts,
 \    namedLoggingChannelOptFile,
@@ -1059,11 +1110,10 @@ syn region namedLoggingChannelSection contained start=+{+ end=+}\s*;+
 \    namedLoggingChannelOptSyslog,
 \    namedLoggingChannelOptNull,
 \    namedLoggingChannelOptSeverity,
-\    namedInclude,
 \    namedComment,
-\    namedParenError,
-\    namedError
-\ skipwhite
+\    namedInclude,
+\    namedParenError
+\ nextgroup=namedSemicolon
 
 hi link namedLoggingChannelIdent namedHLIdentifier
 syn match namedLoggingChannelIdent /\S\+/ contained skipwhite
@@ -1079,7 +1129,7 @@ syn region namedStmtLoggingSection contained start=+{+ end=+}\s*;+
 \ contains=
 \    namedLoggingOptCategoryKeyword,
 \    namedLoggingOptChannelKeyword,
-\    namedComment,namedInclude,namedParenError,namedError
+\    namedComment,namedInclude,namedParenError
 \ skipwhite
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1839,13 +1889,12 @@ syn keyword namedIntKeyword contained grant nextgroup=namedString skipwhite
 syn keyword namedIntKeyword contained name self subdomain wildcard nextgroup=namedString skipwhite
 syn keyword namedIntKeyword TXT A PTR NS SOA A6 CNAME MX ANY skipwhite
 
+syn keyword namedZoneClass contained in hs hesiod chaos
+\  IN HS HESIOD CHAOS
 syn region namedZoneString contained oneline start=+"+ end=+"+ skipwhite
 \  contains=namedDomain,namedIllegalDom
 \  nextgroup=namedZoneClass,namedStmtZoneSection
 
-syn keyword namedZoneClass contained in hs hesiod chaos
-\  IN HS HESIOD CHAOS
-\  nextgroup=namedStmtZoneSection skipwhite
 
 syn keyword namedZoneOpt contained update-policy
 \  nextgroup=namedIntSection skipwhite
@@ -1972,8 +2021,8 @@ syn match namedStmtMastersIdent contained /\<[0-9a-zA-Z\-_\.]\{1,64}/
 " options { <options_statement>; ... };
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-syn region namedStmtOptionsSection contained 
-\ start=+{+ end=+}\s*;+ 
+syn region namedStmtOptionsSection contained start=+{+ end=+}\s*;+ 
+\ skipwhite
 \ contains=
 \    namedStmtOptionsBoolGroup,
 \    namedStmtOptionsMinuteGroup,
@@ -1981,19 +2030,21 @@ syn region namedStmtOptionsSection contained
 \    namedStmtOptionsServerViewOptAV6S,
 \    namedStmtOptionsViewZoneOptAN,
 \    namedOptionsViewAttachCache,
-\    namedInclude,namedComment,namedParenError skipwhite
+\    namedInclude,
+\    namedComment,
+\    namedParenError
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " server <namedStmtServerIdent> { <namedStmtServerKeywords>; };
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn region namedStmtServerSection contained 
-\ start=+{+ end=+}\s*;+ 
+syn region namedStmtServerSection contained start=+{+ end=+}\s*;+ 
+\ skipwhite skipempty
 \ contains=
-\     namedStmtOptionsViewZoneOptAN,
-\     namedStmtOptionsServerViewOptAV6S,
-\     namedStmtServerBoolGroup,
-\     namedComment,namedInclude,namedError,
-\ skipwhite
+\    namedStmtOptionsViewZoneOptAN,
+\    namedStmtOptionsServerViewOptAV6S,
+\    namedStmtServerBoolGroup,
+\    namedComment,
+\    namedInclude
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -2001,15 +2052,21 @@ syn region namedStmtServerSection contained
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn match namedStmtServerIdent contained
 \ /[0-9]\{1,3}\(\.[0-9]\{1,3}\)\{0,3}\([\/][0-9]\{1,3}\)\{0,1}/
-\ nextgroup=namedStmtServerSection,namedComment,namedInclude,namedError skipwhite
+\ skipwhite
+\ nextgroup=
+\    namedStmtServerSection,
+\    namedComment,
+\    namedInclude,
+\    namedError 
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " view <namedViewIdent> { ... };
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-syn region namedStmtViewSection contained 
-\ start=+{+ end=+}\s*;+ 
+syn region namedStmtViewSection contained start=+{+ end=+}+ 
+\ skipwhite skipempty
+\ nextgroup=namedSemicolon
 \ contains=
 \    namedStmtViewBoolGroup,
 \    namedStmtViewSecondGroup,
@@ -2021,26 +2078,40 @@ syn region namedStmtViewSection contained
 \    namedStmtViewKeywords,
 \    namedStmtOptionsViewZoneOptAN,
 \    namedStmtOptionsServerViewOptAV6S,
-\    namedInclude,namedComment,namedParenError skipwhite
+\    namedInclude,namedComment,namedParenError
 
-syn match namedViewIdent contained /\i\+/ 
-\ nextgroup=namedStmtViewSection skipwhite
+syn match namedViewIdent contained /\i\+/ skipwhite
+\ nextgroup=namedStmtViewSection
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " zone <namedZoneIdent> { ... };
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn region namedStmtZoneSection contained 
-\ start=+{+ end=+}\s*;+ 
+syn region namedStmtZoneSection contained start=+{+ end=+}+ 
+\ skipwhite skipempty
+\ nextgroup=namedSemicolon
 \ contains=
-\    namedComment,
-\    namedInclude,
 \    namedStmtOptionsViewZoneOptAN,
 \    namedStmtZoneKeywords,
-\    namedParenError  skipwhite
+\    namedInclude,
+\    namedComment,
+\    namedParenError
+
+hi link namedStmtZoneClass namedHLIdentifier
+syn match namedStmtZoneClass contained /\<\c\%(CHAOS\)\|\%(HESIOD\)\|\%(IN\)\|\%(CH\)\|\%(HS\)\>/
+\ skipwhite skipempty
+\ nextgroup=
+\    namedStmtZoneSection,
+\    namedComment,
+\    namedError 
 
 hi link namedZoneIdent namedHLIdentifier
-syn match namedZoneIdent contained /\i\+/ 
-\ nextgroup=namedStmtZoneSection,namedComment,namedError skipwhite
+syn match namedZoneIdent contained /\S\+/ 
+\ skipwhite skipempty
+\ contains=namedQuotedDomain
+\ nextgroup=
+\    namedStmtZoneSection,
+\    namedStmtZoneClass,
+\    namedComment
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -2048,12 +2119,13 @@ syn match namedZoneIdent contained /\i\+/
 " 'uncontained' statements are the ones used GLOBALLY
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 hi link namedStmtKeyword namedHLStatement
-syn match namedStmtKeyword /\_s*acl/
-\ nextgroup=namedStmtACLIdent skipempty skipwhite
-
-syn match namedStmtKeyword /\_s*controls/
+syn match namedStmtKeyword /\_^\_s*acl/
 \ skipempty skipnl skipwhite
-\ nextgroup=namedStmtControlsSection
+\ nextgroup=namedStmtACLIdent,
+
+syn match namedStmtKeyword /\_^\_s*controls/
+\ skipempty skipnl skipwhite
+\ nextgroup=namedStmtControlsSection,
 
 syn match namedStmtKeyword /\_s*key/
 \ nextgroup=namedStmtKeyIdent skipempty skipwhite
@@ -2094,7 +2166,7 @@ syn match namedStmtKeyword /\_s*view/
 
 " TODO: namedStmtError, how to get namedHLError to appear
 " zone <namedZoneIdent> { ... };
-syn keyword namedStmtKeyword zone 
+syn match namedStmtKeyword /\_s*zone/
 \ nextgroup=namedZoneIdent,namedComment,namedStmtError skipempty skipwhite
 
 hi link namedHLComment	Comment
