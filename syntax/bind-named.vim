@@ -184,6 +184,7 @@ hi link namedPortWild    	namedWildcard
 hi link namedWildcard	namedHLNumber
 hi link namedFilesCount	namedHLNumber
 hi link namedTypeNone	namedIdentifier
+hi link namedOK         21
 
 hi link namedClauseKeyword	namedHLOption
 hi link namedKeyword	namedHLOption
@@ -270,6 +271,7 @@ syn match namedInclude /\_s*include/
 
 " 'contained' statements are confined to within their parent's region
 
+hi link namedSemicolon namedOK
 syn match namedSemicolon contained /\(;\+\s*\)\+/ skipwhite
 " We need a better NotSemicolon pattern here
 syn match namedNotSemicolon contained /[^;]\+/he=e-1 skipwhite
@@ -2446,7 +2448,7 @@ syn match namedStmtKeyword /\_^\s*controls/
 \ skipempty skipnl skipwhite
 \ nextgroup=namedStmtControlsSection,
 
-syn match namedStmtKeyword /\_s^\*key/
+syn match namedStmtKeyword /\_^\s*key/
 \ nextgroup=namedStmtKeyIdent skipempty skipwhite
 
 syn match namedStmtKeyword /\_^\s*logging/
