@@ -1272,13 +1272,8 @@ syn keyword namedStmtOptionsCoresize contained
 \ containedin=namedStmtOptionsSection,namedStmtZoneSection
 
 " syn keyword namedStmtOptionsKeywords deallocate-on-exit
-" syn keyword namedStmtOptionsKeywords dialup
 " syn keyword namedStmtOptionsKeywords disable-ds-digests
 " syn keyword namedStmtOptionsKeywords disable-empty-zone
-" syn keyword namedStmtOptionsKeywords dns64
-" syn keyword namedStmtOptionsKeywords dns64-contact
-" syn keyword namedStmtOptionsKeywords dns64-server
-" syn keyword namedStmtOptionsKeywords dnssec-accept-expired
 " syn keyword namedStmtOptionsKeywords dnssec-dnskey-kskonly
 " syn keyword namedStmtOptionsKeywords dnssec-dnskey-kskonly
 " syn keyword namedStmtOptionsKeywords dnssec-enable
@@ -1428,20 +1423,6 @@ syn keyword namedServerBoolGroup contained
 " Syntaxes that are found only within 'view' statement
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " view statement - boolean operators
-hi link namedStmtViewBoolGroup namedHLStatement
-syn keyword namedStmtViewBoolGroup contained 
-\    check-integrity 
-\    check-sibling 
-\    check-wildcard
-\    dnssec-accept-expired
-\    dnssec-enable
-\    dnssec-validation
-\    empty-zone-enable
-\    fetch-glue
-\    match-recursive-only
-\ nextgroup=@namedClusterBoolean 
-\ containedin=namedStmtViewSection,namedInclude,namedComment
-\ skipwhite
 " obsoleted 'view' statements
 " \    acache-enable
 " \    additional-from-auth
@@ -1790,6 +1771,8 @@ syn keyword namedOptionsViewBoolGroup contained
 \    allow-new-zones
 \    auth-nxdomain 
 \    check-wildcard 
+\    dnsrps-enable
+\    dnssec-accept-expired
 \ nextgroup=@namedClusterBoolean 
 \ containedin=namedStmtOptionsSection,namedStmtViewSection skipwhite
 
@@ -2013,6 +1996,7 @@ syn keyword namedStmtOptionsViewDns64Contact contained
 \    namedStmtOptionsSection,
 \    namedStmtViewSection
 
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found in all 'options', and 'zone'
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -2166,6 +2150,18 @@ syn keyword namedStmtOptionsViewZoneDnssecLoadkeys contained
 \    namedStmtViewSection,
 \    namedStmtZoneSection 
 
+hi link namedStmtOptionsViewBoolGroup namedHLStatement
+syn keyword namedStmtOptionsViewBoolGroup contained 
+\    dnssec-dnskey-kskonly
+\ skipwhite
+\ nextgroup=@namedClusterBoolean 
+\ containedin=
+\    namedStmtOptionsSection,
+\    namedStmtViewSection,
+\    namedStmtZoneSection,
+\    namedInclude,
+\    namedStmtOptionsSection,
+\    namedComment
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found in all 'options', 'view', and 'server'
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -2440,24 +2436,24 @@ syn match namedZoneIdent contained /\S\+/
 " 'uncontained' statements are the ones used GLOBALLY
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 hi link namedStmtKeyword namedHLStatement
-syn match namedStmtKeyword /\_^\s*acl/
+syn match namedStmtKeyword /\_^\s*\<acl\>/
 \ skipempty skipnl skipwhite
 \ nextgroup=namedStmtACLIdent,
 
-syn match namedStmtKeyword /\_^\s*controls/
+syn match namedStmtKeyword /\_^\s*\<controls\>/
 \ skipempty skipnl skipwhite
 \ nextgroup=namedStmtControlsSection,
 
-syn match namedStmtKeyword /\_^\s*key/
+syn match namedStmtKeyword /\_^\s*\<key\>/
 \ nextgroup=namedStmtKeyIdent skipempty skipwhite
 
-syn match namedStmtKeyword /\_^\s*logging/
+syn match namedStmtKeyword /\_^\s*\<logging\>/
 \ nextgroup=namedStmtLoggingSection skipempty skipwhite
 
-syn match namedStmtKeyword /\_^\s*managed-keys/
+syn match namedStmtKeyword /\_^\s*\<managed-keys\>/
 \ nextgroup=namedStmtManagedKeysSection skipempty skipwhite
 
-syn match namedStmtKeyword /\_^\s*masters/ 
+syn match namedStmtKeyword /\_^\s*\<masters\>/ 
 \ skipwhite skipnl skipempty 
 \ nextgroup=
 \    namedStmtMastersIdent,
@@ -2465,29 +2461,29 @@ syn match namedStmtKeyword /\_^\s*masters/
 \    namedInclude,
 " \ namedError prevents a linefeed between 'master' and '<master_name'
 
-syn match namedStmtKeyword /\_^\s*options/
+syn match namedStmtKeyword /\_^\s*\<options\>/
 \ nextgroup=namedStmtOptionsSection skipempty skipwhite
 
-syn match  namedStmtKeyword /\_^\s*server/
+syn match  namedStmtKeyword /\_^\s*\<server\>/
 \ nextgroup=namedStmtServerIdent,namedComment 
 \ skipempty skipwhite
 
-syn keyword namedStmtKeyword statistics-channels 
+syn match namedStmtKeyword /\_^\s*\<statistics-channels\>/
 \ nextgroup=namedIntIdent 
 \ skipempty skipwhite
 
-syn keyword namedStmtKeyword trusted-keys 
+syn match namedStmtKeyword /\_^\s*\<trusted-keys\>/
 \ skipempty skipwhite
 \ nextgroup=namedIntSection 
 
 " view <namedViewIdent> { ... };  
-syn match namedStmtKeyword /\_^\s*view/ 
+syn match namedStmtKeyword /\_^\s*\<view\>/ 
 \ skipwhite
 \ nextgroup=namedViewIdent 
 
 " TODO: namedStmtError, how to get namedHLError to appear
 " zone <namedZoneIdent> { ... };
-syn match namedStmtKeyword /\_^\_s*zone/
+syn match namedStmtKeyword /\_^\_s*\<zone\>/
 \ nextgroup=namedZoneIdent,namedComment,namedStmtError skipempty skipwhite
 
 hi link namedHLComment	Comment
