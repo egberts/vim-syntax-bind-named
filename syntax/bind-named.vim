@@ -466,7 +466,7 @@ syn match namedAllowMaintainOff contained /\coff/ skipwhite
 " --- string 
 syn region namedString start=/"/hs=s+1 skip=/\\"/ end=/"/he=e-1 contained
 syn region namedString start=/'/hs=s+1 skip=/\\'/ end=/'/he=e-1 contained
-syn match namedString contained /\<[a-zA-Z0-9_\.\-]\{1,64}\>/
+syn match namedString contained /\<[a-zA-Z0-9_\.\-]\{1,63}\>/
 syn region namedDoubleQuotedString start=/"/ skip=/\\"/ end=/"/ contained
 syn region namedSingleQuotedString start=/'/ skip=/\\'/ end=/'/ contained
 syn region namedQuotedString start=/"/ skip=/\\"/ end=/"/ contained
@@ -493,7 +493,8 @@ syn match namedElementMasterName contained /\<[0-9a-zA-Z\-_\.]\{1,64}\s*;/he=e-1
 syn match namedHexSecretValue contained /\<'[0-9a-fA-F]\+'\>/ skipwhite
 syn match namedHexSecretValue contained /\<"[0-9a-fA-F]\+"\>/ skipwhite
 
-syn match namedViewName contained /.\+/ skipwhite
+" syn match namedViewName contained /[a-zA-Z0-9_\-\.+~@$%\^&*()=\[\]\\|:<>`?]\{1,64}/ skipwhite
+syn match namedViewName contained /[a-zA-Z0-9]\{1,64}/ skipwhite
 hi link namedElementViewName namedHLIdentifier
 syn match namedElementViewName /\s\+/
 \ contained skipwhite 
@@ -501,7 +502,8 @@ syn match namedElementViewName /\s\+/
 \ nextgroup=namedSemicolon
 
 syn match namedZoneName contained /\i\+;/he=e-1 skipwhite
-syn match namedDLZName contained /\i\+;/he=e-1 skipwhite
+hi link namedDlzName namedHLIdentifier
+syn match namedDlzName contained /[a-zA-Z0-9_\.\-]\{1,63}/ skipwhite
 
 syn match namedFQDN contained /\i\+;/he=e-1 skipwhite
 
@@ -787,6 +789,51 @@ syn region namedStmtControlsSection contained start=+{+ end=+}+
 \    namedInclude
 \ nextgroup=
 \    namedSemicolon
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Syntaxes that are found only within top-level 'dlz' statement
+" 
+" dlz <dlz_name> { database <string> search <boolean>; };
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+hi link namedDlzSearchBoolean namedHLString
+syn match namedDlzSearchBoolean contained /\i/
+\ skipwhite
+\ contains=namedTypeBool
+\ containedin=namedStmtDlzSection
+\ nextgroup=namedSemicolon,namedDlzDatabaseKeyword
+
+hi link namedStmtDlzSearchKeyword namedHLOption
+syn match namedStmtDlzSearchkeyword contained /\<search\>/
+\ skipwhite
+\ nextgroup=namedDlzSearchBoolean
+\ containedin=namedStmtDlzSection
+
+hi link namedDlzDatabaseString namedHLString
+syn region namedDlzDatabaseString start=/"/ skip=/\\"/ end=/"/ contained
+syn region namedDlzDatabaseString start=/'/ skip=/\\'/ end=/'/ contained
+\ skipwhite
+\ containedin=namedStmtDlzSection
+\ nextgroup=namedSemicolon,namedDlzSearchKeyword
+
+hi link namedDlzDatabaseKeyword namedHLOption
+syn match namedDlzDatabaseKeyword contained /\<database\>/
+\ skipwhite
+\ nextgroup=namedDlzDatabaseString
+\ containedin=namedStmtDlzSection
+
+syn region namedStmtDlzSection contained start=+{+ end=+}+
+\ skipwhite skipempty
+\ nextgroup=namedSemicolon,namedNotSemicolon
+\ contains=
+\    namedDlzDatabaseKeyword,
+\    namedDlzSearchKeyword
+
+hi link namedStmtDlzIdent namedHLIdentifier
+syn match namedStmtDlzIdent contained /[a-zA-Z0-9_\.\-]\{1,63}/ 
+\ skipwhite 
+\ nextgroup=namedStmtDlzSection
+\ contains=namedDlzName
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within top-level 'key' statement
@@ -2443,6 +2490,14 @@ syn match namedStmtKeyword /\_^\s*\<acl\>/
 syn match namedStmtKeyword /\_^\s*\<controls\>/
 \ skipempty skipnl skipwhite
 \ nextgroup=namedStmtControlsSection,
+
+syn match namedStmtKeyword /\_^\s*\<dlz\>/
+\ skipempty skipnl skipwhite
+\ nextgroup=namedStmtDlzIdent,
+
+syn match namedStmtKeyword /\_^\s*\<dyndb\>/
+\ skipempty skipnl skipwhite
+\ nextgroup=namedStmtDyndbSection,
 
 syn match namedStmtKeyword /\_^\s*\<key\>/
 \ nextgroup=namedStmtKeyIdent skipempty skipwhite
