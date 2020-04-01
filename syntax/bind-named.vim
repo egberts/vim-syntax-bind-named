@@ -130,12 +130,14 @@ set cpoptions-=C
 
 hi link namedComment	Comment
 hi link namedInclude	Include
+hi link namedIdentifier	    Identifier
 
 " Bind Statements (top-level)
 hi link namedACLKeyword	namedHLStatement
 hi link namedControlsKeyword	namedHLStatement
 hi link namedDLZKeyword	namedHLStatement
 hi link namedKeyKeyword	namedHLStatement
+hi link namedHLIdentifier namedIdentifier
 hi link namedLoggingKeyword	namedHLStatement
 hi link namedManagedKeysKeyword	namedHLStatement
 hi link namedLWRESKeyword	namedHLStatement  " gone in 9.13.0 
@@ -164,6 +166,7 @@ hi link namedViewIdent	namedHLIdentifier
 hi link namedViewName	namedHLIdentifier
 hi link namedZoneIdent	namedHLIdentifier
 hi link namedZoneName	namedHLIdentifier
+hi link namedElementZoneName	namedHLIdentifier
 hi link namedDomain	namedHLIdentifier
 hi link namedString	namedHLString
 hi link namedGroupID	namedHLNumber
@@ -212,7 +215,6 @@ hi link namedTypeZone	namedHLType
 hi link namedIgnoreWarnFail	namedHLType
 hi link namedAllowMaintainOff	namedHLType
 
-hi link namedIdentifier	namedHLClause
 hi link namedControlsInet	namedHLClause
 hi link namedControlsPort	namedHLClause
 hi link namedControlsAllow	namedHLClause
@@ -279,7 +281,7 @@ syn match namedError /[^;{#]$/
 
 syn match namedNotNumber contained "[^  0-9;]\+"
 syn match namedNumber contained "\d\+"
-syn match namedElementNumber contained "\d\{1,9}\s\+;"he=e-1
+syn match namedElementNumber contained "\d\{1,10}\s*;"he=e-1
 syn match namedGroupID contained "[0-6]\{0,1}[0-9]\{1,4}"
 syn match namedUserID contained "[0-6]\{0,1}[0-9]\{1,4}"
 syn match namedFilePerm contained "[0-7]\{3,4}"
@@ -496,12 +498,14 @@ syn match namedHexSecretValue contained /\<"[0-9a-fA-F]\+"\>/ skipwhite
 " syn match namedViewName contained /[a-zA-Z0-9_\-\.+~@$%\^&*()=\[\]\\|:<>`?]\{1,64}/ skipwhite
 syn match namedViewName contained /[a-zA-Z0-9]\{1,64}/ skipwhite
 hi link namedElementViewName namedHLIdentifier
-syn match namedElementViewName /\s\+/
+syn match namedElementViewName contained /[a-zA-Z0-9]\{1,63}\s*;/he=e-1 skipwhite
 \ contained skipwhite 
 \ contains=namedViewName
 \ nextgroup=namedSemicolon
 
-syn match namedZoneName contained /\i\+;/he=e-1 skipwhite
+syn match namedZoneName contained /[a-zA-Z0-9]\{1,64}/ skipwhite
+syn match namedElementZoneName contained /[a-zA-Z0-9]\{1,63}\s*;/he=e-1 skipwhite
+
 hi link namedDlzName namedHLIdentifier
 syn match namedDlzName contained /[a-zA-Z0-9_\.\-]\{1,63}/ skipwhite
 hi link namedDyndbName namedHLIdentifier
@@ -802,7 +806,6 @@ hi link namedDlzSearchBoolean namedHLString
 syn match namedDlzSearchBoolean contained /\i/
 \ skipwhite
 \ contains=namedTypeBool
-\ containedin=namedStmtDlzSection
 \ nextgroup=namedSemicolon,namedDlzDatabaseKeyword
 
 hi link namedStmtDlzSearchKeyword namedHLOption
@@ -926,7 +929,7 @@ syn match namedManagedKeysElementFlagType contained skipwhite /\d\{1,3}/
 \ nextgroup=namedManagedKeysElementProtocolType,namedError
 
 hi link namedManagedKeysElementInitialKey namedHLNumber
-syn match namedManagedKeysElementInitialKey /[0-9A-Za-z][-0-9A-Za-z.]\{1,1024}/ 
+syn match namedManagedKeysElementInitialKey /[0-9A-Za-z][-0-9A-Za-z.]\{1,4096}/ 
 \ contained skipwhite skipempty
 \ contains=namedString
 \ nextgroup=namedManagedKeysElementFlagType,namedError
@@ -989,12 +992,13 @@ syn keyword namedLoggingCategoryBuiltins contained skipwhite
 \ nextgroup=namedLoggingCategorySection
 \ containedin=namedStmtLoggingSection
 
-hi link namedLoggingCategoryCustom namedHLIdentifier
+hi link namedLoggingCategoryCustom Identifier
 syn match namedLoggingCategoryCustom contained skipwhite /\i\+/
 \ containedin=namedStmtLoggingSection
 
+hi link namedLoggingCategoryIdent Identifier
 syn match namedLoggingCategoryIdent /\i\+/ skipwhite contained
-\ contains=namedLoggingCategoryBuiltins,namedLoggingCategoryCustom
+\ contains=namedLoggingCategoryBuiltins
 \ nextgroup=namedLoggingCategorySection,namedError
 \ containedin=namedStmtLoggingSection
 
@@ -1346,13 +1350,7 @@ syn keyword namedStmtOptionsCoresize contained
 \ containedin=namedStmtOptionsSection,namedStmtZoneSection
 
 " syn keyword namedStmtOptionsKeywords deallocate-on-exit
-" syn keyword namedStmtOptionsKeywords disable-ds-digests
-" syn keyword namedStmtOptionsKeywords disable-empty-zone
-" syn keyword namedStmtOptionsKeywords dnssec-dnskey-kskonly
-" syn keyword namedStmtOptionsKeywords dnssec-dnskey-kskonly
-" syn keyword namedStmtOptionsKeywords dnssec-enable
 " syn keyword namedStmtOptionsKeywords dnssec-loadkeys-interval
-" syn keyword namedStmtOptionsKeywords dnssec-lookaside
 " syn keyword namedStmtOptionsKeywords dnssec-must-be-secure
 " syn keyword namedStmtOptionsKeywords dnssec-secure-to-insecure
 " syn keyword namedStmtOptionsKeywords dnssec-validation
@@ -1382,7 +1380,6 @@ syn keyword namedStmtOptionsCoresize contained
 " syn keyword namedStmtOptionsKeywords match-mapped-addresses
 " syn keyword namedStmtOptionsKeywords max-cache-size
 " syn keyword namedStmtOptionsKeywords max-cache-ttl
-" syn keyword namedStmtOptionsKeywords max-clients-per-query
 " syn keyword namedStmtOptionsKeywords max-ixfr-log-size
 " syn keyword namedStmtOptionsKeywords max-journal-size
 " syn keyword namedStmtOptionsKeywords max-ncache-ttl
@@ -1496,12 +1493,6 @@ syn keyword namedServerBoolGroup contained
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within 'view' statement
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" view statement - boolean operators
-" obsoleted 'view' statements
-" \    acache-enable
-" \    additional-from-auth
-" \    additional-from-cache
-" \    cleaning-interval
 
 hi link namedStmtViewNumberGroup namedHLOption
 syn keyword namedStmtViewNumberGroup contained
@@ -1519,7 +1510,6 @@ syn keyword namedStmtViewSecondGroup contained
 " view statement - minute_type
 hi link namedStmtViewMinuteGroup namedHLStatement
 syn keyword namedStmtViewMinuteGroup contained 
-\    cleaning-interval
 \    heartbeat-interval
 \ nextgroup=namedTypeMinutes,namedComment,namedError
 \ containedin=namedStmtViewSection skipwhite
@@ -1563,17 +1553,6 @@ syn keyword namedStmtViewKeywords contained
 \    nextgroup=namedAMLSection,namedError
 \    containedin=namedStmtViewSection skipwhite
 
-
-" view statement - disable-empty-zone, trust anchor method
-hi link namedDNSSECLookaside namedSpecial
-syn match namedDNSSECLookaside /auto\s*;/he=e-1 contained skipwhite
-syn match namedDNSSECLookaside /no\s*;/he=e-1 contained skipwhite
-" TODO: dnssec-lookaside <domain-name>
-" syn match namedDNSSECLookaside /.\+\s*;/he=e-1 contained nextgroup=@namedDomainFQDNCluster skipwhite
-
-syn keyword namedStmtViewKeywords contained 
-\     dnssec-lookaside 
-\ nextgroup=namedDNSSECLookaside,namedQuotedDomain,namedError skipwhite
 
 " dnssec-must-be-secure <domain_name> <boolean>; [ Opt View ]  # v9.3.0+
 syn match namedDMBS_FQDN /\i/ 
@@ -1636,11 +1615,9 @@ syn keyword namedStmtViewKeywords contained
 " syn keyword namedStmtViewKeywords class
 " syn keyword namedStmtViewKeywords client-per-query
 " syn keyword namedStmtViewKeywords dialup
-" syn keyword namedStmtViewKeywords disable-ds-digests
 " syn keyword namedStmtViewKeywords dns64
 " syn keyword namedStmtViewKeywords dns64-contact
 " syn keyword namedStmtViewKeywords dns64-server
-" syn keyword namedStmtViewKeywords dnssec-dnskey-kskonly
 " syn keyword namedStmtViewKeywords dnssec-loadkeys-interval
 " syn keyword namedStmtViewKeywords dnssec-secure-to-insecure
 " syn keyword namedStmtViewKeywords dnssec-update-mode
@@ -1659,7 +1636,6 @@ syn keyword namedStmtViewKeywords contained
 " syn keyword namedStmtViewKeywords match-destination
 " syn keyword namedStmtViewKeywords match-recursive-only
 " syn keyword namedStmtViewKeywords max-cache-ttl
-" syn keyword namedStmtViewKeywords max-clients-per-query
 " syn keyword namedStmtViewKeywords max-ixfr-log-size
 " syn keyword namedStmtViewKeywords max-journal-size
 " syn keyword namedStmtViewKeywords max-ncache-ttl
@@ -1740,7 +1716,6 @@ syn keyword namedStmtZoneKeywords contained key-directory skipwhite
 " syn keyword namedStmtZoneKeywords database
 " syn keyword namedStmtZoneKeywords delegation-only
 " syn keyword namedStmtZoneKeywords dialup
-" syn keyword namedStmtZoneKeywords dnssec-dnskey-kskonly
 " syn keyword namedStmtZoneKeywords dnssec-loadkeys-interval
 " syn keyword namedStmtZoneKeywords dnssec-secure-to-insecure
 " syn keyword namedStmtZoneKeywords dnssec-update-mode
@@ -1827,7 +1802,6 @@ syn keyword namedStmtZoneKeywords contained key-directory skipwhite
 
 " syn keyword namedStmtZoneKeywordsObsoleted alt-transfer-source
 " syn keyword namedStmtZoneKeywordsObsoleted alt-transfer-source-v6
-" syn keyword namedStmtZoneKeywordsObsoleted cleaning-interval
 " syn keyword namedStmtZoneKeywordsObsoleted ixfr-base
 " syn keyword namedStmtZoneKeywordsObsoleted maintain-ixfr-base
 " syn keyword namedStmtZoneKeywordsObsoleted max-refresh-time
@@ -1840,6 +1814,35 @@ syn keyword namedStmtZoneKeywords contained key-directory skipwhite
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found in all 'options', and 'view'
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+hi link namedOptionsViewDnssecLookasideOptDomain namedHLClause
+syn match namedOptionsViewDnssecLookasideOptDomain contained /domain\s+trusted-anchor/
+\ skipwhite
+\ nextgroup=namedElementDomainName
+
+hi link namedOptionsViewDnssecLookasideOptAuto namedHLError
+syn keyword namedOptionsViewDnssecLookasideOptAuto contained auto
+\ skipwhite
+\ nextgroup=namedSemicolon
+
+hi link namedOptionsViewDnssecLookasideOpt namedHLType
+syn keyword namedOptionsViewDnssecLookasideOpt contained no
+\ skipwhite
+\ nextgroup=namedSemicolon
+
+" dnssec-lookaside [ auto | no | domain <domain_name> ];
+hi link namedOptionsViewDnssecLookasideKeyword namedHLOption
+syn keyword namedOptionsViewDnssecLookasideKeyword contained
+\    dnssec-lookaside
+\ skipwhite
+\ nextgroup=
+\    namedOptionsViewDnssecLookasideOpt,
+\    namedOptionsViewDnssecLookasideOptDomain,
+\    namedOptionsViewDnssecLookasideOptAuto
+\ containedin=
+\    namedStmtOptionsSection,
+\    namedStmtViewSection 
+
 hi link namedOptionsViewBoolGroup namedHLOption
 syn keyword namedOptionsViewBoolGroup contained
 \    allow-new-zones
@@ -1847,8 +1850,12 @@ syn keyword namedOptionsViewBoolGroup contained
 \    check-wildcard 
 \    dnsrps-enable
 \    dnssec-accept-expired
+\    dnssec-enable
 \ nextgroup=@namedClusterBoolean 
-\ containedin=namedStmtOptionsSection,namedStmtViewSection skipwhite
+\ skipwhite
+\ containedin=
+\    namedStmtOptionsSection,
+\    namedStmtViewSection 
 
 hi link namedOptionsViewAMLGroup namedHLOption
 syn keyword namedOptionsViewAMLGroup contained
@@ -1872,8 +1879,36 @@ syn match namedOptionsViewAttachCache contained /\<attach-cache\>/ skipwhite
 hi link namedStmtOptionsViewNumbers namedHLOption
 syn keyword namedStmtOptionsViewNumbers contained
 \    clients-per-query 
+\    max-clients-per-query 
 \ skipwhite
 \ nextgroup=namedElementNumber
+\ containedin=
+\    namedStmtOptionsSection,
+\    namedStmtViewSection
+
+" hi link namedOptionsViewDnsrpsElement namedHLString
+syn region namedOptionsViewDnsrpsElement start=/"/hs=s+1 skip=/\\"/ end=/"/he=e-1 contained
+\ skipwhite
+\ nextgroup=namedSemicolon
+\ containedin=namedOptionsViewDnsrpsOptionsSection
+
+syn region namedOptionsViewDnsrpsElement start=/'/hs=s+1 skip=/\\'/ end=/'/he=e-1 contained
+\ skipwhite
+\ nextgroup=namedSemicolon
+\ containedin=namedOptionsViewDnsrpsOptionsSection
+
+syn region namedOptionsViewDnsrpsOptionsSection contained start=+{+ end=+}+
+\ skipwhite skipempty
+\ nextgroup=namedSemicolon,namedNotSemicolon
+
+hi link namedStmtOptionsViewDnsrpsOptions namedHLOption
+syn keyword namedStmtOptionsViewDnsrpsOptions contained
+\    dnsrps-options
+\ skipwhite
+\ nextgroup=namedOptionsViewDnsrpsOptionsSection
+\ containedin=
+\    namedStmtOptionsSection,
+\    namedStmtViewSection
 
 hi link namedOptionsViewDenyAnswerElementDomainName namedHLIdentifier
 syn match namedOptionsViewDenyAnswerElementDomainName /['"][0-9A-Za-z][_\-0-9A-Za-z.]\{1,1024}['"]/
@@ -1969,10 +2004,12 @@ syn region namedOptionsViewDisableAlgosSection contained start=+{+ end=+}+
 " disable-algorithms <name> { ... };
 hi link namedOptionsViewDisableAlgosIdent namedHLIdentifier
 syn match namedOptionsViewDisableAlgosIdent contained 
-\   /['"]\?[a-zA-Z0-9\.\-_]\{1,64}['"]\?/hs=s+1,he=e-1
+\   /['"][a-zA-Z0-9\.\-_]\{1,64}['"]/
 \ skipwhite
 \ nextgroup=namedOptionsViewDisableAlgosSection
-\ contains=namedString
+\ containedin=namedStmtOptionsSection
+\ containedin=namedStmtViewSection
+" \ contains=namedString  this is bad... why?
 
 " disable-algorithms <name> ...
 hi link namedStmtOptionsViewDisableAlgosKeyword namedHLOption
@@ -1984,9 +2021,21 @@ syn keyword namedStmtOptionsViewDisableAlgosKeyword contained
 \    namedStmtOptionsSection,
 \    namedStmtViewSection
 
+" disable-ds-digests <name> ...
+hi link namedStmtOptionsViewDisableDsDigestKywd namedHLOption
+syn keyword namedStmtOptionsViewDisableDsDigestKywd contained 
+\    disable-ds-digests
+\ skipwhite skipempty
+\ nextgroup=namedOptionsViewDisableAlgosIdent
+\ containedin=
+\    namedStmtOptionsSection,
+\    namedStmtViewSection
+
 hi link namedStmtOptionsViewDisEmptyZone namedHLOption
-syn keyword namedStmtOptionsViewDisEmptyZone contained disable-empty-zone 
-\ nextgroup=namedString,namedError skipwhite
+syn keyword namedStmtOptionsViewDisEmptyZone contained 
+\    disable-empty-zone 
+\ nextgroup=namedElementZoneName,namedError
+\ skipwhite
 \ containedin=
 \    namedStmtOptionsSection,
 \    namedStmtViewSection
@@ -2224,18 +2273,33 @@ syn keyword namedStmtOptionsViewZoneDnssecLoadkeys contained
 \    namedStmtViewSection,
 \    namedStmtZoneSection 
 
-hi link namedStmtOptionsViewBoolGroup namedHLStatement
-syn keyword namedStmtOptionsViewBoolGroup contained 
+" cleaning-interval: range: 0-1440
+hi link namedOptionsViewZoneCleaningValue namedHLNumber
+syn match namedOptionsViewZoneCleaningValue contained
+\    /\(1440\)\|\(14[0-3][0-9]\)\|\([1[0-3][0-9][0-9]\)\|\([0-9][0-9][0-9]\)\|\([0-9][0-9]\)\|\([0-9]\)/
+\ skipwhite
+\ nextgroup=namedSemicolon
+
+hi link namedStmtOptionsViewZoneCleaning namedHLOption
+syn keyword namedStmtOptionsViewZoneCleaning contained
+\    cleaning-interval
+\ nextgroup=namedOptionsViewZoneCleaningValue
+\ skipwhite
+\ containedin=
+\    namedStmtOptionsSection, " inert since 9.5
+\    namedStmtViewSection,  " inert since 9.5
+\    namedStmtZoneSection   " inert since 9.5
+
+hi link namedStmtOptionsViewZoneBoolGroup namedHLOption
+syn keyword namedStmtOptionsViewZoneBoolGroup contained 
 \    dnssec-dnskey-kskonly
 \ skipwhite
-\ nextgroup=@namedClusterBoolean 
+\ nextgroup=@namedClusterBoolean_SC
 \ containedin=
-\    namedStmtOptionsSection,
 \    namedStmtViewSection,
 \    namedStmtZoneSection,
-\    namedInclude,
 \    namedStmtOptionsSection,
-\    namedComment
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found in all 'options', 'view', and 'server'
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -2262,19 +2326,12 @@ syn keyword namedStmtOptionsViewZoneOptAN contained
 \ skipwhite
 
 " + these keywords are contained within `update-policy' section only
-syn keyword namedIntKeyword contained grant nextgroup=namedString skipwhite
-syn keyword namedIntKeyword contained name self subdomain wildcard nextgroup=namedString skipwhite
-syn keyword namedIntKeyword TXT A PTR NS SOA A6 CNAME MX ANY skipwhite
-
-syn keyword namedZoneClass contained in hs hesiod chaos
-\  IN HS HESIOD CHAOS
-syn region namedZoneString contained oneline start=+"+ end=+"+ skipwhite
-\  contains=namedDomain,namedIllegalDom
-\  nextgroup=namedZoneClass,namedStmtZoneSection
-
-
-syn keyword namedZoneOpt contained update-policy
-\  nextgroup=namedIntSection skipwhite
+" syn keyword namedIntKeyword contained grant nextgroup=namedString skipwhite
+" syn keyword namedIntKeyword contained name self subdomain wildcard nextgroup=namedString skipwhite
+" syn keyword namedIntKeyword TXT A PTR NS SOA A6 CNAME MX ANY skipwhite
+" 
+" syn keyword namedZoneOpt contained update-policy
+" \  nextgroup=namedIntSection skipwhite
 
 " syn match namedAMElement contained /.*\s*;/ 
 " \ contains=namedACLName,namedComment,namedError skipwhite
@@ -2416,7 +2473,6 @@ syn region namedStmtOptionsSection contained start=+{+ end=+}\s*;+
 \    namedStmtOptionsServerViewOptAV6S,
 \    namedStmtOptionsViewZoneIgnoreWarnFail,
 \    namedStmtOptionsViewZoneOptAN,
-\    namedStmtOptionsViewNumbers,
 \    namedInclude,
 \    namedComment,
 \    namedParenError
@@ -2427,11 +2483,11 @@ syn region namedStmtOptionsSection contained start=+{+ end=+}\s*;+
 syn region namedStmtServerSection contained start=+{+ end=+}\s*;+ 
 \ skipwhite skipempty
 \ contains=
-\    namedStmtOptionsViewZoneOptAN,
 \    namedStmtOptionsServerViewOptAV6S,
 \    namedStmtServerBoolGroup,
 \    namedComment,
 \    namedInclude
+" \ contains=    namedStmtOptionsViewZoneOptAN,
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -2465,7 +2521,6 @@ syn region namedStmtViewSection contained start=+{+ end=+}+
 \    namedStmtOptionsViewZoneOptAN,
 \    namedStmtOptionsServerViewOptAV6S,
 \    namedStmtOptionsViewZoneIgnoreWarnFail,
-\    namedStmtOptionsViewNumbers,
 \    namedStmtViewZoneIgnoreWarnFail,
 \    namedInclude,namedComment,namedParenError
 
