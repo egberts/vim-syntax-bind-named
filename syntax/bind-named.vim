@@ -167,7 +167,7 @@ hi link namedViewName	namedHLIdentifier
 hi link namedZoneIdent	namedHLIdentifier
 hi link namedZoneName	namedHLIdentifier
 hi link namedElementZoneName	namedHLIdentifier
-hi link namedDomain	namedHLIdentifier
+hi link namedDomain	namedHLString 
 hi link namedString	namedHLString
 hi link namedGroupID	namedHLNumber
 hi link namedUserID	namedHLNumber
@@ -1351,7 +1351,6 @@ syn keyword namedStmtOptionsCoresize contained
 
 " syn keyword namedStmtOptionsKeywords deallocate-on-exit
 " syn keyword namedStmtOptionsKeywords dnssec-loadkeys-interval
-" syn keyword namedStmtOptionsKeywords dnssec-must-be-secure
 " syn keyword namedStmtOptionsKeywords dnssec-secure-to-insecure
 " syn keyword namedStmtOptionsKeywords dnssec-validation
 " syn keyword namedStmtOptionsKeywords dscp
@@ -1554,13 +1553,6 @@ syn keyword namedStmtViewKeywords contained
 \    containedin=namedStmtViewSection skipwhite
 
 
-" dnssec-must-be-secure <domain_name> <boolean>; [ Opt View ]  # v9.3.0+
-syn match namedDMBS_FQDN /\i/ 
-\ contained contains=namedDomain 
-\ nextgroup=@namedClusterBoolean skipwhite
-syn keyword namedStmtViewKeywords contained dnssec-must-be-secure 
-\ nextgroup=namedDMBS_FQDN skipwhite
-
 "  dual-stack-servers [ port <pg_num> ] 
 "                     { ( <domain_name> [port <p_num>] |
 "                         <ipv4> [port <p_num>] | 
@@ -1619,8 +1611,6 @@ syn keyword namedStmtViewKeywords contained
 " syn keyword namedStmtViewKeywords dns64-contact
 " syn keyword namedStmtViewKeywords dns64-server
 " syn keyword namedStmtViewKeywords dnssec-loadkeys-interval
-" syn keyword namedStmtViewKeywords dnssec-secure-to-insecure
-" syn keyword namedStmtViewKeywords dnssec-update-mode
 " syn keyword namedStmtViewKeywords empty-server
 " syn keyword namedStmtViewKeywords fetch-quota-param
 " syn keyword namedStmtViewKeywords fetches-per-server
@@ -1717,8 +1707,6 @@ syn keyword namedStmtZoneKeywords contained key-directory skipwhite
 " syn keyword namedStmtZoneKeywords delegation-only
 " syn keyword namedStmtZoneKeywords dialup
 " syn keyword namedStmtZoneKeywords dnssec-loadkeys-interval
-" syn keyword namedStmtZoneKeywords dnssec-secure-to-insecure
-" syn keyword namedStmtZoneKeywords dnssec-update-mode
 " syn keyword namedStmtZoneKeywords file
 " syn keyword namedStmtZoneKeywords forward
 " syn keyword namedStmtZoneKeywords forwarders
@@ -1815,10 +1803,22 @@ syn keyword namedStmtZoneKeywords contained key-directory skipwhite
 " Syntaxes that are found in all 'options', and 'view'
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-hi link namedOptionsViewDnssecLookasideOptDomain namedHLClause
-syn match namedOptionsViewDnssecLookasideOptDomain contained /domain\s+trusted-anchor/
+hi link namedOptionsViewDnssecLookasideOptKeyname namedHLString
+syn match namedOptionsViewDnssecLookasideOptKeyname contained 
+\    /\<[0-9A-Za-z][-0-9A-Za-z\.\-_]\+\>/ 
+\ nextgroup=namedSemicolon
 \ skipwhite
-\ nextgroup=namedElementDomainName
+
+hi link namedOptionsViewDnssecLookasideOptTD namedHLClause
+syn keyword namedOptionsViewDnssecLookasideOptTD contained trust-anchor
+\ nextgroup=namedOptionsViewDnssecLookasideOptKeyname
+\ skipwhite
+
+hi link namedOptionsViewDnssecLookasideOptDomain namedHLString
+syn match namedOptionsViewDnssecLookasideOptDomain contained 
+\    /[0-9A-Za-z][-0-9A-Za-z\.\-_]\+/ 
+\ nextgroup=namedOptionsViewDnssecLookasideOptTD
+\ skipwhite
 
 hi link namedOptionsViewDnssecLookasideOptAuto namedHLError
 syn keyword namedOptionsViewDnssecLookasideOptAuto contained auto
@@ -1830,7 +1830,7 @@ syn keyword namedOptionsViewDnssecLookasideOpt contained no
 \ skipwhite
 \ nextgroup=namedSemicolon
 
-" dnssec-lookaside [ auto | no | domain <domain_name> ];
+" dnssec-lookaside [ auto | no | <domain_name> trusted-anchor <key_name>];
 hi link namedOptionsViewDnssecLookasideKeyword namedHLOption
 syn keyword namedOptionsViewDnssecLookasideKeyword contained
 \    dnssec-lookaside
@@ -2119,6 +2119,19 @@ syn keyword namedStmtOptionsViewDns64Contact contained
 \    namedStmtOptionsSection,
 \    namedStmtViewSection
 
+" dnssec-validation [ maintain | no-resign ];
+hi link namedOptionsViewDnssecValidation namedHLOption
+syn keyword namedOptionsViewDnssecValidation contained 
+\    dnssec-validation
+\ skipwhite
+\ nextgroup=@namedClusterBoolean_SC
+\ containedin=
+\    namedStmtOptionsSection,
+\    namedStmtViewSection
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+" Syntaxes that are found in all 'options', and 'view'
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found in all 'options', and 'zone'
@@ -2290,15 +2303,49 @@ syn keyword namedStmtOptionsViewZoneCleaning contained
 \    namedStmtViewSection,  " inert since 9.5
 \    namedStmtZoneSection   " inert since 9.5
 
-hi link namedStmtOptionsViewZoneBoolGroup namedHLOption
-syn keyword namedStmtOptionsViewZoneBoolGroup contained 
+hi link namedOptionsViewZoneBoolGroup namedHLOption
+syn keyword namedOptionsViewZoneBoolGroup contained 
 \    dnssec-dnskey-kskonly
+\    dnssec-secure-to-insecure
 \ skipwhite
 \ nextgroup=@namedClusterBoolean_SC
 \ containedin=
 \    namedStmtViewSection,
-\    namedStmtZoneSection,
 \    namedStmtOptionsSection,
+\    namedStmtZoneSection   " zone obsoleted by 9.15(?)
+
+" dnssec-must-be-secure <domain_name> <boolean>; [ Opt View ]  # v9.3.0+
+syn match namedDMBS_FQDN contained /\<[0-9A-Za-z][-0-9A-Za-z\.]\{1,1024}[\.]\{0,1}\>/ 
+\ contains=namedDomain 
+\ nextgroup=@namedClusterBoolean_SC skipwhite
+
+hi link namedStmtOptionsViewDnssecMustBeSecure namedHLOption
+syn keyword namedStmtOptionsViewDnssecMustBeSecure contained 
+\    dnssec-must-be-secure 
+\ nextgroup=namedDMBS_FQDN
+\ skipwhite
+\ containedin=
+\    namedStmtOptionsSection,
+\    namedStmtViewSection,
+\    namedStmtZoneSection  " only if its zone is inside 'view'
+
+hi link namedOptionsViewZoneDnssecUpdateModeOpt namedHLBuiltin
+syn keyword namedOptionsViewZoneDnssecUpdateModeOpt contained
+\   maintain
+\   no-resign
+\ skipwhite
+\ nextgroup=namedSemicolon
+
+hi link namedOptionsViewZoneDnssecUpdateMode namedHLOption
+syn keyword namedOptionsViewZoneDnssecUpdateMode contained
+\    dnssec-update-mode
+\ nextgroup=namedOptionsViewZoneDnssecUpdateModeOpt
+\ skipwhite
+\ containedin=
+\    namedStmtOptionsSection,
+\    namedStmtViewSection,
+\    namedStmtZoneSection
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found in all 'options', 'view', and 'server'
