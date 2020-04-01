@@ -469,8 +469,8 @@ syn region namedString start=/'/hs=s+1 skip=/\\'/ end=/'/he=e-1 contained
 syn match namedString contained /\<[a-zA-Z0-9_\.\-]\{1,63}\>/
 syn region namedDoubleQuotedString start=/"/ skip=/\\"/ end=/"/ contained
 syn region namedSingleQuotedString start=/'/ skip=/\\'/ end=/'/ contained
-syn region namedQuotedString start=/"/ skip=/\\"/ end=/"/ contained
-syn region namedQuotedString start=/'/ skip=/\\'/ end=/'/ contained
+syn region namedQuotedString start=/"/hs=s+1 skip=/\\"/ end=/"/he=e-1 contained
+syn region namedQuotedString start=/'/hs=s+1 skip=/\\'/ end=/'/he=e-1 contained
 
 " --- Other variants of strings
 "  filespec = '_-.+~@$%^&*()=[]\\|:<>`?'  " no curly braces nor semicolon
@@ -504,6 +504,8 @@ syn match namedElementViewName /\s\+/
 syn match namedZoneName contained /\i\+;/he=e-1 skipwhite
 hi link namedDlzName namedHLIdentifier
 syn match namedDlzName contained /[a-zA-Z0-9_\.\-]\{1,63}/ skipwhite
+hi link namedDyndbName namedHLIdentifier
+syn match namedDyndbName contained /[a-zA-Z0-9_\.\-]\{1,63}/ skipwhite
 
 syn match namedFQDN contained /\i\+;/he=e-1 skipwhite
 
@@ -825,15 +827,40 @@ syn match namedDlzDatabaseKeyword contained /\<database\>/
 syn region namedStmtDlzSection contained start=+{+ end=+}+
 \ skipwhite skipempty
 \ nextgroup=namedSemicolon,namedNotSemicolon
-\ contains=
-\    namedDlzDatabaseKeyword,
-\    namedDlzSearchKeyword
 
 hi link namedStmtDlzIdent namedHLIdentifier
 syn match namedStmtDlzIdent contained /[a-zA-Z0-9_\.\-]\{1,63}/ 
 \ skipwhite 
 \ nextgroup=namedStmtDlzSection
 \ contains=namedDlzName
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Syntaxes that are found only within top-level 'dyndb' statement
+" 
+" dyndb <dyndb_name> <device_driver_filename> { <arguments> };
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+hi link   namedDyndbDriverParameters namedHLString
+syn match namedDyndbDriverParameters contained /[<>\|:"'a-zA-Z0-9_\.\-\/\\]\+[^;]/ 
+\ skipwhite skipempty skipnl
+\ contains=namedQuotedString
+\ containedin=namedStmtDyndbSection
+\ nextgroup=namedSemicolon
+
+syn region namedStmtDyndbSection contained start=+{+ end=+}+
+\ skipwhite skipempty
+\ nextgroup=namedSemicolon,namedNotSemicolon
+
+syn match namedStmtDyndbDriverFilespec contained /[<>\|:"'a-zA-Z0-9_\.\-\/\\]\+[^;]/ 
+\ skipwhite skipempty skipnl
+\ nextgroup=namedStmtDyndbSection
+\ contains=namedQuotedString
+
+hi link namedStmtDyndbIdent namedHLIdentifier
+syn match namedStmtDyndbIdent contained /[a-zA-Z0-9_\.\-]\{1,63}/ 
+\ skipwhite 
+\ nextgroup=namedStmtDyndbDriverFilespec
+\ contains=namedDyndbName
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within top-level 'key' statement
@@ -2497,7 +2524,7 @@ syn match namedStmtKeyword /\_^\s*\<dlz\>/
 
 syn match namedStmtKeyword /\_^\s*\<dyndb\>/
 \ skipempty skipnl skipwhite
-\ nextgroup=namedStmtDyndbSection,
+\ nextgroup=namedStmtDyndbIdent,
 
 syn match namedStmtKeyword /\_^\s*\<key\>/
 \ nextgroup=namedStmtKeyIdent skipempty skipwhite
