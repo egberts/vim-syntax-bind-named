@@ -176,14 +176,13 @@ hi link namedChannelIdent	namedHL_Identifier
 hi link namedChannelName	namedHL_Identifier
 hi link namedKeyIdent	namedHL_Identifier
 hi link namedKeyName	namedHL_Identifier
-hi link namedStmtMastersIdent	namedHL_Identifier
+hi link namedStmt_MastersNameIdentifier	namedHL_Identifier
 hi link namedMasterName	namedHL_Identifier
 hi link namedElementMasterName	namedHL_Identifier
-hi link namedStmtServerIdent namedHL_Identifier
+hi link namedStmt_ServerNameIdentifier namedHL_Identifier
 hi link namedServerName	namedHL_Identifier
-hi link namedViewIdent	namedHL_Identifier
 hi link namedViewName	namedHL_Identifier
-hi link namedZoneIdent	namedHL_Identifier
+hi link namedStmt_ZoneNameIdentifier	namedHL_Identifier
 hi link namedZoneName	namedHL_Identifier
 hi link namedElementZoneName	namedHL_Identifier
 hi link namedHLDomain	namedHL_String 
@@ -272,6 +271,10 @@ syn keyword namedBuiltinsKeyword any none localhost localnets
 hi link namedToDo Todo
 syn keyword namedToDo xxx contained XXX FIXME TODO TODO: FIXME:
 
+hi link named_Builtin_None namedHL_Builtin
+syn keyword named_Builtin_None contained none skipwhite
+\ nextgroup=namedSemicolon
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Variable-LENGTH static PATTERNS
@@ -301,6 +304,11 @@ syn match namedNumber contained "\d\+"
 hi link named_Number_SC	namedHL_Number
 syn match named_Number_SC contained "\d\{1,10}" skipwhite nextgroup=namedSemicolon
 
+" <0-30000> (resolver-query-timeout in millisecond)
+hi link named_Interval_Max30ms_SC namedHL_Number
+syn match named_Interval_Max30ms_SC contained /\d\+/ skipwhite
+\ nextgroup=namedSemicolon
+
 " <0-30> (servfail-ttl)
 hi link named_Ttl_Max30sec_SC namedHL_Number
 syn match named_Ttl_Max30sec_SC contained 
@@ -317,6 +325,12 @@ syn match named_Ttl_Max90sec_SC contained
 hi link named_Number_Max20min_SC	namedHL_Number
 syn match named_Number_Max20min_SC contained "\d\{1,10}" skipwhite nextgroup=namedSemicolon
 
+" edns-udp-size: range: 512 to 4096 (default 4096)
+hi link named_Number_UdpSize namedHL_Number
+syn match named_Number_UdpSize contained skipwhite
+\  /\(51[2-9]\)\|\(5[2-9][0-9]\)\|\([6-9][0-9][0-9]\)\|\([1-3][0-9][0-9][0-9]\)\|\(40[0-8][0-9]\)\|\(409[0-6]\)/
+\ nextgroup=namedSemicolon
+
 " TTL <0-10800> (max-ncache-ttl)
 hi link named_Ttl_Max3hour_SC namedHL_Number
 syn match named_Ttl_Max3hour_SC contained 
@@ -327,6 +341,12 @@ syn match named_Ttl_Max3hour_SC contained
 hi link named_Ttl_Max30min_SC namedHL_Number
 syn match named_Ttl_Max30min_SC contained 
 \ /\d\+/
+\ nextgroup=namedSemicolon
+
+" <0-3660> days (dnskey-sig-validity)
+hi link named_Number_Max3660days namedHL_Number
+syn match named_Number_Max3660days contained skipwhite
+\ /\%(3660\)\|\%(36[0-5][0-9]\)\|\%(3[0-5][0-9][0-9]\)\|\%([1-9][0-9][0-9]\|[1-9][0-9]\|[0-9]\)/
 \ nextgroup=namedSemicolon
 
 " <0-604800> (max-cache-ttl)
@@ -588,11 +608,11 @@ syn region named_String_DQuoteForced start=/"/ skip=/\\"/ end=/"/ contained
 syn region named_String_SQuoteForced start=/'/ skip=/\\'/ end=/'/ contained
 syn region named_String_QuoteForced start=/"/hs=s+1 skip=/\\"/ end=/"/he=e-1 contained
 syn region named_String_QuoteForced start=/'/hs=s+1 skip=/\\'/ end=/'/he=e-1 contained
-hi link named_String_DQuoteForced_SC namedHL_Identifier
+hi link named_String_DQuoteForced_SC namedHL_String
 syn region named_String_DQuoteForced_SC start=/"/ skip=/\\"/ end=/"/ contained nextgroup=namedSemicolon
-hi link named_String_SQuoteForced_SC namedHL_Identifier
+hi link named_String_SQuoteForced_SC namedHL_String
 syn region named_String_SQuoteForced_SC start=/'/ skip=/\\'/ end=/'/ contained nextgroup=namedSemicolon
-hi link named_String_QuoteForced_SC namedHL_Identifier
+hi link named_String_QuoteForced_SC namedHL_String
 syn region named_String_QuoteForced_SC start=/"/hs=s+1 skip=/\\"/ end=/"/he=e-1 contained nextgroup=namedSemicolon
 syn region named_String_QuoteForced_SC start=/'/hs=s+1 skip=/\\'/ end=/'/he=e-1 contained nextgroup=namedSemicolon
 
@@ -659,6 +679,10 @@ hi link named_QuotedDomain_SC	namedHLDomain
 syn match named_QuotedDomain_SC contained /[0-9A-Za-z\._\-]\{1,1023}\.\{0,1}/ nextgroup=namedSemicolon skipwhite
 syn match named_QuotedDomain_SC contained /'[0-9A-Za-z\.\-_]\{1,1023}\.\{0,1}'/hs=s+1,he=e-1 nextgroup=namedSemicolon skipwhite
 syn match named_QuotedDomain_SC contained /"[0-9A-Za-z\.\-_]\{1,1023}\.\{0,1}"/hs=s+1,he=e-1 nextgroup=namedSemicolon skipwhite
+
+hi link named_E_Domain_SC namedHLDomain
+syn match named_E_Domain_SC contained /\<[0-9A-Za-z\._\-]\+\>/
+\ nextgroup=namedSemicolon
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Nesting of PATTERNS
@@ -1079,13 +1103,13 @@ syn region namedStmtKeySection start=+{+ end=+}+
 \ nextgroup=
 \    namedSemicolon,
 \    namedNotSemicolon
-\ containedin=namedStmtViewSection
+\ containedin=namedStmt_ViewSection
 
 hi link namedStmtKeyIdent namedHL_Identifier
 syn match namedStmtKeyIdent contained skipwhite /\i/
 \ contains=namedKeyName
 \ nextgroup=namedStmtKeySection,namedNotParem,namedError
-\ containedin=namedStmtViewSection
+\ containedin=namedStmt_ViewSection
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within 'logging' statement
@@ -1365,41 +1389,36 @@ syn region namedStmtLoggingSection contained start=+{+ end=+}+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 hi link namedMk_E_KeySecret namedKeySecretValue
-syn match namedMk_E_KeySecret /["'0-9A-Za-z\+\=\/]\{1,4098}/ 
+syn match namedMk_E_KeySecret contained /["'0-9A-Za-z\+\=\/]\{1,4098}/ 
+\ skipwhite skipempty
 \ contains=namedKeySecretValue
-\ contained skipwhite
-\ skipempty
 \ nextgroup=namedSemicolon,namedNotSemicolon,namedError
 
 hi link namedMk_E_AlgorithmType namedHL_Number
-syn match namedMk_E_AlgorithmType contained skipwhite /\d\{1,3}/
-\ skipempty
+syn match namedMk_E_AlgorithmType contained skipwhite /\d\{1,3}/ skipempty
 \ nextgroup=namedMk_E_KeySecret,namedError
 
 hi link namedMk_E_ProtocolType namedHL_Number
-syn match namedMk_E_ProtocolType contained skipwhite /\d\{1,3}/
-\ skipempty
+syn match namedMk_E_ProtocolType contained skipwhite /\d\{1,3}/ skipempty
 \ nextgroup=namedMk_E_AlgorithmType,namedError
 
 hi link namedMk_E_FlagType namedHL_Number
-syn match namedMk_E_FlagType contained skipwhite /\d\{1,3}/
-\ skipempty
+syn match namedMk_E_FlagType contained skipwhite /\d\{1,3}/ skipempty
 \ nextgroup=namedMk_E_ProtocolType,namedError
 
 hi link namedMk_E_InitialKey namedHL_Number
-syn match namedMk_E_InitialKey /[0-9A-Za-z][-0-9A-Za-z.]\{1,4096}/ 
-\ contained skipwhite skipempty
+syn match namedMk_E_InitialKey contained /[0-9A-Za-z][-0-9A-Za-z.]\{1,4096}/ 
+\ skipwhite skipempty
 \ contains=namedString
 \ nextgroup=namedMk_E_FlagType,namedError
 
 hi link namedMk_E_DomainName namedHL_Identifier
-syn match namedMk_E_DomainName /[0-9A-Za-z][_\-0-9A-Za-z.]\{1,1024}/
-\ contains=namedDomain
-\ contained skipwhite skipempty 
+syn match namedMk_E_DomainName contained /[0-9A-Za-z][_\-0-9A-Za-z.]\{1,1024}/
+\ skipwhite skipempty 
 \ nextgroup=namedMk_E_InitialKey,namedError
 
-syn region namedStmtManagedKeysSection start=+{+ end=+}+
-\ contained skipwhite skipempty skipnl
+syn region namedStmt_ManagedKeysSection contained start=+{+ end=+}+
+\ skipwhite skipempty skipnl
 \ contains=namedMk_E_DomainName
 \ nextgroup=
 \    namedSemicolon,
@@ -1492,7 +1511,7 @@ hi link namedM_Dscp  namedHL_Option
 syn match namedM_Dscp /dscp/ contained skipwhite
 \ nextgroup=namedM_Dscp_Number
 
-syn match namedStmtMastersIdent contained /\<[0-9a-zA-Z\-_\.]\{1,64}/
+syn match namedStmt_MastersNameIdentifier contained /\<[0-9a-zA-Z\-_\.]\{1,64}/
 \ contains=namedMasterName
 \ skipwhite skipempty skipnl
 \ nextgroup=
@@ -1514,17 +1533,31 @@ syn keyword namedO_Boolean_Group contained
 \     match-mapped-addresses
 \     memstatistics
 \     querylog
-\     root-key-sentinel
 \ nextgroup=@namedClusterBoolean_SC
 \ skipwhite
-\ containedin=namedStmtOptionsSection
+\ containedin=namedStmt_OptionsSection
 
 hi link namedO_UdpPorts namedHL_Option
 syn keyword namedO_UdpPorts contained skipwhite
 \    avoid-v4-udp-ports
 \    avoid-v6-udp-ports
 \ nextgroup=named_PortSection,namedInclude,namedComment,namedError
-\ containedin=namedStmtOptionsSection
+\ containedin=namedStmt_OptionsSection
+
+hi link named_Hostname_SC namedHL_Builtin
+syn keyword named_Hostname_SC contained skipwhite
+\    hostname
+\ nextgroup=namedSemicolon
+
+hi link namedO_Domain namedHL_Option
+syn keyword namedO_Domain contained skipwhite
+\    server-id
+\ nextgroup=
+\    named_Builtin_None_SC,
+\    named_Hostname_SC,
+\    named_QuotedDomain_SC
+\ containedin=
+\    namedStmt_OptionsSection
 
 hi link namedO_String_QuoteForced namedHL_Option
 syn keyword namedO_String_QuoteForced contained skipwhite
@@ -1538,14 +1571,14 @@ syn keyword namedO_String_QuoteForced contained skipwhite
 \    named-xfer
 \    pid-file
 \ nextgroup=named_String_QuoteForced_SC,namedNotString
-\ containedin=namedStmtOptionsSection
+\ containedin=namedStmt_OptionsSection
 
 hi link namedO_AMLSection namedHL_Option
 syn keyword namedO_AMLSection contained skipwhite
 \    blackhole
 \    listen-on
 \ nextgroup=named_E_AMLSection_SC,namedInclude,namedComment
-\ containedin=namedStmtOptionsSection
+\ containedin=namedStmt_OptionsSection
 
 hi link namedO_CheckNamesType namedHL_Builtin
 syn match namedO_CheckNamesType contained /primary/ skipwhite
@@ -1563,7 +1596,7 @@ syn match namedO_CheckNamesType contained /slave/ skipwhite
 hi link namedO_CheckNames namedHL_Option
 syn keyword namedO_CheckNames contained check-names skipwhite
 \ nextgroup=namedO_CheckNamesType,namedError
-\ containedin=namedStmtOptionsSection
+\ containedin=namedStmt_OptionsSection
 
 hi link namedO_CookieAlgorithmChoices namedHL_Type
 syn match namedO_CookieAlgorithmChoices contained skipwhite
@@ -1574,7 +1607,7 @@ hi link namedO_CookieAlgs namedHL_Option
 syn keyword namedO_CookieAlgs contained cookie-algorithm
 \ skipwhite
 \ nextgroup=namedO_CookieAlgorithmChoices
-\ containedin=namedStmtOptionsSection
+\ containedin=namedStmt_OptionsSection
 
 hi link namedO_CookieSecretValue namedHL_Identifier
 syn match namedO_CookieSecretValue contained 
@@ -1597,7 +1630,7 @@ hi link namedO_CookieSecret namedHL_Option
 syn keyword namedO_CookieSecret contained cookie-secret
 \ skipwhite
 \ nextgroup=namedO_CookieSecretValue
-\ containedin=namedStmtOptionsSection
+\ containedin=namedStmt_OptionsSection
 
 hi link named_NumberSize_SC namedHL_Number
 syn match named_NumberSize_SC contained
@@ -1613,7 +1646,7 @@ syn keyword namedO_DefaultUnlimitedSize contained
 \ nextgroup=
 \    named_DefaultUnlimited_SC,
 \    named_SizeSpec_SC
-\ containedin=namedStmtOptionsSection
+\ containedin=namedStmt_OptionsSection
 
 hi link namedO_DnstapOutputSuffix namedHL_Builtin
 syn keyword namedO_DnstapOutputSuffix contained 
@@ -1687,20 +1720,16 @@ syn keyword namedO_DnstapOutputType contained skipwhite
 hi link namedO_DnstapOutputKeyword namedHL_Option
 syn keyword namedO_DnstapOutputKeyword contained dnstap-output skipwhite
 \ nextgroup=namedO_DnstapOutputType,namedO_DnstapOutputFilespec
-\ containedin=namedStmtOptionsSection
-
-hi link namedO_DnstapVersionOpt namedHL_Builtin
-syn keyword namedO_DnstapVersionOpt contained none skipwhite
-\ nextgroup=namedSemicolon
+\ containedin=namedStmt_OptionsSection
 
 hi link namedO_DnstapVersion namedHL_Option
 syn keyword namedO_DnstapVersion contained
 \    dnstap-version
 \ skipwhite
 \ nextgroup=
-\    namedO_DnstapVersionOpt,
+\    named_Builtin_None,
 \    named_E_Filespec_SC
-\ containedin=namedStmtOptionsSection
+\ containedin=namedStmt_OptionsSection
 
 hi link namedO_DscpNumber namedHL_Number
 syn match namedO_DscpNumber contained /6[0-3]\|[0-5][0-9]\|[1-9]/
@@ -1710,7 +1739,7 @@ syn match namedO_DscpNumber contained /6[0-3]\|[0-5][0-9]\|[1-9]/
 hi link namedO_Dscp namedHL_Option
 syn keyword namedO_Dscp contained dscp skipwhite
 \ nextgroup=namedO_DscpNumber
-\ containedin=namedStmtOptionsSection
+\ containedin=namedStmt_OptionsSection
 
 hi link namedO_Fstrm_ModelValue namedHL_Builtin
 syn keyword namedO_Fstrm_ModelValue contained
@@ -1724,19 +1753,13 @@ syn keyword namedO_Fstrm_Model contained
 \    fstrm-set-output-queue-model
 \ skipwhite
 \ nextgroup=namedO_Fstrm_ModelValue
-\ containedin=namedStmtOptionsSection
-
-hi link namedO_ServFailTtl namedHL_Option
-syn keyword namedO_ServFailTtl contained skipwhite
-\    servfail-ttl
-\ nextgroup=named_Ttl_Max30sec_SC
-\ containedin=namedStmtOptionsSection
+\ containedin=namedStmt_OptionsSection
 
 hi link namedO_InterfaceInterval namedHL_Option
 syn keyword namedO_InterfaceInterval contained skipwhite
 \    interface-interval
 \ nextgroup=named_Number_Max28day_SC
-\ containedin=namedStmtOptionsSection
+\ containedin=namedStmt_OptionsSection
 
 hi link namedO_Number_Group namedHL_Option
 syn keyword namedO_Number_Group contained
@@ -1748,16 +1771,10 @@ syn keyword namedO_Number_Group contained
 \    fstrm-set-reopen-interval
 \    max-cache-size
 \    max-rsa-exponent-size
-\    max-stale-ttl
-\    max-udp-size
-\    min-cache-ttl
-\    min-ncache-ttl
 \    nocookie-udp-size
 \    notify-rate
 \    recursive-clients
 \    reserved-sockets
-\    resolver-query-timeout
-\    resolver-retry-timeout
 \    serial-query-rate
 \    stacksize
 \    startup-notify-rate
@@ -1771,11 +1788,9 @@ syn keyword namedO_Number_Group contained
 \    transfers-in
 \    transfers-out
 \    transfers-per-ns
-\    v6-bias
-\    zero-no-soa-ttl-cache
 \ skipwhite
 \ nextgroup=named_Number_SC
-\ containedin=namedStmtOptionsSection
+\ containedin=namedStmt_OptionsSection
 
 hi link namedO_Ixfr_From_Diff_Opts namedHL_Builtin
 syn keyword namedO_Ixfr_From_Diff_Opts contained
@@ -1789,12 +1804,26 @@ syn keyword namedO_Ixfr_From_Diff_Opts contained
 hi link namedO_Ixfr_From_Diff namedHL_Option
 syn keyword namedO_Ixfr_From_Diff contained ixfr-from-differences skipwhite
 \ nextgroup=namedO_Ixfr_From_Diff_Opts
-\ containedin=namedStmtOptionsSection
+\ containedin=namedStmt_OptionsSection
 
 hi link namedO_KeepResponseOrder namedHL_Option
 syn keyword namedO_KeepResponseOrder contained keep-response-order skipwhite
 \ nextgroup=named_E_AMLSection_SC
-\ containedin=namedStmtOptionsSection
+\ containedin=namedStmt_OptionsSection
+
+hi link namedO_KeepResponseOrder namedHL_Option
+syn keyword namedO_KeepResponseOrder contained skipwhite
+\    recursing-file
+\ nextgroup=named_E_Filespec_SC
+\ containedin=namedStmt_OptionsSection
+
+hi link namedO_Filespec_Quoted_None_Group namedHL_Option
+syn keyword namedO_Filespec_Quoted_None_Group contained skipwhite
+\    random-device
+\ nextgroup=
+\    named_E_Filespec_SC,
+\    named_Builtin_None
+\ containedin=namedStmt_OptionsSection
 
 
 " syn keyword namedO_Keywords deallocate-on-exit
@@ -1811,7 +1840,6 @@ syn keyword namedO_KeepResponseOrder contained keep-response-order skipwhite
 " syn keyword namedO_Keywords max-transfer-idle-out
 " syn keyword namedO_Keywords max-transfer-time-in
 " syn keyword namedO_Keywords max-transfer-time-out
-" syn keyword namedO_Keywords max-udp-size
 " syn keyword namedO_Keywords max-zone-ttl
 " syn keyword namedO_Keywords min-roots
 " syn keyword namedO_Keywords minimal-responses
@@ -1823,32 +1851,24 @@ syn keyword namedO_KeepResponseOrder contained keep-response-order skipwhite
 " syn keyword namedO_Keywords notify-delay
 " syn keyword namedO_Keywords notify-source
 " syn keyword namedO_Keywords notify-source-v6
-" syn keyword namedO_Keywords preferred-glue
-" syn keyword namedO_Keywords prefetch
 " syn keyword namedO_Keywords provide-ixfr
 " syn keyword namedO_Keywords queryport-port-ports
 " syn keyword namedO_Keywords queryport-port-updateinterval
-" syn keyword namedO_Keywords query-source
-" syn keyword namedO_Keywords query-source-v6
 " syn keyword namedO_Keywords querylog
 " syn keyword namedO_Keywords random-device
 " syn keyword namedO_Keywords rate-limit
 " syn keyword namedO_Keywords recursing-file
 " syn keyword namedO_Keywords request-nsid
 " syn keyword namedO_Keywords request-sit
-" syn keyword namedO_Keywords resolver-query-timeout
 " syn keyword namedO_Keywords response-policy
 " syn keyword namedO_Keywords rfc2308-type1
-" syn keyword namedO_Keywords root-delegation
 " syn keyword namedO_Keywords rrset-order
 " syn keyword namedO_Keywords secroots-file
 " syn keyword namedO_Keywords serial-query-rate
 " syn keyword namedO_Keywords serial-update-method
-" syn keyword namedO_Keywords server-id
 " syn keyword namedO_Keywords session-keyfile
 " syn keyword namedO_Keywords session-keyalg
 " syn keyword namedO_Keywords session-keyname
-" syn keyword namedO_Keywords sig-validity-interval
 " syn keyword namedO_Keywords sit-secret
 " syn keyword namedO_Keywords sortlist
 " syn keyword namedO_Keywords statistics-file
@@ -1873,8 +1893,6 @@ syn keyword namedO_KeepResponseOrder contained keep-response-order skipwhite
 " syn keyword namedO_Keywords use-v6-udp-ports
 " syn keyword namedO_Keywords version
 " syn keyword namedO_Keywords zero-no-soa-ttl
-" syn keyword namedO_Keywords zero-no-soa-ttl-cache
-" syn keyword namedO_Keywords zone-statistics
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within 'server' statement
@@ -1899,7 +1917,6 @@ hi link namedS_NumberGroup namedHL_Option
 syn keyword namedS_NumberGroup contained
 \ skipwhite
 \    edns-version
-\    max-udp-size
 \    padding
 \    transfers
 \ nextgroup=namedS_GroupNumber
@@ -1929,7 +1946,7 @@ hi link namedV_MinuteGroup namedHL_Statement
 syn keyword namedV_MinuteGroup contained 
 \    heartbeat-interval
 \ nextgroup=namedTypeMinutes,namedComment,namedError
-\ containedin=namedStmtViewSection skipwhite
+\ containedin=namedStmt_ViewSection skipwhite
 
 " List of Port numbers
 
@@ -1940,14 +1957,14 @@ syn keyword namedV_FilespecGroup contained
 \    cache-file
 \    managed-keys-directory
 \    nextgroup=named_String_QuoteForced,namedNotString
-\    containedin=namedStmtViewSection skipwhite
+\    containedin=namedStmt_ViewSection skipwhite
 
 " view statement - SizeSpec options
 hi link namedV_SizeSpec_Group namedHL_Statement
 syn keyword namedV_SizeSpec_Group contained 
 \    max-cache-size
 \ nextgroup=named_SizeSpec,namedComment,namedError
-\ containedin=namedStmtViewSection skipwhite
+\ containedin=namedStmt_ViewSection skipwhite
 
 
 " view statement - AML
@@ -1955,14 +1972,20 @@ syn keyword namedV_Keywords contained skipwhite
 \    match-clients
 \    match-destinations
 \ nextgroup=named_E_AMLSection_SC,namedError
-\ containedin=namedStmtViewSection
+\ containedin=namedStmt_ViewSection
 
 " TODO: Old days, keys ere defined inside views
 " I can't remember if keyname or key section came first
 hi link namedV_Key namedHL_Option
 syn  keyword namedV_Key  contained key skipwhite
 \ nextgroup=namedStmtKeyIdent,namedStmtKeySection
-\ containedin=namedStmtViewSection
+\ containedin=namedStmt_ViewSection
+
+hi link namedV_Boolean_Group namedHL_Option
+syn  keyword namedV_Boolean_Group  contained skipwhite
+\    match-recursive-only
+\ nextgroup=@namedClusterBoolean
+\ containedin=namedStmt_ViewSection
 
 
 
@@ -1972,12 +1995,10 @@ syn  keyword namedV_Key  contained key skipwhite
 " syn keyword namedV_Keywords filter-aaaa-on-v6
 " syn keyword namedV_Keywords match-clients
 " syn keyword namedV_Keywords match-destination
-" syn keyword namedV_Keywords match-recursive-only
 " syn keyword namedV_Keywords max-transfer-idle-in
 " syn keyword namedV_Keywords max-transfer-idle-out
 " syn keyword namedV_Keywords max-transfer-time-in
 " syn keyword namedV_Keywords max-transfer-time-out
-" syn keyword namedV_Keywords max-udp-size
 " syn keyword namedV_Keywords max-zone-ttl
 " syn keyword namedV_Keywords min-roots
 " syn keyword namedV_Keywords minimal-responses
@@ -1989,23 +2010,16 @@ syn  keyword namedV_Key  contained key skipwhite
 " syn keyword namedV_Keywords notify-delay
 " syn keyword namedV_Keywords notify-source
 " syn keyword namedV_Keywords notify-source-v6
-" syn keyword namedV_Keywords preferred-glue
-" syn keyword namedV_Keywords prefetch
 " syn keyword namedV_Keywords provide-ixfr
 " syn keyword namedV_Keywords queryport-port-ports
 " syn keyword namedV_Keywords queryport-port-updateinterval
-" syn keyword namedV_Keywords query-source
-" syn keyword namedV_Keywords query-source-v6
 " syn keyword namedV_Keywords rate-limit
 " syn keyword namedV_Keywords request-nsid
 " syn keyword namedV_Keywords request-sit
-" syn keyword namedV_Keywords resolver-query-timeout
 " syn keyword namedV_Keywords response-policy
 " syn keyword namedV_Keywords rfc2308-type1
-" syn keyword namedV_Keywords root-delegation
 " syn keyword namedV_Keywords serial-update-method
 " syn keyword namedV_Keywords session-keyname
-" syn keyword namedV_Keywords sig-validity-interval
 " syn keyword namedV_Keywords sortlist
 " syn keyword namedV_Keywords support-ixfr
 " syn keyword namedV_Keywords suppress-initial-notify
@@ -2014,8 +2028,6 @@ syn  keyword namedV_Key  contained key skipwhite
 " syn keyword namedV_Keywords transfers-source
 " syn keyword namedV_Keywords transfers-source-v6
 " syn keyword namedV_Keywords zero-no-soa-ttl
-" syn keyword namedV_Keywords zero-no-soa-ttl-cache
-" syn keyword namedV_Keywords zone-statistics
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within 'zone' statement
@@ -2059,8 +2071,8 @@ syn match namedZ_DefaultUnlimitedSize_Group contained /max-journal-size/
 \    named_DefaultUnlimited_SC,
 \    named_SizeSpec_SC
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection
 
 " syn keyword namedStmtZoneKeywords class
@@ -2082,13 +2094,11 @@ syn match namedZ_DefaultUnlimitedSize_Group contained /max-journal-size/
 " syn keyword namedStmtZoneKeywords server-addresses
 " syn keyword namedStmtZoneKeywords server-names
 " syn keyword namedStmtZoneKeywords session-keyname
-" syn keyword namedStmtZoneKeywords sig-validity-interval
 " syn keyword namedStmtZoneKeywords transfers-source
 " syn keyword namedStmtZoneKeywords transfers-source-v6
 " syn keyword namedStmtZoneKeywords type
 " syn keyword namedStmtZoneKeywords update-policy
 " syn keyword namedStmtZoneKeywords zero-no-soa-ttl
-" syn keyword namedStmtZoneKeywords zone-statistics
 
 " syn keyword namedO_KeywordsObsoleted acache-cleaning-interval
 " syn keyword namedO_KeywordsObsoleted acache-enable
@@ -2135,21 +2145,15 @@ syn match namedZ_DefaultUnlimitedSize_Group contained /max-journal-size/
 " Syntaxes that are found in all 'options', 'server', and 'view'
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" edns-udp-size: range: 512 to 4096 (default 4096)
-hi link namedOSV_EdnsUdpSizeValue namedHL_Number
-syn match namedOSV_EdnsUdpSizeValue contained 
-\  /\(51[2-9]\)\|\(5[2-9][0-9]\)\|\([6-9][0-9][0-9]\)\|\([1-3][0-9][0-9][0-9]\)\|\(40[0-8][0-9]\)\|\(409[0-6]\)/
-\ nextgroup=namedSemicolon
-\ skipwhite
-
-hi link namedOSV_EdnsUdpSize namedHL_Option
-syn keyword namedOSV_EdnsUdpSize contained edns-udp-size
-\ skipwhite
-\ nextgroup=namedOSV_EdnsUdpSizeValue
+hi link namedOSV_UdpSize namedHL_Option
+syn keyword namedOSV_UdpSize contained skipwhite
+\    edns-udp-size
+\    max-udp-size
+\ nextgroup=named_Number_UdpSize
 \ containedin=
-\    namedStmtOptionsSection,
+\    namedStmt_OptionsSection,
 \    namedStmtServerSection,
-\    namedStmtViewSection
+\    namedStmt_ViewSection
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found in all 'options', and 'view'
@@ -2159,7 +2163,7 @@ syn keyword namedOV_SizeSpec_Group contained skipwhite
 \    lmdb-mapsize
 \ nextgroup=named_SizeSpec
 \ containedin=
-\    namedStmtOptionsSection,
+\    namedStmt_OptionsSection,
 \    namedStmtOptionsView
 
 hi link namedOV_DefaultUnlimitedSize_Group namedHL_Option
@@ -2169,24 +2173,44 @@ syn keyword namedOV_DefaultUnlimitedSize_Group contained skipwhite
 \    named_DefaultUnlimited_SC,
 \    named_SizeSpec_SC
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
+
+" <0-30000> millisecond
+hi link namedOV_Interval_Max30ms_Group namedHL_Option
+syn keyword namedOV_Interval_Max30ms_Group contained skipwhite
+\    resolver-query-timeout
+\    resolver-retry-interval
+\ nextgroup=named_Interval_Max30ms_SC
+\ containedin=
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 hi link namedOV_Ttl_Group namedHL_Option
 syn keyword namedOV_Ttl_Group contained skipwhite
 \    lame-ttl
+\    servfail-ttl
 \ nextgroup=named_Ttl_Max30min_SC
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
+
+hi link namedOV_Ttl90sec_Group namedHL_Option
+syn keyword namedOV_Ttl90sec_Group contained skipwhite
+\    min-cache-ttl
+\    min-ncache-ttl
+\ nextgroup=named_Ttl_Max90sec_SC
+\ containedin=
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 hi link namedOV_Ttl_Max3h_Group namedHL_Option
 syn keyword namedOV_Ttl_Max3h_Group contained skipwhite
 \    max-ncache-ttl
 \ nextgroup=named_Ttl_Max3hour_SC
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 hi link namedOV_Ttl_Max1week_Group namedHL_Option
 syn keyword namedOV_Ttl_Max1week_Group contained skipwhite
@@ -2195,22 +2219,22 @@ syn keyword namedOV_Ttl_Max1week_Group contained skipwhite
 \    max-cache-ttl
 \ nextgroup=named_Ttl_Max1week_SC
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 " view statement - hostname [ none | <domain_name> ];
-hi link namedOV_Builtin_None_SC namedHL_Builtin
-syn match namedOV_Builtin_None_SC contained /none/ skipwhite
+hi link named_Builtin_None_SC namedHL_Builtin
+syn match named_Builtin_None_SC contained /none/ skipwhite
 \ nextgroup=namedSemicolon
 
 hi link namedOV_Hostname namedHL_Option
 syn keyword namedOV_Hostname contained hostname skipwhite
 \ nextgroup=
-\    namedOV_Builtin_None_SC,
+\    named_Builtin_None_SC,
 \    named_QuotedDomain_SC
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 hi link namedOV_DnssecLookasideOptKeyname namedHL_String
 syn match namedOV_DnssecLookasideOptKeyname contained 
@@ -2249,8 +2273,8 @@ syn keyword namedOV_DnssecLookasideKeyword contained
 \    namedOV_DnssecLookasideOptDomain,
 \    namedOV_DnssecLookasideOptAuto
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection 
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection 
 
 hi link namedOV_Boolean_Group namedHL_Option
 syn keyword namedOV_Boolean_Group contained
@@ -2266,14 +2290,15 @@ syn keyword namedOV_Boolean_Group contained
 \    minimal-any
 \    recursion
 \    require-server-cookie
+\    root-key-sentinel
 \    stale-answer-enable
 \    synth-from-dnssec
 \    trust-anchor-telemetry
 \ nextgroup=@namedClusterBoolean_SC
 \ skipwhite
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection 
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection 
 
 hi link namedOV_Filespec namedHL_Option
 syn keyword namedOV_Filespec contained
@@ -2281,8 +2306,8 @@ syn keyword namedOV_Filespec contained
 \ skipwhite
 \ nextgroup=named_E_Filespec_SC
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 hi link namedOV_AML_Group namedHL_Option
 syn keyword namedOV_AML_Group contained
@@ -2293,15 +2318,15 @@ syn keyword namedOV_AML_Group contained
 \ skipwhite
 \ nextgroup=named_E_AMLSection_SC
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 hi link namedOV_AttachCache namedHL_Option
 syn keyword namedOV_AttachCache contained attach-cache skipwhite
 \ nextgroup=named_E_ViewName_SC,namedError
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 hi link namedOV_Number_Group namedHL_Option
 syn keyword namedOV_Number_Group contained
@@ -2310,11 +2335,15 @@ syn keyword namedOV_Number_Group contained
 \    resolver-nonbackoff-tries
 \    max-recursion-depth
 \    max-recursion-queries
+\    max-stale-ttl
+\    stale-answer-ttl
+\    v6-bias
+\    zero-no-soa-ttl-cache
 \ skipwhite
 \ nextgroup=named_Number_SC
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 hi link namedOV_DnsrpsElement namedHL_String
 syn region namedOV_DnsrpsElement start=/"/hs=s+1 skip=/\\"/ end=/"/he=e-1 contained
@@ -2337,8 +2366,8 @@ syn keyword namedStmtOptionsViewDnsrpsOptions contained
 \ skipwhite
 \ nextgroup=namedOV_DnsrpsOptionsSection
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 syn match namedOV_DenyAnswerElementDomainName /['"][_\-0-9A-Za-z\.]\{1,1024}['"]/
 \ contained skipwhite skipempty 
@@ -2392,8 +2421,8 @@ syn keyword namedStmtOptionsViewDenyAnswerAddrKeyword contained
 \ skipwhite
 \ nextgroup=namedOV_DenyAnswerAddrSection
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 " deny-answer-aliases { <AML>; } ...
 syn region namedOV_DenyAnswerAliasSection contained start=/{/ end=/}/
@@ -2414,8 +2443,8 @@ syn keyword namedStmtOptionsViewDenyAnswerAliasKeyword contained
 \ skipwhite
 \ nextgroup=namedOV_DenyAnswerAliasSection
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 " disable-algorithms <name> { <algo_name>; ... };
 hi link namedOV_DisableAlgosElementName namedHL_String
@@ -2456,8 +2485,8 @@ syn keyword namedStmtOptionsViewDisableAlgosKeyword contained
 \ skipwhite skipempty
 \ nextgroup=namedOV_DisableAlgosIdent
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 " disable-ds-digests <name> ...
 hi link namedStmtOptionsViewDisableDsDigestKywd namedHL_Option
@@ -2466,8 +2495,8 @@ syn keyword namedStmtOptionsViewDisableDsDigestKywd contained
 \ skipwhite skipempty
 \ nextgroup=namedOV_DisableAlgosIdent
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 hi link namedStmtOptionsViewDisEmptyZone namedHL_Option
 syn keyword namedStmtOptionsViewDisEmptyZone contained 
@@ -2475,8 +2504,8 @@ syn keyword namedStmtOptionsViewDisEmptyZone contained
 \ nextgroup=namedElementZoneName,namedError
 \ skipwhite
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 hi link namedOV_Dns64Element namedHL_Option
 " dns64 <netprefix> { break-dnssec <boolean>; };
@@ -2543,8 +2572,8 @@ hi link namedStmtOptionsViewDns64 namedHL_Option
 syn keyword namedStmtOptionsViewDns64 contained dns64
 \ nextgroup=namedOV_Dns64Ident,namedError skipwhite
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 " dns64-contact <string>
 " dns64-server <string>
@@ -2557,8 +2586,8 @@ syn keyword namedStmtOptionsViewDns64Contact contained
 \ nextgroup=named_QuotedDomain_SC,namedError
 \ skipwhite
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 hi link named_Auto_SC namedHL_Builtin
 syn match named_Auto_SC contained /auto/ skipwhite
@@ -2571,8 +2600,8 @@ syn keyword namedOV_DnssecValidation contained
 \ skipwhite
 \ nextgroup=@namedClusterBoolean_SC,named_Auto_SC
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 " dnstap { ... };
 hi link namedOV_DnstapClauses namedHL_Builtin
@@ -2604,8 +2633,8 @@ syn keyword namedOV_DnstapKeyword contained
 \ skipwhite
 \ nextgroup=namedOV_DnstapSection
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 hi link namedOV_FetchQuotaParamsHigh namedHL_Number
 syn match namedOV_FetchQuotaParamsHigh contained /\d\{1,10}\.\d/ skipwhite nextgroup=namedSemicolon
@@ -2632,8 +2661,8 @@ hi link namedOV_FetchQuotaParams namedHL_Option
 syn keyword namedOV_FetchQuotaParams contained fetch-quota-params skipwhite
 \ nextgroup=namedOV_FetchQuotaParamsRecalPerQueries
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 hi link namedOV_FetchQuotaPersType namedHL_Builtin
 syn keyword namedOV_FetchQuotaPersType contained
@@ -2655,8 +2684,8 @@ syn keyword namedOV_FetchPers contained
 \ skipwhite
 \ nextgroup=namedOV_FetchQuotaPersValue
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 " heartbeat-interval: range: 0-40320
 hi link named_Number_Max28day_SC namedHL_Number
@@ -2671,8 +2700,8 @@ syn keyword namedOV_HeartbeatInterval contained
 \ skipwhite
 \ nextgroup=named_Number_Max28day_SC
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 "  dual-stack-servers [ port <pg_num> ] 
 "                     { ( <domain_name> [port <p_num>] |
@@ -2715,8 +2744,8 @@ syn keyword namedOV_DualStack contained dual-stack-servers skipwhite
 \    namedOV_DualStack_Port,
 \    namedOV_DualStack_Section
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 " Gee whiz, ya think they could have used SEMICOLON within
 " 'catalog-zone' ... ya know, out of consistency????
@@ -2867,16 +2896,102 @@ hi link namedOV_CatalogZones namedHL_Option
 syn keyword namedOV_CatalogZones contained catalog-zones skipwhite
 \ nextgroup=namedOV_CatalogZones_Section
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
-
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 hi link namedOV_QnameMin namedHL_Option
 syn keyword namedOV_QnameMin contained qname-minimization skipwhite
 \ nextgroup=named_StrictRelaxedDisabledOff
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
+
+hi link namedOV_MinResponse_Opts namedHL_Builtin
+syn keyword namedOV_MinResponse_Opts contained skipwhite
+\    no-auth
+\    no-auth-recursive
+\ nextgroup=namedSemicolon
+
+hi link namedOV_MinResponse namedHL_Option
+syn keyword namedOV_MinResponse contained skipwhite
+\    minimal-responses
+\ nextgroup=namedOV_MinResponse_Opts,@namedClusterBoolean
+\ containedin=
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
+
+hi link namedOV_NxdomainRedirect namedHL_Option
+syn keyword namedOV_NxdomainRedirect contained skipwhite
+\    nxdomain-redirect
+\ nextgroup=named_E_Domain_SC
+\ containedin=
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
+
+hi link namedOV_RootDelegation_Domain namedHLDomain
+syn match namedOV_RootDelegation_Domain contained /\<[0-9A-Za-z\._\-]\+\>/
+\ nextgroup=namedSemicolon
+\ containedin=namedOV_RootDelegation_Section
+
+syn region namedOV_RootDelegation_Section contained start=+{+ end=+}+
+\ skipwhite skipempty
+\ nextgroup=namedSemicolon
+
+hi link namedOV_RootDelegation_Opts namedHL_Clause
+syn match namedOV_RootDelegation_Opts contained /exclude/ skipwhite
+\ nextgroup=namedOV_RootDelegation_Section
+
+hi link namedOV_RootDelegation namedHL_Option
+syn keyword namedOV_RootDelegation contained skipwhite
+\    root-delegation-only
+\ nextgroup=
+\    namedOV_RootDelegation_Opts
+\ containedin=
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
+
+hi link namedOV_AorAAAA_SC namedHL_String
+" syn match namedOV_AorAAAA_SC contained /\(AAAA\)\|\(A6\)/ skipwhite
+syn match namedOV_AorAAAA_SC /\ca/ contained skipwhite nextgroup=namedSemicolon
+syn match namedOV_AorAAAA_SC /\caaaa/ contained skipwhite nextgroup=namedSemicolon
+
+hi link namedOV_AorAAAA namedHL_Option
+syn keyword namedOV_AorAAAA contained skipwhite
+\    preferred-glue
+\ nextgroup=namedOV_AorAAAA_SC 
+\ containedin=
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
+
+hi link named_Number_Max10sec_SC namedHL_Number
+syn match named_Number_Max10sec_SC contained skipwhite 
+\     /\d\+/
+\ nextgroup=
+\    namedSemicolon
+
+hi link namedOV_First_Number_Max10sec namedHL_Number
+syn match namedOV_First_Number_Max10sec contained skipwhite 
+\     /\d\+/
+\ nextgroup=
+\    namedSemicolon,
+\    named_Number_Max10sec_SC
+
+hi link namedOV_Prefetch namedHL_Option
+syn keyword namedOV_Prefetch contained skipwhite
+\    prefetch
+\ nextgroup=namedOV_First_Number_Max10sec
+\ containedin=
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
+
+hi link namedOV_QuerySource namedHL_Option
+syn keyword namedOV_QuerySource contained skipwhite
+\    query-source
+\    query-source-v6
+\ nextgroup=named_E_AMLSection_SC
+\ containedin=
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -2890,7 +3005,7 @@ syn keyword namedOV_QnameMin contained qname-minimization skipwhite
 " syn keyword namedOZ_Boolean_Group contained skipwhite
 " \ nextgroup=named_Number_SC
 " \ containedin=
-" \    namedStmtOptionsSection,
+" \    namedStmt_OptionsSection,
 " \    namedStmtZoneSection
 
 syn match namedOZ_DialupOptBoolean contained /\S\+/
@@ -2911,8 +3026,8 @@ syn keyword namedOZ_Dialup contained dialup
 \    namedOZ_DialupOptBuiltin,
 \    namedOZ_DialupOptBoolean
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection
 
 hi link namedOptionsDnstapIdentityOpts namedHL_Builtin
@@ -2944,7 +3059,7 @@ syn keyword namedOZ_DnstapIdentity contained
 \    namedOptionsDnstapIdentityOpts,
 \    namedOptionsDnstapIdentityDomain
 \ containedin=
-\    namedStmtOptionsSection
+\    namedStmt_OptionsSection
 
 hi link namedOZ_Files_Wildcard namedHL_Builtin
 syn match namedOZ_Files_Wildcard /\*/ contained skipwhite
@@ -2956,7 +3071,7 @@ syn keyword namedOZ_Files contained files skipwhite
 \    named_DefaultUnlimited_SC,
 \    named_SizeSpec_SC
 \ containedin=
-\    namedStmtOptionsSection,
+\    namedStmt_OptionsSection,
 \    namedStmtZoneSection
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -2987,8 +3102,8 @@ syn keyword namedOVZ_Number_Group contained skipwhite
 \    sig-signing-type
 \ nextgroup=named_Number_SC
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection
 
 hi link namedOVZ_Boolean_Group namedHL_Option
@@ -3008,8 +3123,8 @@ syn keyword namedOVZ_Boolean_Group contained
 \ skipwhite
 \ nextgroup=@namedClusterBoolean_SC
 \ containedin=
-\    namedStmtViewSection,
-\    namedStmtOptionsSection,
+\    namedStmt_ViewSection,
+\    namedStmt_OptionsSection,
 \    namedStmtZoneSection
 
 hi link namedOVZ_AML_Group namedHL_Option
@@ -3022,8 +3137,8 @@ syn keyword namedOVZ_AML_Group contained skipwhite
 \    allow-update-forwarding
 \ nextgroup=named_E_AMLSection_SC
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection
 
 hi link namedOVZ_Number_Max28days namedHL_Option
@@ -3034,8 +3149,8 @@ syn keyword namedOVZ_Number_Max28days contained skipwhite
 \    max-transfer-time-out
 \ nextgroup=named_Number_Max28day_SC
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection
 
 hi link namedOptATSClauseDscp  namedHL_Clause
@@ -3085,23 +3200,23 @@ syn keyword namedOVZ_OptATS contained
 \    alt-transfer-source-v6
 \ nextgroup=namedOptATS_IP6wild skipwhite
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection
 syn keyword namedOVZ_OptATS contained
 \    alt-transfer-source
 \ nextgroup=namedOptATS_IP4wild skipwhite
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection
 
 hi link namedOVZ_AutoDNSSEC namedHL_Option
 syn keyword namedOVZ_AutoDNSSEC contained auto-dnssec skipwhite
 \ nextgroup=named_AllowMaintainOff_SC,namedComment,namedError 
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection 
 
 hi link namedStmtOVZ_IgnoreWarnFail namedHL_Option
@@ -3114,25 +3229,23 @@ syn keyword namedStmtOVZ_IgnoreWarnFail contained
 \ skipwhite
 \ nextgroup=named_IgnoreWarnFail_SC
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection,
 
 " <0-3660> days (dnskey-sig-validity)
-hi link namedOVZ_DnskeyValidityDays namedHL_Number
-syn match namedOVZ_DnsKeyValidityDays contained 
+hi link named_Number_Max3660days namedHL_Number
+syn match named_Number_Max3660days contained skipwhite
 \ /\%(3660\)\|\%(36[0-5][0-9]\)\|\%(3[0-5][0-9][0-9]\)\|\%([1-9][0-9][0-9]\|[1-9][0-9]\|[0-9]\)/
-\ skipwhite
 \ nextgroup=namedSemicolon
 
 hi link namedStmtOVZ_DnskeyValidity namedHL_Option
-syn keyword namedStmtOVZ_DnskeyValidity contained 
+syn keyword namedStmtOVZ_DnskeyValidity contained skipwhite
 \    dnskey-sig-validity
-\ skipwhite
-\ nextgroup=namedOVZ_DnsKeyValidityDays
+\ nextgroup=named_Number_Max3660days
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection 
 
 " <0-1440> (dnssec-loadkeys-interval)
@@ -3148,8 +3261,8 @@ syn keyword namedStmtOVZ_DnssecLoadkeys contained
 \ skipwhite
 \ nextgroup=namedOVZ_DnssecLoadkeysInterval
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection 
 
 " cleaning-interval: range: 0-1440
@@ -3165,8 +3278,8 @@ syn keyword namedStmtOVZ_Cleaning contained
 \ nextgroup=namedOVZ_CleaningValue
 \ skipwhite
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection
 
 " dnssec-must-be-secure <domain_name> <boolean>; [ Opt View ]  # v9.3.0+
@@ -3186,8 +3299,8 @@ syn keyword namedStmtOptionsViewDnssecMustBeSecure contained
 \ nextgroup=namedDMBS_FQDN
 \ skipwhite
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection  " only if its zone is inside 'view'
 
 hi link namedOVZ_DnssecUpdateModeOpt namedHL_Builtin
@@ -3203,8 +3316,8 @@ syn keyword namedOVZ_DnssecUpdateMode contained
 \ nextgroup=namedOVZ_DnssecUpdateModeOpt
 \ skipwhite
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection
 
 hi link namedOVZ_ForwardOpt namedHL_Builtin
@@ -3218,8 +3331,8 @@ syn keyword namedOVZ_Forward contained forward
 \ skipwhite
 \ nextgroup=namedOVZ_ForwardOpt
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection
 " XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx
 
@@ -3312,8 +3425,8 @@ syn keyword namedOVZ_Forwarders contained
 \    namedComment, namedInclude,
 \    namedError
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection
 
 hi link namedOVZ_MasterfileFormat_Opts namedHL_Builtin
@@ -3330,8 +3443,8 @@ syn keyword namedOVZ_MasterfileFormat contained
 \ nextgroup=namedOVZ_MasterfileFormat_Opts
 \ skipwhite
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection
 
 hi link namedOVZ_MasterfileStyles namedHL_Builtin
@@ -3347,8 +3460,8 @@ syn keyword namedOVZ_MasterfileStyle contained
 \ nextgroup=namedOVZ_MasterfileStyles
 \ skipwhite
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection
 
 
@@ -3365,8 +3478,8 @@ hi link namedOVZ_MaxZoneTtl namedHL_Option
 syn keyword namedOVZ_MaxZoneTtl contained max-zone-ttl skipwhite
 \ nextgroup=namedOVZ_TtlUnlimited,namedOVZ_Ttl
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection
 
 
@@ -3376,8 +3489,8 @@ syn keyword namedOVZ_Filespec_Group contained skipwhite
 \    key-directory
 \ nextgroup=named_String_QuoteForced_SC,namedNotString
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection 
 
 hi link namedOVZ_DefaultUnlimitedSize_Group namedHL_Option
@@ -3387,11 +3500,12 @@ syn keyword namedOVZ_DefaultUnlimitedSize_Group contained skipwhite
 \    named_SizeSpec_SC,
 \    named_DefaultUnlimited_SC
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection 
 
 " max-refresh-time obsoleted in view and zone section
+
 hi link namedOVZ_RefreshRetry namedHL_Option
 syn keyword namedOVZ_RefreshRetry contained skipwhite
 \    max-refresh-time
@@ -3400,10 +3514,25 @@ syn keyword namedOVZ_RefreshRetry contained skipwhite
 \    min-retry-time
 \ nextgroup=named_Number_Max24week_SC
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection
 
+hi link namedOVZ_ZoneStat_Opts namedHL_Builtin
+syn keyword namedOVZ_ZoneStat_Opts contained skipwhite
+\    full
+\    terse
+\    none
+\ nextgroup=namedSemicolon
+
+hi link namedOVZ_ZoneStat namedHL_Option
+syn keyword namedOVZ_ZoneStat contained skipwhite
+\    zone-statistics
+\ nextgroup=namedOVZ_ZoneStat_Opts,@namedClusterBoolean
+\ containedin=
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
+\    namedStmtZoneSection
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -3411,19 +3540,19 @@ syn keyword namedOVZ_RefreshRetry contained skipwhite
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found in all 'options', 'view', and 'server'
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-hi link named_AllowV6Synth_SC namedHL_String
-" syn match named_AllowV6Synth_SC contained /\(AAAA\)\|\(A6\)/ skipwhite
-syn match named_AllowV6Synth_SC /\caaaa/ contained skipwhite nextgroup=namedSemicolon
-syn match named_AllowV6Synth_SC /\ca6/ contained skipwhite nextgroup=namedSemicolon
+hi link named_A6orAAAA_SC namedHL_String
+" syn match named_A6orAAAA_SC contained /\(AAAA\)\|\(A6\)/ skipwhite
+syn match named_A6orAAAA_SC /\caaaa/ contained skipwhite nextgroup=namedSemicolon
+syn match named_A6orAAAA_SC /\ca6/ contained skipwhite nextgroup=namedSemicolon
 
 hi link namedOSV_OptAV6S namedHL_Option
 syn keyword namedOSV_OptAV6S contained skipwhite
 \    allow-v6-synthesis
-\ nextgroup=named_AllowV6Synth_SC 
+\ nextgroup=named_A6orAAAA_SC 
 \ containedin=
-\    namedStmtOptionsSection,
+\    namedStmt_OptionsSection,
 \    namedStmtServerSection,
-\    namedStmtViewSection
+\    namedStmt_ViewSection
 
 hi link namedOSV_Boolean_Group namedHL_Option
 syn keyword namedOSV_Boolean_Group contained skipwhite
@@ -3432,9 +3561,39 @@ syn keyword namedOSV_Boolean_Group contained skipwhite
 \    send-cookie
 \ nextgroup=@namedClusterBoolean 
 \ containedin=
-\    namedStmtOptionsSection,
+\    namedStmt_OptionsSection,
 \    namedStmtServerSection,
-\    namedStmtViewSection
+\    namedStmt_ViewSection
+
+" <0-3660> days (sig-validity-interval)
+hi link namedOVZ_First_Number_Max3660days namedHL_Number
+syn match namedOVZ_First_Number_Max3660days contained skipwhite
+\ /\%(3660\)\|\%(36[0-5][0-9]\)\|\%(3[0-5][0-9][0-9]\)\|\%([1-9][0-9][0-9]\|[1-9][0-9]\|[0-9]\)/
+\ nextgroup=named_Number_Max3660days,namedSemicolon
+
+hi link namedOVZ_SigSigning namedHL_Option
+syn keyword namedOVZ_SigSigning contained skipwhite
+\    sig-validity-interval
+\ nextgroup=namedOVZ_First_Number_Max3660days
+\ containedin=
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
+\    namedStmtZoneSection 
+
+hi link namedOVZ_Notify_Opts namedHL_Builtin
+syn keyword namedOVZ_Notify_Opts contained skipwhite
+\    explicit
+\    master-only
+\ nextgroup=namedSemicolon
+
+hi link namedOVZ_Notify namedHL_Option
+syn keyword namedOVZ_Notify contained skipwhite
+\    notify
+\ nextgroup=namedOVZ_Notify_Opts,@namedClusterBoolean
+\ containedin=
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
+\    namedStmtZoneSection 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found in all 'options', 'server', 'view', and 'zone'.
@@ -3447,8 +3606,8 @@ syn keyword namedOSVZ_Boolean_Group  contained skipwhite
 \    request-ixfr
 \ nextgroup=@namedClusterBoolean_SC
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtServerSection,
 \    namedStmtZoneSection
 
@@ -3519,8 +3678,8 @@ syn keyword namedOSVZ_AlsoNotify contained skipwhite
 \    also-notify
 \ nextgroup=namedOSVZ_Masters_MML,namedInclude,namedComment,namedError
 \ containedin=
-\    namedStmtOptionsSection,
-\    namedStmtViewSection,
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection,
 \    namedStmtServerSection,
 \    namedStmtZoneSection
 
@@ -3534,7 +3693,7 @@ syn keyword namedVZ_CheckNames contained
 \ skipwhite
 \ nextgroup=named_IgnoreWarnFail_SC
 \ containedin=
-\    namedStmtViewSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection
 
 " not the same as ixfr-from-differences in 'options' statement
@@ -3543,7 +3702,7 @@ syn keyword namedVZ_Ixfr_From_Diff contained ixfr-from-differences skipwhite
 \ skipwhite
 \ nextgroup=@namedClusterBoolean_SC
 \ containedin=
-\    namedStmtViewSection,
+\    namedStmt_ViewSection,
 \    namedStmtZoneSection
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -3555,7 +3714,7 @@ syn keyword namedVZ_Ixfr_From_Diff contained ixfr-from-differences skipwhite
 " options { <options_statement>; ... };
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-syn region namedStmtOptionsSection contained start=+{+ end=+}+ 
+syn region namedStmt_OptionsSection contained start=+{+ end=+}+ 
 \ skipwhite
 \ contains=
 \    namedInclude,
@@ -3564,7 +3723,7 @@ syn region namedStmtOptionsSection contained start=+{+ end=+}+
 \ nextgroup=namedSemicolon
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" server <namedStmtServerIdent> { <namedStmtServerKeywords>; };
+" server <namedStmt_ServerNameIdentifier> { <namedStmtServerKeywords>; };
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn region namedStmtServerSection contained start=+{+ end=+}+ 
 \ skipwhite skipempty
@@ -3575,9 +3734,9 @@ syn region namedStmtServerSection contained start=+{+ end=+}+
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" server <namedStmtServerIdent> { ... };
+" server <namedStmt_ServerNameIdentifier> { ... };
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn match namedStmtServerIdent contained
+syn match namedStmt_ServerNameIdentifier contained
 \ /[0-9]\{1,3}\(\.[0-9]\{1,3}\)\{0,3}\([\/][0-9]\{1,3}\)\{0,1}/
 \ skipwhite
 \ nextgroup=
@@ -3588,20 +3747,21 @@ syn match namedStmtServerIdent contained
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" view <namedViewIdent> { ... };
+" view <namedStmt_ViewNameIdentifier> { ... };
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-syn region namedStmtViewSection contained start=+{+ end=+}+ 
+syn region namedStmt_ViewSection contained start=+{+ end=+}+ 
 \ skipwhite skipempty
 \ nextgroup=namedSemicolon
 \ contains=
 \    namedInclude,namedComment,namedParenError
 
-syn match namedViewIdent contained /\i\+/ skipwhite
-\ nextgroup=namedStmtViewSection
+hi link namedStmt_ViewNameIdentifier	namedHL_Identifier
+syn match namedStmt_ViewNameIdentifier contained /\i\+/ skipwhite
+\ nextgroup=namedStmt_ViewSection
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" zone <namedZoneIdent> { ... };
+" zone <namedStmt_ZoneNameIdentifier> { ... };
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn region namedStmtZoneSection contained start=+{+ end=+}+ 
 \ skipwhite skipempty
@@ -3619,8 +3779,8 @@ syn match namedStmtZoneClass contained /\<\c\%(CHAOS\)\|\%(HESIOD\)\|\%(IN\)\|\%
 \    namedComment,
 \    namedError 
 
-hi link namedZoneIdent namedHL_Identifier
-syn match namedZoneIdent contained /\S\+/ 
+hi link namedStmt_ZoneNameIdentifier namedHL_Identifier
+syn match namedStmt_ZoneNameIdentifier contained /\S\+/ 
 \ skipwhite skipempty
 \ contains=named_QuotedDomain
 \ nextgroup=
@@ -3634,64 +3794,60 @@ syn match namedZoneIdent contained /\S\+/
 " 'uncontained' statements are the ones used GLOBALLY
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 hi link namedStmtKeyword namedHL_Statement
-syn match namedStmtKeyword /\_^\s*\<acl\>/
-\ skipempty skipnl skipwhite
-\ nextgroup=namedStmtACLIdent,
+syn match namedStmtKeyword /\_^\s*\<acl\>/ skipempty skipnl skipwhite
+\ nextgroup=namedStmtACLIdent
 
-syn match namedStmtKeyword /\_^\s*\<controls\>/
-\ skipempty skipnl skipwhite
-\ nextgroup=namedStmtControlsSection,
+syn match namedStmtKeyword /\_^\s*\<controls\>/ skipempty skipnl skipwhite
+\ nextgroup=namedStmtControlsSection
 
-syn match namedStmtKeyword /\_^\s*\<dlz\>/
-\ skipempty skipnl skipwhite
-\ nextgroup=namedStmtDlzIdent,
+syn match namedStmtKeyword /\_^\s*\<dlz\>/ skipempty skipnl skipwhite
+\ nextgroup=namedStmtDlzIdent
 
-syn match namedStmtKeyword /\_^\s*\<dyndb\>/
-\ skipempty skipnl skipwhite
+syn match namedStmtKeyword /\_^\s*\<dyndb\>/ skipempty skipnl skipwhite
 \ nextgroup=namedStmtDyndbIdent
-\ containedin=namedStmtViewSection
+\ containedin=namedStmt_ViewSection
 
-syn match namedStmtKeyword /\_^\s*\<key\>/
-\ nextgroup=namedStmtKeyIdent skipempty skipwhite
+syn match namedStmtKeyword /\_^\s*\<key\>/ skipwhite skipempty
+\ nextgroup=namedStmtKeyIdent 
 
-syn match namedStmtKeyword /\_^\s*\<logging\>/
-\ nextgroup=namedStmtLoggingSection skipempty skipwhite
+syn match namedStmtKeyword /\_^\s*\<logging\>/ skipempty skipwhite
+\ nextgroup=namedStmtLoggingSection 
 
-syn match namedStmtKeyword /\_^\s*\<managed-keys\>/
-\ nextgroup=namedStmtManagedKeysSection skipempty skipwhite
+syn match namedStmtKeyword /\_^\s*\<managed-keys\>/ skipempty skipwhite
+\ nextgroup=namedStmt_ManagedKeysSection 
 
-syn match namedStmtKeyword /\_^\s*\<masters\>/ 
-\ skipwhite skipnl skipempty 
+syn match namedStmtKeyword /\_^\s*\<masters\>/ skipwhite skipnl skipempty 
 \ nextgroup=
-\    namedStmtMastersIdent,
+\    namedStmt_MastersNameIdentifier,
 \    namedComment, 
 \    namedInclude,
 " \ namedError prevents a linefeed between 'master' and '<master_name'
 
-syn match namedStmtKeyword /\_^\s*\<options\>/
-\ nextgroup=namedStmtOptionsSection skipempty skipwhite
+syn match namedStmtKeyword /\_^\s*\<options\>/ skipempty skipwhite
+\ nextgroup=namedStmt_OptionsSection 
 
-syn match  namedStmtKeyword /\_^\s*\<server\>/
-\ nextgroup=namedStmtServerIdent,namedComment 
-\ skipempty skipwhite
+syn match  namedStmtKeyword /\_^\s*\<server\>/ skipempty skipwhite
+\ nextgroup=namedStmt_ServerNameIdentifier,namedComment 
+\ containedin=namedStmt_ViewSection
 
-syn match namedStmtKeyword /\_^\s*\<statistics-channels\>/
+syn match namedStmtKeyword /\_^\s*\<statistics-channels\>/ skipempty skipwhite
 \ nextgroup=namedIntIdent 
-\ skipempty skipwhite
 
-syn match namedStmtKeyword /\_^\s*\<trusted-keys\>/
-\ skipempty skipwhite
+syn match namedStmtKeyword /\_^\s*\<trusted-keys\>/ skipempty skipwhite
 \ nextgroup=namedIntSection 
 
-" view <namedViewIdent> { ... };  
-syn match namedStmtKeyword /\_^\s*\<view\>/ 
-\ skipwhite
-\ nextgroup=namedViewIdent 
+" view <namedStmt_ViewNameIdentifier> { ... };  
+syn match namedStmtKeyword /\_^\s*\<view\>/ skipwhite skipempty
+\ nextgroup=namedStmt_ViewNameIdentifier 
 
 " TODO: namedStmtError, how to get namedHL_Error to appear
-" zone <namedZoneIdent> { ... };
-syn match namedStmtKeyword /\_^\_s*\<zone\>/
-\ nextgroup=namedZoneIdent,namedComment,namedStmtError skipempty skipwhite
+" zone <namedStmt_ZoneNameIdentifier> { ... };
+syn match namedStmtKeyword /\_^\_s*\<zone\>/ skipempty skipwhite
+\ nextgroup=
+\    namedStmt_ZoneNameIdentifier,
+\    namedComment,
+\    namedStmtError 
+\ containedin=namedStmt_ViewSection
 
 let &cpoptions = s:save_cpo
 unlet s:save_cpo
