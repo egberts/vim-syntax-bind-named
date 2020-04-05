@@ -1147,7 +1147,7 @@ hi link namedLoggingCategoryBuiltins namedHL_Builtin
 syn keyword namedLoggingCategoryBuiltins contained skipwhite 
 \    client cname config database default delegation-only dnssec dispatch
 \    dnstap edns-disabled general lame-servers
-\    network notify nsid queries query-errors rate-limit resolver
+\    network notify nsid queries query-errors 
 \    rate-limit resolver rpz security serve-stale spill 
 \    trust-anchor-telemetry unmatched update update-security
 \    xfer-in xfer-out zoneload 
@@ -1577,6 +1577,7 @@ hi link namedO_AMLSection namedHL_Option
 syn keyword namedO_AMLSection contained skipwhite
 \    blackhole
 \    listen-on
+\    listen-on-v6
 \ nextgroup=named_E_AMLSection_SC,namedInclude,namedComment
 \ containedin=namedStmt_OptionsSection
 
@@ -1817,14 +1818,21 @@ syn keyword namedO_KeepResponseOrder contained skipwhite
 \ nextgroup=named_E_Filespec_SC
 \ containedin=namedStmt_OptionsSection
 
-hi link namedO_Filespec_Quoted_None_Group namedHL_Option
-syn keyword namedO_Filespec_Quoted_None_Group contained skipwhite
+hi link namedO_Filespec_None_ForcedQuoted_Group namedHL_Option
+syn keyword namedO_Filespec_None_ForcedQuoted_Group contained skipwhite
 \    random-device
 \ nextgroup=
 \    named_E_Filespec_SC,
 \    named_Builtin_None
 \ containedin=namedStmt_OptionsSection
 
+hi link namedO_Filespec_Group namedHL_Option
+syn keyword namedO_Filespec_Group contained skipwhite
+\    secroots-file
+\ nextgroup=
+\    named_E_Filespec_SC,
+\    named_Builtin_None
+\ containedin=namedStmt_OptionsSection
 
 " syn keyword namedO_Keywords deallocate-on-exit
 " syn keyword namedO_Keywords filter-aaaa
@@ -1856,7 +1864,6 @@ syn keyword namedO_Filespec_Quoted_None_Group contained skipwhite
 " syn keyword namedO_Keywords queryport-port-updateinterval
 " syn keyword namedO_Keywords querylog
 " syn keyword namedO_Keywords random-device
-" syn keyword namedO_Keywords rate-limit
 " syn keyword namedO_Keywords recursing-file
 " syn keyword namedO_Keywords request-nsid
 " syn keyword namedO_Keywords request-sit
@@ -1907,7 +1914,7 @@ syn keyword namedS_Bool_Group contained
 \   tcp-keepalive
 \   tcp-only
 \ nextgroup=@namedClusterBoolean_SC
-\ containedin=namedStmtServerSection skipwhite
+\ containedin=namedStmt_ServerSection skipwhite
 
 hi link namedS_GroupNumber namedHL_Number
 syn match namedS_GroupNumber contained /\d\{1,10}/ skipwhite
@@ -1920,7 +1927,7 @@ syn keyword namedS_NumberGroup contained
 \    padding
 \    transfers
 \ nextgroup=namedS_GroupNumber
-\ containedin=namedStmtServerSection
+\ containedin=namedStmt_ServerSection
 
 hi link namedS_Keys_Id namedHL_String
 syn match namedS_Keys_Id contained /[a-zA-Z0-9_\-]\{1,63}/ skipwhite
@@ -1929,7 +1936,7 @@ syn match namedS_Keys_Id contained /[a-zA-Z0-9_\-]\{1,63}/ skipwhite
 hi link namedS_Keys namedHL_Option
 syn keyword namedS_Keys contained keys skipwhite
 \ nextgroup=namedS_Keys_Id
-\ containedin=namedStmtServerSection
+\ containedin=namedStmt_ServerSection
 
 " syn keyword namedStmtServerKeywords notify-source
 " syn keyword namedStmtServerKeywords notify-source-v6
@@ -2013,7 +2020,6 @@ syn  keyword namedV_Boolean_Group  contained skipwhite
 " syn keyword namedV_Keywords provide-ixfr
 " syn keyword namedV_Keywords queryport-port-ports
 " syn keyword namedV_Keywords queryport-port-updateinterval
-" syn keyword namedV_Keywords rate-limit
 " syn keyword namedV_Keywords request-nsid
 " syn keyword namedV_Keywords request-sit
 " syn keyword namedV_Keywords response-policy
@@ -2141,6 +2147,165 @@ syn match namedZ_DefaultUnlimitedSize_Group contained /max-journal-size/
 " syn keyword namedStmtZoneKeywordsObsoleted pubkey
 " syn keyword namedStmtZoneKeywordsObsoleted use-id-pool
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"  Both 'options' and 'servers' only.
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" notify-source [address] 
+"              ( * | <ip4_addr> )
+"                  [ port ( * | <port> )]
+"                  [ dscp <dscp> ];
+" notify-source [ [ address ] 
+"                ( * | <ip4_addr> ) ]
+"              port ( * | <port> )
+"              [ dscp <dscp> ];
+hi link named_Dscp_SC namedHL_Number
+syn match named_Dscp_SC contained /\d\+/ skipwhite
+\ nextgroup=namedSemicolon
+
+hi link namedOS_NotifySource_Dscp namedHL_Option
+syn keyword namedOS_NotifySource_Dscp contained dscp skipwhite
+\ nextgroup=named_Dscp_SC
+
+hi link namedOS_NotifySource_PortValue namedHL_Number
+syn match namedOS_NotifySource_PortValue contained 
+\ /\*\|\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+\ skipwhite
+\ nextgroup=
+\    namedOS_NotifySource_Dscp,
+\    namedSemicolon
+
+hi link namedOS_NotifySource_Port namedHL_Option
+syn keyword namedOS_NotifySource_Port contained port skipwhite
+\ nextgroup=namedOS_NotifySource_PortValue
+
+hi link namedOS_NotifySource_IP4Addr namedHL_Number
+syn match namedOS_NotifySource_IP4Addr contained /\<\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/
+\ skipwhite
+\ nextgroup=
+\    namedOS_NotifySource_Port,
+\    namedOS_NoityfSource_Dscp,
+\    namedSemicolon
+
+hi link namedOS_NotifySource namedHL_Option
+syn keyword namedOS_NotifySource contained skipwhite
+\    notify-source
+\ nextgroup=
+\    namedOS_NotifySource_IP4Addr,
+\    namedOS_NotifySource_Port
+\ containedin=
+\    namedStmt_OptionsSection,
+\    namedStmt_ServerSection
+
+" notify-source-v6 [address] 
+"              ( * | <ip6_addr> )
+"                  [ port ( * | <port> )]
+"                  [ dscp <dscp> ];
+" notify-source-v6 [ [ address ] 
+"                ( * | <ip6_addr> ) ]
+"              port ( * | <port> )
+"              [ dscp <dscp> ];
+"
+" Full IPv6 (without the trailing '/') with trailing semicolon
+hi link namedOS_NotifySource_IP6Addr namedHL_Number
+syn match namedOS_NotifySource_IP6Addr contained /\%(\x\{1,4}:\)\{7,7}\x\{1,4}/
+\ skipwhite
+\ nextgroup=
+\    namedOS_NotifySource_Port,
+\    namedSemicolon
+" 1::                              1:2:3:4:5:6:7::
+syn match namedOS_NotifySource_IP6Addr contained /\%(\x\{1,4}:\)\{1,7}:/ 
+\ skipwhite
+\ nextgroup=
+\    namedOS_NotifySource_Port,
+\    namedSemicolon
+" 1::8             1:2:3:4:5:6::8  1:2:3:4:5:6::8
+syn match namedOS_NotifySource_IP6Addr contained /\%(\x\{1,4}:\)\{1,6}:\x\{1,4}/
+\ skipwhite
+\ nextgroup=
+\    namedOS_NotifySource_Port,
+\    namedSemicolon
+" 1::7:8           1:2:3:4:5::7:8  1:2:3:4:5::8
+syn match namedOS_NotifySource_IP6Addr contained /\%(\x\{1,4}:\)\{1,5}\%(:\x\{1,4}\)\{1,2}/
+\ skipwhite
+\ nextgroup=
+\    namedOS_NotifySource_Port,
+\    namedSemicolon
+" 1::6:7:8         1:2:3:4::6:7:8  1:2:3:4::8
+syn match namedOS_NotifySource_IP6Addr contained /\%(\x\{1,4}:\)\{1,4}\%(:\x\{1,4}\)\{1,3}/
+\ skipwhite
+\ nextgroup=
+\    namedOS_NotifySource_Port,
+\    namedSemicolon
+" 1::5:6:7:8       1:2:3::5:6:7:8  1:2:3::8
+syn match namedOS_NotifySource_IP6Addr contained /\%(\x\{1,4}:\)\{1,3}\%(:\x\{1,4}\)\{1,4}/
+\ skipwhite
+\ nextgroup=
+\    namedOS_NotifySource_Port,
+\    namedSemicolon
+" 1::4:5:6:7:8     1:2::4:5:6:7:8  1:2::8
+syn match namedOS_NotifySource_IP6Addr contained /\%(\x\{1,4}:\)\{1,2}\%(:\x\{1,4}\)\{1,5}/
+\ skipwhite
+\ nextgroup=
+\    namedOS_NotifySource_Port,
+\    namedSemicolon
+" 1::3:4:5:6:7:8   1::3:4:5:6:7:8  1::8
+syn match namedOS_NotifySource_IP6Addr contained /\x\{1,4}:\%(\%(:\x\{1,4}\)\{1,6}\)/
+\ skipwhite
+\ nextgroup=
+\    namedOS_NotifySource_Port,
+\    namedSemicolon
+" fe80::7:8%eth0   (link-local IPv6 addresses with zone index)
+syn match namedOS_NotifySource_IP6Addr contained /fe08%[a-zA-Z0-9\-_\.]\{1,64}/
+\ skipwhite
+\ nextgroup=
+\    namedOS_NotifySource_Port,
+\    namedSemicolon
+" fe80::7:8%1     (link-local IPv6 addresses with zone index)
+syn match namedOS_NotifySource_IP6Addr contained /fe08::[0-9a-fA-F]\{1,4}:[0-9a-fA-F]\{1,4}%[a-zA-Z0-9]\{1,64}/
+\ skipwhite
+\ nextgroup=
+\    namedOS_NotifySource_Port,
+\    namedSemicolon
+" ::2:3:4:5:6:7:8  ::2:3:4:5:6:7:8 ::8       ::
+syn match namedOS_NotifySource_IP6Addr contained /::\x\{1,4}\%(:\x\{0,3}\)\{0,6}/
+\ skipwhite
+\ nextgroup=
+\    namedOS_NotifySource_Port,
+\    namedSemicolon
+" ::ffff:0:255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
+syn match namedOS_NotifySource_IP6Addr contained /::ffff:0\{1,4}:\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/
+\ skipwhite
+\ nextgroup=
+\    namedOS_NotifySource_Port,
+\    namedSemicolon
+" ::ffff:255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
+syn match namedOS_NotifySource_IP6Addr contained /::ffff:\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/
+\ skipwhite
+\ nextgroup=
+\    namedOS_NotifySource_Port,
+\    namedSemicolon
+" 2001:db8:3:4::192.0.2.33  64:ff9b::192.0.2.33 (IPv4-Embedded IPv6 Address)
+syn match namedOS_NotifySource_IP6Addr contained /\x\{1,4}\%(:\x\{1,4}\)\{1,3}::[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}/
+\ skipwhite
+\ nextgroup=
+\    namedOS_NotifySource_Port,
+\    namedSemicolon
+" ::255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
+syn match namedOS_NotifySource_IP6Addr contained /::\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/
+\ skipwhite
+\ nextgroup=
+\    namedOS_NotifySource_Port,
+\    namedSemicolon
+
+hi link namedOS_NotifySource namedHL_Option
+syn keyword namedOS_NotifySource contained skipwhite
+\    notify-source-v6
+\ nextgroup=
+\    namedOS_NotifySource_IP6Addr
+\ containedin=
+\    namedStmt_OptionsSection,
+\    namedStmt_ServerSection
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found in all 'options', 'server', and 'view'
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -2152,7 +2317,164 @@ syn keyword namedOSV_UdpSize contained skipwhite
 \ nextgroup=named_Number_UdpSize
 \ containedin=
 \    namedStmt_OptionsSection,
-\    namedStmtServerSection,
+\    namedStmt_ServerSection,
+\    namedStmt_ViewSection
+
+" query-source [address] 
+"              ( * | <ip4_addr> )
+"                  [ port ( * | <port> )]
+"                  [ dscp <dscp> ];
+" query-source [ [ address ] 
+"                ( * | <ip4_addr> ) ]
+"              port ( * | <port> )
+"              [ dscp <dscp> ];
+
+hi link namedOSV_QuerySource_PortValue namedHL_Number
+syn match namedOSV_QuerySource_PortValue contained 
+\ /\*\|\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+\ skipwhite
+\ nextgroup=namedSemicolon
+
+hi link namedOSV_QuerySource_Port namedHL_Option
+syn keyword namedOSV_QuerySource_Port contained port skipwhite
+\ nextgroup=namedOSV_QuerySource_PortValue
+
+hi link namedOSV_QuerySource_IP4Addr namedHL_Number
+syn match namedOSV_QuerySource_IP4Addr contained /\<\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/
+\ skipwhite
+\ nextgroup=namedOSV_QuerySource_Port
+
+hi link namedOSV_QuerySource_Address namedHL_Option
+syn keyword namedOSV_QuerySource_Address contained address skipwhite
+\ nextgroup=namedOSV_QuerySource_IP4Addr
+
+hi link namedOSV_QuerySource namedHL_Option
+syn keyword namedOSV_QuerySource contained skipwhite
+\    query-source
+\ nextgroup=
+\    namedOSV_QuerySource_Address,
+\    namedOSV_QuerySource_IP4Addr,
+\    namedOSV_QuerySource_Port
+\ containedin=
+\    namedStmt_OptionsSection,
+\    namedStmt_ServerSection,
+\    namedStmt_ViewSection
+
+" query-source [address] 
+"              ( * | <ip4_addr> )
+"                  [ port ( * | <port> )]
+"                  [ dscp <dscp> ];
+" query-source [ [ address ] 
+"                ( * | <ip4_addr> ) ]
+"              port ( * | <port> )
+"              [ dscp <dscp> ];
+"
+" Full IPv6 (without the trailing '/') with trailing semicolon
+hi link namedOSV_QuerySource_IP6Addr namedHL_Number
+syn match namedOSV_QuerySource_IP6Addr contained /\%(\x\{1,4}:\)\{7,7}\x\{1,4}/
+\ skipwhite
+\ nextgroup=
+\    namedOSV_QuerySource_Port,
+\    namedSemicolon
+" 1::                              1:2:3:4:5:6:7::
+syn match namedOSV_QuerySource_IP6Addr contained /\%(\x\{1,4}:\)\{1,7}:/ 
+\ skipwhite
+\ nextgroup=
+\    namedOSV_QuerySource_Port,
+\    namedSemicolon
+" 1::8             1:2:3:4:5:6::8  1:2:3:4:5:6::8
+syn match namedOSV_QuerySource_IP6Addr contained /\%(\x\{1,4}:\)\{1,6}:\x\{1,4}/
+\ skipwhite
+\ nextgroup=
+\    namedOSV_QuerySource_Port,
+\    namedSemicolon
+" 1::7:8           1:2:3:4:5::7:8  1:2:3:4:5::8
+syn match namedOSV_QuerySource_IP6Addr contained /\%(\x\{1,4}:\)\{1,5}\%(:\x\{1,4}\)\{1,2}/
+\ skipwhite
+\ nextgroup=
+\    namedOSV_QuerySource_Port,
+\    namedSemicolon
+" 1::6:7:8         1:2:3:4::6:7:8  1:2:3:4::8
+syn match namedOSV_QuerySource_IP6Addr contained /\%(\x\{1,4}:\)\{1,4}\%(:\x\{1,4}\)\{1,3}/
+\ skipwhite
+\ nextgroup=
+\    namedOSV_QuerySource_Port,
+\    namedSemicolon
+" 1::5:6:7:8       1:2:3::5:6:7:8  1:2:3::8
+syn match namedOSV_QuerySource_IP6Addr contained /\%(\x\{1,4}:\)\{1,3}\%(:\x\{1,4}\)\{1,4}/
+\ skipwhite
+\ nextgroup=
+\    namedOSV_QuerySource_Port,
+\    namedSemicolon
+" 1::4:5:6:7:8     1:2::4:5:6:7:8  1:2::8
+syn match namedOSV_QuerySource_IP6Addr contained /\%(\x\{1,4}:\)\{1,2}\%(:\x\{1,4}\)\{1,5}/
+\ skipwhite
+\ nextgroup=
+\    namedOSV_QuerySource_Port,
+\    namedSemicolon
+" 1::3:4:5:6:7:8   1::3:4:5:6:7:8  1::8
+syn match namedOSV_QuerySource_IP6Addr contained /\x\{1,4}:\%(\%(:\x\{1,4}\)\{1,6}\)/
+\ skipwhite
+\ nextgroup=
+\    namedOSV_QuerySource_Port,
+\    namedSemicolon
+" fe80::7:8%eth0   (link-local IPv6 addresses with zone index)
+syn match namedOSV_QuerySource_IP6Addr contained /fe08%[a-zA-Z0-9\-_\.]\{1,64}/
+\ skipwhite
+\ nextgroup=
+\    namedOSV_QuerySource_Port,
+\    namedSemicolon
+" fe80::7:8%1     (link-local IPv6 addresses with zone index)
+syn match namedOSV_QuerySource_IP6Addr contained /fe08::[0-9a-fA-F]\{1,4}:[0-9a-fA-F]\{1,4}%[a-zA-Z0-9]\{1,64}/
+\ skipwhite
+\ nextgroup=
+\    namedOSV_QuerySource_Port,
+\    namedSemicolon
+" ::2:3:4:5:6:7:8  ::2:3:4:5:6:7:8 ::8       ::
+syn match namedOSV_QuerySource_IP6Addr contained /::\x\{1,4}\%(:\x\{0,3}\)\{0,6}/
+\ skipwhite
+\ nextgroup=
+\    namedOSV_QuerySource_Port,
+\    namedSemicolon
+" ::ffff:0:255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
+syn match namedOSV_QuerySource_IP6Addr contained /::ffff:0\{1,4}:\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/
+\ skipwhite
+\ nextgroup=
+\    namedOSV_QuerySource_Port,
+\    namedSemicolon
+" ::ffff:255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
+syn match namedOSV_QuerySource_IP6Addr contained /::ffff:\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/
+\ skipwhite
+\ nextgroup=
+\    namedOSV_QuerySource_Port,
+\    namedSemicolon
+" 2001:db8:3:4::192.0.2.33  64:ff9b::192.0.2.33 (IPv4-Embedded IPv6 Address)
+syn match namedOSV_QuerySource_IP6Addr contained /\x\{1,4}\%(:\x\{1,4}\)\{1,3}::[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}/
+\ skipwhite
+\ nextgroup=
+\    namedOSV_QuerySource_Port,
+\    namedSemicolon
+" ::255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
+syn match namedOSV_QuerySource_IP6Addr contained /::\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/
+\ skipwhite
+\ nextgroup=
+\    namedOSV_QuerySource_Port,
+\    namedSemicolon
+
+hi link namedOSV_QuerySource_Address6 namedHL_Option
+syn keyword namedOSV_QuerySource_Address6 contained address skipwhite
+\ nextgroup=namedOSV_QuerySource_IP6Addr
+
+hi link namedOSV_QuerySource namedHL_Option
+syn keyword namedOSV_QuerySource contained skipwhite
+\    query-source-v6
+\ nextgroup=
+\    namedOSV_QuerySource_Address6,
+\    namedOSV_QuerySource_IP6Addr,
+\    namedOSV_QuerySource_Port
+\ containedin=
+\    namedStmt_OptionsSection,
+\    namedStmt_ServerSection,
 \    namedStmt_ViewSection
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -2713,6 +3035,7 @@ hi link namedOV_DualStack_E_Port	namedKeyword
 syn match namedOV_DualStack_E_Port /port/
 \ contained skipwhite
 \ nextgroup=named_Port,namedWildcard
+
 syn match namedDSS_Element_DomainAddrPort 
 \ /\<[0-9A-Za-z\._\-]\+\>/ 
 \ contained skipwhite
@@ -2984,14 +3307,6 @@ syn keyword namedOV_Prefetch contained skipwhite
 \    namedStmt_OptionsSection,
 \    namedStmt_ViewSection
 
-hi link namedOV_QuerySource namedHL_Option
-syn keyword namedOV_QuerySource contained skipwhite
-\    query-source
-\    query-source-v6
-\ nextgroup=named_E_AMLSection_SC
-\ containedin=
-\    namedStmt_OptionsSection,
-\    namedStmt_ViewSection
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -3551,7 +3866,7 @@ syn keyword namedOSV_OptAV6S contained skipwhite
 \ nextgroup=named_A6orAAAA_SC 
 \ containedin=
 \    namedStmt_OptionsSection,
-\    namedStmtServerSection,
+\    namedStmt_ServerSection,
 \    namedStmt_ViewSection
 
 hi link namedOSV_Boolean_Group namedHL_Option
@@ -3562,7 +3877,7 @@ syn keyword namedOSV_Boolean_Group contained skipwhite
 \ nextgroup=@namedClusterBoolean 
 \ containedin=
 \    namedStmt_OptionsSection,
-\    namedStmtServerSection,
+\    namedStmt_ServerSection,
 \    namedStmt_ViewSection
 
 " <0-3660> days (sig-validity-interval)
@@ -3608,8 +3923,9 @@ syn keyword namedOSVZ_Boolean_Group  contained skipwhite
 \ containedin=
 \    namedStmt_OptionsSection,
 \    namedStmt_ViewSection,
-\    namedStmtServerSection,
+\    namedStmt_ServerSection,
 \    namedStmtZoneSection
+
 
 
 " + these keywords are contained within `update-policy' section only
@@ -3680,7 +3996,7 @@ syn keyword namedOSVZ_AlsoNotify contained skipwhite
 \ containedin=
 \    namedStmt_OptionsSection,
 \    namedStmt_ViewSection,
-\    namedStmtServerSection,
+\    namedStmt_ServerSection,
 \    namedStmtZoneSection
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -3725,7 +4041,7 @@ syn region namedStmt_OptionsSection contained start=+{+ end=+}+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " server <namedStmt_ServerNameIdentifier> { <namedStmtServerKeywords>; };
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn region namedStmtServerSection contained start=+{+ end=+}+ 
+syn region namedStmt_ServerSection contained start=+{+ end=+}+ 
 \ skipwhite skipempty
 \ contains=
 \    namedComment,
@@ -3740,7 +4056,7 @@ syn match namedStmt_ServerNameIdentifier contained
 \ /[0-9]\{1,3}\(\.[0-9]\{1,3}\)\{0,3}\([\/][0-9]\{1,3}\)\{0,1}/
 \ skipwhite
 \ nextgroup=
-\    namedStmtServerSection,
+\    namedStmt_ServerSection,
 \    namedComment,
 \    namedInclude,
 \    namedError 
