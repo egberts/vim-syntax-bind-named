@@ -1,7 +1,7 @@
 " Vim syntax file for ISC BIND named configuration file
 " Language:     ISC BIND named configuration file
 " Maintainer:   egberts <egberts@github.com>
-" Last change:  2020-03-12
+" Last change:  2020-04-04
 " Filenames:    named.conf, rndc.conf
 " Filenames:    named[-_]*.conf, rndc[-_]*.conf
 " Filenames:    *[-_]named.conf
@@ -111,7 +111,7 @@
 " NOTE: DON'T put inline comment on continuation lines.  It hurts, badly.
 "
 " quit when a syntax file was already loaded
-if !exists("main_syntax")
+if !exists('main_syntax')
   if exists('b:current_syntax')
     finish
   endif
@@ -124,9 +124,9 @@ setlocal iskeyword=.,-,48-58,A-Z,a-z
 setlocal isident=.,-,48-58,A-Z,a-z,_
 
 " I've got the largest named.conf possible.
-" it's a heavily commented named.cnf file containing every 
+" it's a heavily commented named.conf file containing every 
 " valid statements, options, and clauses.
-" sync is barely triggered here.
+" sync gets barely triggered here.
 syn sync match namedSync grouphere NONE "^(zone|controls|acl|key)"
 
 let s:save_cpo = &cpoptions
@@ -248,7 +248,7 @@ hi link namedError	namedHL_Error
 
 
 
-" Down-Top syntax approach.
+" Down-Top/Bottom-Up syntax approach.
 " Smallest granular definition starts here.
 " Largest granular definition goes at the bottom.
 " Pay attention to tighest-pattern-first ordering of syntax.
@@ -259,11 +259,6 @@ hi link namedError	namedHL_Error
 
 " 'Vim-uncontained' statements are the ones used GLOBALLY
 
-" Builtins are not Vim-'contained' as to prevent 
-" its re-use as a Vim-String or Bind-identifier.
-hi link namedBuiltinsKeyword namedHL_Builtin
-syn keyword namedBuiltinsKeyword any none localhost localnets
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " FIXED-LENGTH PATTERNS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -271,10 +266,19 @@ syn keyword namedBuiltinsKeyword any none localhost localnets
 hi link namedToDo Todo
 syn keyword namedToDo xxx contained XXX FIXME TODO TODO: FIXME:
 
-hi link named_Builtin_None namedHL_Builtin
-syn keyword named_Builtin_None contained none skipwhite
+hi link named_Bind_Builtins namedHL_Builtin
+syn keyword named_Bind_Builtins contained skipwhite
+\    any
+\    none
+\    localhost
+\    localnets
 \ nextgroup=namedSemicolon
 
+
+hi link named_AllowMaintainOff	namedHL_Type
+syn match named_AllowMaintainOff contained /\callow/ skipwhite nextgroup=namedSemicolon
+syn match named_AllowMaintainOff contained /\cmaintain/ skipwhite nextgroup=namedSemicolon
+syn match named_AllowMaintainOff contained /\coff/ skipwhite nextgroup=namedSemicolon
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Variable-LENGTH static PATTERNS
@@ -595,11 +599,6 @@ syn match named_IP6Addr contained /\x\{1,4}\%(:\x\{1,4}\)\{1,3}::[0-9]\{1,3}\.[0
 syn match named_IP6Addr contained /::\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/
 
 
-hi link named_AllowMaintainOff_SC	namedHL_Type
-syn match named_AllowMaintainOff_SC contained /\callow/ skipwhite nextgroup=namedSemicolon
-syn match named_AllowMaintainOff_SC contained /\cmaintain/ skipwhite nextgroup=namedSemicolon
-syn match named_AllowMaintainOff_SC contained /\coff/ skipwhite nextgroup=namedSemicolon
-
 
 " --- string 
 syn region namedString start=/"/hs=s+1 skip=/\\"/ end=/"/he=e-1 contained
@@ -655,9 +654,9 @@ syn match namedTypeCacheSize contained /\d\{1,3}\s*;/he=e-1 skipwhite
 " --- syntax errors
 syn match namedIllegalDom contained /"\S*[^-A-Za-z0-9.[:space:]]\S*"/ms=s+1,me=e-1
 syn match namedIPerror contained /\<\S*[^0-9.[:space:];]\S*/
-syn match namedNotParenError contained +\([^{]\|$\)+ skipwhite
+syn match namedNotParenError contained /\%([^{]\|$\)/ skipwhite
 syn match namedEParenError contained +{+
-syn match namedParenError +}\([^;]\|$\)+
+syn match namedParenError /}\%([^;]\|$\)/
 
 
 " --- IPs & Domains
@@ -700,7 +699,6 @@ syn match namedInclude /\_s*include/
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " -- Vim syntax clusters
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syntax cluster namedClusterCommonNext contains=namedComment,namedInclude,namedError
 hi link namedClusterBoolean_SC namedHL_Error
 syntax cluster namedClusterBoolean_SC contains=named_Boolean_SC
 syntax cluster namedClusterBoolean contains=namedTypeBool,namedNotBool,@namedClusterCommonNext
@@ -732,7 +730,8 @@ syn region named_E_IP4Addr_SCList contained start=+{+ end=+}\s*;+he=e-1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " BIND builtins
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
+" Add AML clusters for AML Element
+"
 " AML Section/Elements
 syn region namedElementAMLSection contained start=+{+ end=+;+ skipwhite skipempty
 \ contains=
@@ -758,6 +757,9 @@ syn region named_E_AMLSection_SC contained start=/{/ end=/}/ skipwhite skipempty
 \    namedInclude,
 \    namedComment 
 \ nextgroup=namedSemicolon
+
+syn match named_E_AMLSection_Not_SC contained /!/ skipwhite skipempty
+\ nextgroup=named_E_AMLSection_SC,named_AMLSection_SC
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within 'acl' statement
@@ -1730,7 +1732,7 @@ syn keyword namedO_DnstapVersion contained
 \    dnstap-version
 \ skipwhite
 \ nextgroup=
-\    named_Builtin_None,
+\    named_Builtin_None_SC,
 \    named_E_Filespec_SC
 \ containedin=namedStmt_OptionsSection
 
@@ -1825,7 +1827,7 @@ syn keyword namedO_Filespec_None_ForcedQuoted_Group contained skipwhite
 \    random-device
 \ nextgroup=
 \    named_E_Filespec_SC,
-\    named_Builtin_None
+\    named_Builtin_None_SC
 \ containedin=namedStmt_OptionsSection
 
 hi link namedO_Filespec_Group namedHL_Option
@@ -1833,7 +1835,7 @@ syn keyword namedO_Filespec_Group contained skipwhite
 \    secroots-file
 \ nextgroup=
 \    named_E_Filespec_SC,
-\    named_Builtin_None
+\    named_Builtin_None_SC
 \ containedin=namedStmt_OptionsSection
 
 " syn keyword namedO_Keywords deallocate-on-exit
@@ -3598,7 +3600,7 @@ syn keyword namedOVZ_OptATS contained
 
 hi link namedOVZ_AutoDNSSEC namedHL_Option
 syn keyword namedOVZ_AutoDNSSEC contained auto-dnssec skipwhite
-\ nextgroup=named_AllowMaintainOff_SC,namedComment,namedError 
+\ nextgroup=named_AllowMaintainOff,namedComment,namedError 
 \ containedin=
 \    namedStmt_OptionsSection,
 \    namedStmt_ViewSection,
@@ -4418,7 +4420,7 @@ unlet s:save_cpo
 
 let b:current_syntax = 'named'
 
-if main_syntax == 'bind-named'
+if main_syntax ==# 'bind-named'
   unlet main_syntax
 endif
 
