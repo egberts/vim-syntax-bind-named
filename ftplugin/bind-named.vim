@@ -9,12 +9,12 @@
 " License:      MIT license
 " Remarks:
 "
-let namedident_override_with_local_expandtab = exists("g:namedident_override_with_local_expandtab")
-let namedident_disable_expandtab = get(g:,"namedident_disable_expandtab", 0)
+let namedindent_override_with_local_expandtab = exists("g:namedident_override_with_local_expandtab")
+let namedindent_disable_expandtab = get(g:,"namedident_disable_expandtab", 0)
 
 
-setlocal tabstop=8
-setlocal softtabstop=8
+setlocal tabstop=4
+setlocal softtabstop=4
 setlocal shiftwidth=8
 
 " If you prefer not to change your settings of hard/soft tab characters 
@@ -36,7 +36,7 @@ setlocal shiftwidth=8
 "     namedident_override_with_local_expandtab = 1
 "     namedident_disable_expandtab = 0
 
-if namedident_override_with_local_expandtab != 0
+if namedindent_override_with_local_expandtab != 0
 
     if namedindent_disable_expandtab != 0
       " expandtab got defined elsewhere, so we use hard tab, locally
