@@ -133,21 +133,26 @@ let s:save_cpo = &cpoptions
 set cpoptions-=C
 
 " First-level highlighting
+highlight namedHL_Statement1 guifg=#ffff00 guibg=#000000 gui=bold ctermfg=Yellow ctermbg=Black cterm=bold
+highlight namedHL_Statement2 guifg=#dddd00 guibg=#000000 ctermfg=Yellow ctermbg=Black
+highlight namedHL_Statement3 guifg=#bbbb00 guibg=#000000 ctermfg=Yellow ctermbg=Black
+highlight namedHL_Builtin guifg=#cc0000 guibg=#000000 ctermfg=DarkRed ctermbg=Black
+highlight namedHL_Operator guifg=#ff0000 guibg=#000000 gui=bold ctermfg=DarkRed ctermbg=Black
 
 hi link namedHL_Comment     Comment
 hi link namedHL_Include     DiffAdd
 hi link namedHL_ToDo        Todo
 hi link namedHL_Identifier  Identifier
-hi link namedHL_Statement   Keyword
-hi link namedHL_Option      Label     " could use a 2nd color here
-hi link namedHL_Clause      Type    " could use a 3rd color here
+hi link namedHL_Statement   namedHL_Statement1
+hi link namedHL_Option      namedHL_Statement2
+hi link namedHL_Clause      namedHL_Statement3    " could use a 3rd color here
 hi link namedHL_Type        Type
 " Bind has only one operator '!'
-hi link namedHL_Operator    Operator  
+" hi link namedHL_Operator    Operator  
 hi link namedHL_Number      Number
 hi link namedHL_String      String
 " Bind's builtins: 'any', 'none', 'localhost', 'localnets'
-hi link namedHL_Builtin     Special 
+"hi link namedHL_Builtin     Special 
 hi link namedHL_Underlined  Underlined
 " Do not use Vim's "Boolean" highlighter, Bind has its own syntax.
 hi link namedHL_Error       Error
@@ -2653,8 +2658,8 @@ syn keyword namedOSV_QuerySource_Address6 contained address skipwhite
 \ nextgroup=namedOSV_QuerySource_IP6Addr
 
 hi link namedOSV_QuerySourceIP6 namedHL_Option
-syn keyword namedOSV_QuerySourceIP6 contained skipwhite
-\    query-source-v6
+syn match namedOSV_QuerySourceIP6 contained skipwhite
+\    /\<query-source-v6\>/
 \ nextgroup=
 \    namedOSV_QuerySource_Address6,
 \    namedOSV_QuerySource_IP6Addr,
@@ -3563,7 +3568,7 @@ hi link namedOV_RateLimit namedHL_Option
 syn keyword namedOV_RateLimit contained rate-limit skipwhite skipempty
 \ nextgroup=namedOV_RateLimitSection
 
-hi link namedOV_ResponsePadding_BlockSize namedHL_Option
+hi link namedOV_ResponsePadding_BlockSize namedHL_Clause
 syn match namedOV_ResponsePadding_BlockSize contained skipwhite
 \    /block\-size/
 \ nextgroup=named_Number_SC
@@ -4516,8 +4521,8 @@ syn match namedOSVZ_NotifySource_IP6Addr contained /::\%(\%(25[0-5]\|\%(2[0-4]\|
 
 " Do both IPv4 and IPv6 for notify-source
 hi link namedOSVZ_NotifySource namedHL_Option
-syn keyword namedOSVZ_NotifySource contained skipwhite
-\    notify-source-v6
+syn match namedOSVZ_NotifySource contained skipwhite
+\    /\<notify-source-v6\>/
 \ nextgroup=
 \    namedOSVZ_NotifySource_IP6Addr
 
