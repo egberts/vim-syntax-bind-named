@@ -4555,7 +4555,7 @@ syn region namedStmt_OptionsSection contained start=+{+ end=+}+
 \    namedOSVZ_AlsoNotify,
 \    namedOV_AML_Group,
 \    namedOVZ_AML_Group,
-\    namedOV_AorAAA,
+\    namedOV_AorAAAA,
 \    namedOV_AttachCache,
 \    namedOVZ_AutoDNSSEC,
 \    namedO_Blackhole,
@@ -4793,14 +4793,14 @@ syn region namedStmt_ViewSection contained start=+{+ end=+}+
 \    namedParenError
 
 hi link namedStmt_ViewNameIdentifier namedHL_Identifier
-syn match namedStmt_ViewNameIdentifier contained /\i\+/ skipwhite
+syn match namedStmt_ViewNameIdentifier contained /\i\+/ skipwhite skipnl skipempty
 \ nextgroup=namedStmt_ViewSection
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " zone <namedStmt_ZoneNameIdentifier> { ... };
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn region namedStmt_ZoneSection contained start=+{+ end=+}+ 
-\ skipwhite skipempty
+\ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
 \ contains=
 \    namedInclude,
@@ -4925,12 +4925,12 @@ syn match namedStmtKeyword /\_^\s*\<trusted-keys\>/ skipempty skipwhite skipnl
 \ nextgroup=namedIntSection 
 
 " view <namedStmt_ViewNameIdentifier> { ... };  
-syn match namedStmtKeyword /\_^\s*\<view\>/ skipwhite skipempty
+syn match namedStmtKeyword /\_^\s*\<view\>/ skipwhite skipnl skipempty
 \ nextgroup=namedStmt_ViewNameIdentifier 
 
 " TODO: namedStmtError, how to get namedHL_Error to appear
 " zone <namedStmt_ZoneNameIdentifier> { ... };
-syn match namedStmtKeyword /\_^\_s*\<zone\>/ skipempty skipwhite
+syn match namedStmtKeyword /\_^\_s*\<zone\>/ skipempty skipnl skipwhite
 \ nextgroup=
 \    namedStmt_ZoneNameIdentifier,
 \    namedComment,

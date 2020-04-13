@@ -15,7 +15,7 @@ let namedindent_disable_expandtab = get(g:,"namedident_disable_expandtab", 0)
 
 setlocal tabstop=4
 setlocal softtabstop=4
-setlocal shiftwidth=8
+setlocal shiftwidth=4
 
 " If you prefer not to change your settings of hard/soft tab characters 
 " instead of replacement with spaces but leave as it is, that is 
@@ -41,10 +41,15 @@ if namedindent_override_with_local_expandtab != 0
     if namedindent_disable_expandtab != 0
       " expandtab got defined elsewhere, so we use hard tab, locally
       setlocal noexpandtab
+      echomsg "No nein Expandtabby..."
     else
       " noexpandtab got defined elsewhere, so we use hard tab, locally
+      echomsg "Expandtabby..."
       setlocal expandtab
     endif
 endif
+
+setlocal expandtab
+filetype plugin indent on
 
 setlocal completefunc=syntaxcomplete#Complete
