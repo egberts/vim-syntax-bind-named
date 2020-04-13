@@ -122,10 +122,12 @@ endif
 
 syn case match
 
-setlocal iskeyword=.,-,48-58,A-Z,a-z
+" iskeyword severly impacts '\<' and '\>' atoms
+setlocal iskeyword=.,-,48-58,A-Z,a-z,_
 setlocal isident=.,-,48-58,A-Z,a-z,_
 
-syn sync match namedSync grouphere NONE "^(zone|controls|acl|key)"
+" syn sync match namedSync grouphere NONE "^(zone|controls|acl|key)"
+syn sync fromstart
 
 let s:save_cpo = &cpoptions
 set cpoptions-=C
@@ -171,20 +173,53 @@ hi link namedHL_Base64      namedHL_Identifier "  RFC 3548
 
 " 'Vim-uncontained' statements are the ones used GLOBALLY
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" FIXED-LENGTH FIXED-CHARACTERS PATTERNS
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi link namedE_UnexpectedSemicolon namedHL_Error
+syn match namedE_UnexpectedSemicolon contained /;\+/ skipwhite skipempty
+
+hi link namedE_MissingSemicolon namedHL_Error
+syn match namedE_MissingSemicolon contained /[ \n\r]*\zs[^;]*/he=s+1|
+
+" Keep this 'uncontained' EOF search shallow and short
+hi link namedE_MissingLastSemicolon namedHL_Error
+syn match namedE_MissingLastSemicolon /[^; \n\r][ \n\r]\{0,10}\%$/rs=s,he=s+1 skipwhite skipnl skipempty
+
+hi link namedE_MissingLParen namedHL_Error
+syn match namedE_MissingLParen contained /[ \n\r#]*\zs[^\{]*/he=s+1|
+
+hi link namedE_UnexpectedRParen namedHL_Error
+syn match namedE_UnexpectedSemicolon contained /;\+/ skipwhite skipempty
+
+hi link namedSemicolon namedHL_Type
+" syn match namedSemicolon contained /\(;\+\s*\)\+/ skipwhite skipempty
+syn match namedSemicolon contained /;/ skipwhite skipempty
+
+hi link namedA_Semicolon namedHL_Type
+syn match namedA_Semicolon contained /;/ skipwhite skipempty
+
+
 
 hi link named_ToDo namedHL_ToDo
 syn keyword named_ToDo xxx contained XXX FIXME TODO TODO: FIXME:
 
-hi link named_Bind_Builtins namedHL_Builtin
-syn keyword named_Bind_Builtins contained skipwhite
+hi link namedComment namedHL_Comment
+syn match namedComment "//.*" contains=named_ToDo
+syn match namedComment "#.*" contains=named_ToDo
+syn region namedComment start="/\*" end="\*/" contains=named_ToDo
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" FIXED-LENGTH FIXED-CHARACTERS PATTERNS
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+
+hi link namedA_Bind_Builtins namedHL_Builtin
+syn keyword namedA_Bind_Builtins contained skipwhite skipempty
 \    any
 \    none
 \    localhost
 \    localnets
-\ nextgroup=namedSemicolon
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedA_Semicolon
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " FIXED-LENGTH VARIABLE-CHARACTERS PATTERNS
@@ -197,8 +232,6 @@ syn match named_AllowMaintainOff contained /\coff/ skipwhite nextgroup=namedSemi
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " VARIABLE-LENGTH FIXED-NONSPACE PATTERNS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-hi link namedSemicolon namedOK
-syn match namedSemicolon contained /\(;\+\s*\)\+/ skipwhite
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " VARIABLE-LENGTH VARIABLE-CHARACTERS PATTERNS
@@ -234,8 +267,8 @@ syn match named_E_Filespec_SC contained /[a-zA-Z\]\-\[0-9\._,:\/?<>|'"`~!@#$%\^&
 hi link namedNotSemicolon namedHL_Error
 syn match namedNotSemicolon contained /[^;]\+/he=e-1 skipwhite
 
-hi link namedError        namedHL_Error
-syn match namedError /[^;{#]$/
+" hi link namedError        namedHL_Error
+" syn match namedError /[^;{#]$/
 
 hi link namedNotNumber    namedHL_Error
 syn match namedNotNumber contained "[^  0-9;]\+"
@@ -367,9 +400,11 @@ hi link namedACLName namedHL_Identifier
 syn match namedACLName contained /[0-9a-zA-Z\-_\[\]\<\>]\{1,63}/ skipwhite
 
 hi link named_E_ACLName_SC namedHL_Identifier
-syn match named_E_ACLName_SC contained /[0-9a-zA-Z\-_\[\]\<\>]\{1,63}/
+syn match named_E_ACLName_SC contained /\<[0-9a-zA-Z\-_\[\]\<\>]\{1,63}\>/
 \ skipwhite
-\ nextgroup=namedSemicolon
+\ nextgroup=
+\    namedSemicolon,
+\    namedE_MissingSemicolon
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " REGEX PATTERNS
@@ -381,31 +416,42 @@ syn match namedOV_CZ_MasterName_SC contained /\<[0-9a-zA-Z\-_\.]\{1,63}/
 \ nextgroup=namedSemicolon
 \ containedin=namedOV_CZ_DefMasters_MML
 
-hi link named_IP6Addr namedHL_Number
-hi link named_IP6AddrPrefix namedHL_Number
+hi link namedA_ACL_Name namedHL_String
+syn match namedA_ACL_Name contained "\<\(\w\|\.\|\-\)\{1,63}\ze[^;]*" 
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_MissingSemicolon
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" IP patterns, 
+" organized by IP4 to IP6; global to specific subgroups
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 hi link named_IP4Addr namedHL_Number
 syn match named_IP4Addr contained /\<\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/
-\ containedin=
-\    namedOV_CZ_DefMasters_MML,
-\    namedElementAMLSection
 
 hi link named_IP4AddrPrefix namedHL_Number
 syn match named_IP4AddrPrefix contained /\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\/[0-9]\{1,3}/
-\ containedin=
-\    namedOV_CZ_DefMasters_MML,
-\    namedElementAMLSection
 
 hi link named_E_IP4Addr_SC namedHL_Number
 syn match named_E_IP4Addr_SC contained /\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/ nextgroup=namedSemicolon
-\ containedin=
-\    namedOV_CZ_DefMasters_MML,
-\    namedElementAMLSection
 hi link named_E_IP4AddrPrefix_SC namedHL_Number
 syn match named_E_IP4AddrPrefix_SC contained /\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\/[0-9]\{1,3}/ nextgroup=namedSemicolon
-\ containedin=
-\    namedOV_CZ_DefMasters_MML,
-\    namedElementAMLSection
+
+hi link namedA_IP4Addr_SC namedHL_Type
+syn match namedA_IP4Addr_SC contained /\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\ze[^;]*\ze[^;]*/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+
+hi link namedA_IP4AddrPrefix_SC namedHL_Number
+syn match namedA_IP4AddrPrefix_SC contained /\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\/[0-9]\{1,3}\ze[^;]*/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
 
 " named_IP6Addr  should match:
 "  IPv6 addresses
@@ -418,85 +464,303 @@ syn match named_E_IP4AddrPrefix_SC contained /\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[
 "
 " Full IPv6 (without the trailing '/') with trailing semicolon
 hi link named_E_IP6Addr_SC namedHL_Number
+
 syn match named_E_IP6Addr_SC contained /\%(\x\{1,4}:\)\{7,7}\x\{1,4}/ nextgroup=namedSemicolon
-\ containedin=namedElementAMLSection
+\ containedin=
+\    namedElementAMLSection,
+\    namedOV_ResponsePaddingSection
 " 1::                              1:2:3:4:5:6:7::
 syn match named_E_IP6Addr_SC contained /\%(\x\{1,4}:\)\{1,7}:/ nextgroup=namedSemicolon
+\ containedin=
+\    namedElementAMLSection,
+\    namedOV_ResponsePaddingSection
 " 1::8             1:2:3:4:5:6::8  1:2:3:4:5:6::8
 syn match named_E_IP6Addr_SC contained /\%(\x\{1,4}:\)\{1,6}:\x\{1,4}/ nextgroup=namedSemicolon
-\ containedin=namedElementAMLSection
+\ containedin=
+\    namedElementAMLSection,
+\    namedOV_ResponsePaddingSection
 " 1::7:8           1:2:3:4:5::7:8  1:2:3:4:5::8
 syn match named_E_IP6Addr_SC contained /\%(\x\{1,4}:\)\{1,5}\%(:\x\{1,4}\)\{1,2}/ nextgroup=namedSemicolon
+\ containedin=
+\    namedElementAMLSection,
+\    namedOV_ResponsePaddingSection
 " 1::6:7:8         1:2:3:4::6:7:8  1:2:3:4::8
 syn match named_E_IP6Addr_SC contained /\%(\x\{1,4}:\)\{1,4}\%(:\x\{1,4}\)\{1,3}/ nextgroup=namedSemicolon
-\ containedin=namedElementAMLSection
+\ containedin=
+\    namedElementAMLSection,
+\    namedOV_ResponsePaddingSection
 " 1::5:6:7:8       1:2:3::5:6:7:8  1:2:3::8
 syn match named_E_IP6Addr_SC contained /\%(\x\{1,4}:\)\{1,3}\%(:\x\{1,4}\)\{1,4}/ nextgroup=namedSemicolon
+\ containedin=
+\    namedElementAMLSection,
+\    namedOV_ResponsePaddingSection
 " 1::4:5:6:7:8     1:2::4:5:6:7:8  1:2::8
 syn match named_E_IP6Addr_SC contained /\%(\x\{1,4}:\)\{1,2}\%(:\x\{1,4}\)\{1,5}/ nextgroup=namedSemicolon
-\ containedin=namedElementAMLSection
+\ containedin=
+\    namedElementAMLSection,
+\    namedOV_ResponsePaddingSection
 " 1::3:4:5:6:7:8   1::3:4:5:6:7:8  1::8
 syn match named_E_IP6Addr_SC contained /\x\{1,4}:\%(\%(:\x\{1,4}\)\{1,6}\)/ nextgroup=namedSemicolon
+\ containedin=
+\    namedElementAMLSection,
+\    namedOV_ResponsePaddingSection
 " fe80::7:8%eth0   (link-local IPv6 addresses with zone index)
 syn match named_E_IP6Addr_SC contained /fe08%[a-zA-Z0-9\-_\.]\{1,64}/ nextgroup=namedSemicolon
-\ containedin=namedElementAMLSection
+\ containedin=
+\    namedElementAMLSection,
+\    namedOV_ResponsePaddingSection
 " fe80::7:8%1     (link-local IPv6 addresses with zone index)
 syn match named_E_IP6Addr_SC contained /fe08::[0-9a-fA-F]\{1,4}:[0-9a-fA-F]\{1,4}%[a-zA-Z0-9]\{1,64}/ nextgroup=namedSemicolon
+\ containedin=
+\    namedElementAMLSection,
+\    namedOV_ResponsePaddingSection
 " ::2:3:4:5:6:7:8  ::2:3:4:5:6:7:8 ::8       ::
 syn match named_E_IP6Addr_SC contained /::\x\{1,4}\%(:\x\{0,3}\)\{0,6}/ nextgroup=namedSemicolon
-\ containedin=namedElementAMLSection
+\ containedin=
+\    namedElementAMLSection,
+\    namedOV_ResponsePaddingSection
 " ::ffff:0:255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
 syn match named_E_IP6Addr_SC contained /::ffff:0\{1,4}:\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/ nextgroup=namedSemicolon
+\ containedin=
+\    namedElementAMLSection,
+\    namedOV_ResponsePaddingSection
 " ::ffff:255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
 syn match named_E_IP6Addr_SC contained /::ffff:\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/ nextgroup=namedSemicolon
-\ containedin=namedElementAMLSection
+\ containedin=namedElementAMLSection,
+\    namedOV_ResponsePaddingSection
 " 2001:db8:3:4::192.0.2.33  64:ff9b::192.0.2.33 (IPv4-Embedded IPv6 Address)
 syn match named_E_IP6Addr_SC contained /\x\{1,4}\%(:\x\{1,4}\)\{1,3}::[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}/ nextgroup=namedSemicolon
+\ containedin=
+\    namedElementAMLSection,
+\    namedOV_ResponsePaddingSection
 " ::255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
 syn match named_E_IP6Addr_SC contained /::\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/ nextgroup=namedSemicolon
-\ containedin=namedElementAMLSection
+\ containedin=
+\    namedElementAMLSection,
+\    namedOV_ResponsePaddingSection
+
+hi link namedA_IP6Addr_SC namedHL_Number
+syn match namedA_IP6Addr_SC contained /\%(\x\{1,4}:\)\{7,7}\x\{1,4}/ 
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" 1::                              1:2:3:4:5:6:7::
+syn match namedA_IP6Addr_SC contained /\%(\x\{1,4}:\)\{1,7}:/ 
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" 1::8             1:2:3:4:5:6::8  1:2:3:4:5:6::8
+syn match namedA_IP6Addr_SC contained /\%(\x\{1,4}:\)\{1,6}:\x\{1,4}/ 
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" 1::7:8           1:2:3:4:5::7:8  1:2:3:4:5::8
+syn match namedA_IP6Addr_SC contained /\%(\x\{1,4}:\)\{1,5}\%(:\x\{1,4}\)\{1,2}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" 1::6:7:8         1:2:3:4::6:7:8  1:2:3:4::8
+syn match namedA_IP6Addr_SC contained /\%(\x\{1,4}:\)\{1,4}\%(:\x\{1,4}\)\{1,3}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" 1::5:6:7:8       1:2:3::5:6:7:8  1:2:3::8
+syn match namedA_IP6Addr_SC contained /\%(\x\{1,4}:\)\{1,3}\%(:\x\{1,4}\)\{1,4}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" 1::4:5:6:7:8     1:2::4:5:6:7:8  1:2::8
+syn match namedA_IP6Addr_SC contained /\%(\x\{1,4}:\)\{1,2}\%(:\x\{1,4}\)\{1,5}/ 
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" 1::3:4:5:6:7:8   1::3:4:5:6:7:8  1::8
+syn match namedA_IP6Addr_SC contained /\x\{1,4}:\%(\%(:\x\{1,4}\)\{1,6}\)/ 
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" fe80::7:8%eth0   (link-local IPv6 addresses with zone index)
+syn match namedA_IP6Addr_SC contained /fe08%[a-zA-Z0-9\-_\.]\{1,64}/ 
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" fe80::7:8%1     (link-local IPv6 addresses with zone index)
+syn match namedA_IP6Addr_SC contained /fe08::[0-9a-fA-F]\{1,4}:[0-9a-fA-F]\{1,4}%[a-zA-Z0-9]\{1,64}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" ::2:3:4:5:6:7:8  ::2:3:4:5:6:7:8 ::8       ::
+syn match namedA_IP6Addr_SC contained /::\x\{1,4}\%(:\x\{0,3}\)\{0,6}/ 
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" ::ffff:0:255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
+syn match namedA_IP6Addr_SC contained /::ffff:0\{1,4}:\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" ::ffff:255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
+syn match namedA_IP6Addr_SC contained /::ffff:\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" 2001:db8:3:4::192.0.2.33  64:ff9b::192.0.2.33 (IPv4-Embedded IPv6 Address)
+syn match namedA_IP6Addr_SC contained /\x\{1,4}\%(:\x\{1,4}\)\{1,3}::[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" ::255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
+syn match namedA_IP6Addr_SC contained /::\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/ 
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+
 
 " Full IPv6 with Prefix with trailing semicolon
 hi link named_E_IP6AddrPrefix_SC namedHL_Number
 syn match named_E_IP6AddrPrefix_SC /\%(\x\{1,4}:\)\{7,7}\x\{1,4}\/[0-9]\{1,3}/ contained nextgroup=namedSemicolon
-\ containedin=namedElementAMLSection
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    named_A_AML_Nested_Semicolon,
+\    named_E_MissingSemicolon
 " 1::                              1:2:3:4:5:6:7::
 syn match named_E_IP6AddrPrefix_SC /\%(\x\{1,4}:\)\{1,7}:\/[0-9]\{1,3}/ contained nextgroup=namedSemicolon
 " 1::8             1:2:3:4:5:6::8  1:2:3:4:5:6::8
 syn match named_E_IP6AddrPrefix_SC /\%(\x\{1,4}:\)\{1,6}:\x\{1,4}\/[0-9]\{1,3}/ contained nextgroup=namedSemicolon
-\ containedin=namedElementAMLSection
 " 1::7:8           1:2:3:4:5::7:8  1:2:3:4:5::8
 syn match named_E_IP6AddrPrefix_SC /\%(\x\{1,4}:\)\{1,5}\%(:\x\{1,4}\)\{1,2}\/[0-9]\{1,3}/ contained nextgroup=namedSemicolon
 " 1::6:7:8         1:2:3:4::6:7:8  1:2:3:4::8
 syn match named_E_IP6AddrPrefix_SC contained /\%(\x\{1,4}:\)\{1,4}\%(:\x\{1,4}\)\{1,3}\/[0-9]\{1,3}/ nextgroup=namedSemicolon
-\ containedin=namedElementAMLSection
 " 1::5:6:7:8       1:2:3::5:6:7:8  1:2:3::8
 syn match named_E_IP6AddrPrefix_SC contained /\%(\x\{1,4}:\)\{1,3}\%(:\x\{1,4}\)\{1,4}\/[0-9]\{1,3}/ nextgroup=namedSemicolon
 " 1::4:5:6:7:8     1:2::4:5:6:7:8  1:2::8
 syn match named_E_IP6AddrPrefix_SC contained /\%(\x\{1,4}:\)\{1,2}\%(:\x\{1,4}\)\{1,5}\/[0-9]\{1,3}/ nextgroup=namedSemicolon
-\ containedin=namedElementAMLSection
 " 1::3:4:5:6:7:8   1::3:4:5:6:7:8  1::8
 syn match named_E_IP6AddrPrefix_SC contained /\x\{1,4}:\%(\%(:\x\{1,4}\)\{1,6}\)\/[0-9]\{1,3}/ nextgroup=namedSemicolon
 " fe80::7:8%eth0   (link-local IPv6 addresses with zone index)
 syn match named_E_IP6AddrPrefix_SC contained /fe80\/[0-9]\{1,3}%[a-zA-Z0-9\-_\.]\{1,64}/ nextgroup=namedSemicolon
-\ containedin=namedElementAMLSection
 " fe80::7:8%1     (link-local IPv6 addresses with zone index)
 syn match named_E_IP6AddrPrefix_SC contained /fe08::[0-9a-fA-F]\{1,4}:[0-9a-fA-F]\{1,4}\/[0-9]\{1,3}%[a-zA-Z0-9]\{1,64}/ nextgroup=namedSemicolon
 " ::2:3:4:5:6:7:8  ::2:3:4:5:6:7:8 ::8       ::
 syn match named_E_IP6AddrPrefix_SC contained /::\x\{1,4}\%(:\x\{0,3}\)\{0,6}\/[0-9]\{1,3}/ nextgroup=namedSemicolon
-\ containedin=namedElementAMLSection
 " ::ffff:0:255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
 syn match named_E_IP6AddrPrefix_SC contained /::ffff:0\{1,4}:\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\/[0-9]\{1,3}/ nextgroup=namedSemicolon
 " ::ffff:255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
 syn match named_E_IP6AddrPrefix_SC contained /::ffff:\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\/[0-9]\{1,3}/ nextgroup=namedSemicolon
-\ containedin=namedElementAMLSection
 " 2001:db8:3:4::192.0.2.33  64:ff9b::192.0.2.33 (IPv4-Embedded IPv6 Address)
 syn match named_E_IP6AddrPrefix_SC contained /\x\{1,4}\%(:\x\{1,4}\)\{1,3}::[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}\/[0-9]\{1,3}/ nextgroup=namedSemicolon
 " ::255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
 syn match named_E_IP6AddrPrefix_SC contained /::\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\/[0-9]\{1,3}/ nextgroup=namedSemicolon
-\ containedin=namedElementAMLSection
 
+" Full IPv6 with Prefix with trailing semicolon (used by AML only)
+hi link namedA_IP6AddrPrefix_SC namedHL_Number
+syn match namedA_IP6AddrPrefix_SC contained /\%(\x\{1,4}:\)\{7,7}\x\{1,4}\/[0-9]\{1,3}/ 
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" 1::                              1:2:3:4:5:6:7::
+syn match namedA_IP6AddrPrefix_SC contained /\%(\x\{1,4}:\)\{1,7}:\/[0-9]\{1,3}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" 1::8             1:2:3:4:5:6::8  1:2:3:4:5:6::8
+syn match namedA_IP6AddrPrefix_SC contained /\%(\x\{1,4}:\)\{1,6}:\x\{1,4}\/[0-9]\{1,3}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" 1::7:8           1:2:3:4:5::7:8  1:2:3:4:5::8
+syn match namedA_IP6AddrPrefix_SC contained /\%(\x\{1,4}:\)\{1,5}\%(:\x\{1,4}\)\{1,2}\/[0-9]\{1,3}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" 1::6:7:8         1:2:3:4::6:7:8  1:2:3:4::8
+syn match namedA_IP6AddrPrefix_SC contained /\%(\x\{1,4}:\)\{1,4}\%(:\x\{1,4}\)\{1,3}\/[0-9]\{1,3}/ 
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" 1::5:6:7:8       1:2:3::5:6:7:8  1:2:3::8
+syn match namedA_IP6AddrPrefix_SC contained /\%(\x\{1,4}:\)\{1,3}\%(:\x\{1,4}\)\{1,4}\/[0-9]\{1,3}/ 
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" 1::4:5:6:7:8     1:2::4:5:6:7:8  1:2::8
+syn match namedA_IP6AddrPrefix_SC contained /\%(\x\{1,4}:\)\{1,2}\%(:\x\{1,4}\)\{1,5}\/[0-9]\{1,3}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" 1::3:4:5:6:7:8   1::3:4:5:6:7:8  1::8
+syn match namedA_IP6AddrPrefix_SC contained /\x\{1,4}:\%(\%(:\x\{1,4}\)\{1,6}\)\/[0-9]\{1,3}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" fe80::7:8%eth0   (link-local IPv6 addresses with zone index)
+syn match namedA_IP6AddrPrefix_SC contained /fe80\/[0-9]\{1,3}%[a-zA-Z0-9\-_\.]\{1,64}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" fe80::7:8%1     (link-local IPv6 addresses with zone index)
+syn match namedA_IP6AddrPrefix_SC contained /fe08::[0-9a-fA-F]\{1,4}:[0-9a-fA-F]\{1,4}\/[0-9]\{1,3}%[a-zA-Z0-9]\{1,64}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" ::2:3:4:5:6:7:8  ::2:3:4:5:6:7:8 ::8       ::
+syn match namedA_IP6AddrPrefix_SC contained /::\x\{1,4}\%(:\x\{0,3}\)\{0,6}\/[0-9]\{1,3}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" ::ffff:0:255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
+syn match namedA_IP6AddrPrefix_SC contained /::ffff:0\{1,4}:\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\/[0-9]\{1,3}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" ::ffff:255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
+syn match namedA_IP6AddrPrefix_SC contained /::ffff:\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\/[0-9]\{1,3}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" 2001:db8:3:4::192.0.2.33  64:ff9b::192.0.2.33 (IPv4-Embedded IPv6 Address)
+syn match namedA_IP6AddrPrefix_SC contained /\x\{1,4}\%(:\x\{1,4}\)\{1,3}::[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}\/[0-9]\{1,3}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+" ::255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
+syn match namedA_IP6AddrPrefix_SC contained /::\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\/[0-9]\{1,3}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_Missing_Semicolon
+"
 " Full IPv6 with Prefix (without semicolon)
+hi link named_IP6AddrPrefix namedHL_Number
 syn match named_IP6AddrPrefix contained /\%(\x\{1,4}:\)\{7,7}\x\{1,4}\/[0-9]\{1,3}/ 
 " 1::                              1:2:3:4:5:6:7::
 syn match named_IP6AddrPrefix contained /\%(\x\{1,4}:\)\{1,7}:\/[0-9]\{1,3}/ 
@@ -528,6 +792,7 @@ syn match named_IP6AddrPrefix contained /\x\{1,4}\%(:\x\{1,4}\)\{1,3}::[0-9]\{1,
 syn match named_IP6AddrPrefix contained /::\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\/[0-9]\{1,3}/
 
 " Full IPv6 (without the trailing '/') (without semicolon)
+hi link named_IP6Addr namedHL_Number
 syn match named_IP6Addr /\%(\x\{1,4}:\)\{7,7}\x\{1,4}/ contained
 " 1::                              1:2:3:4:5:6:7::
 syn match named_IP6Addr /\%(\x\{1,4}:\)\{1,7}:/ contained
@@ -694,11 +959,6 @@ syn match named_E_SuffixDomain_SC contained /\<[0-9A-Za-z\._\-]{1,1023}[A-Za-z\.
 " Nesting of PATTERNS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-hi link namedComment namedHL_Comment
-syn match namedComment "//.*" contains=named_ToDo
-syn match namedComment "#.*" contains=named_ToDo
-syn region namedComment start="/\*" end="\*/" contains=named_ToDo
-
 hi link namedInclude namedHL_Include
 syn match namedInclude /\_s*include/ 
 \ nextgroup=named_E_Filespec_SC
@@ -733,46 +993,6 @@ syn match named_DefaultUnlimited_SC contained skipwhite /\cdefault/
 \ nextgroup=namedSemicolon
 
 
-syn region named_E_IP4Addr_SCList contained start=+{+ end=+}\s*;+he=e-1
-\ contains=named_E_IP4Addr_SC,namedIPerror,namedParenError,namedComment
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" BIND builtins
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Add AML clusters for AML Element
-"
-" AML Section/Elements
-syn region namedElementAMLSection contained start=+{+ end=+;+ skipwhite skipempty
-\ contains=
-\    namedInclude,
-\    namedComment,
-\    named_E_IP6AddrPrefix_SC,
-\    named_E_IP6Addr_SC,
-\    named_E_IP4AddrPrefix_SC,
-\    named_E_IP4Addr_SC,
-\    named_Bind_Builtins,
-\    named_E_ACLName_SC  " TODO find a way to show Builtins before ACLName
-\ nextgroup=
-\    namedSemicolon,
-\    namedParenError
-
-syn region named_E_AMLSection_SC contained start=/{/ end=/}/ skipwhite skipempty
-\ contains=
-\    named_AML_Not_Operator,
-\    named_E_IP6AddrPrefix_SC,
-\    named_E_IP6Addr_SC,
-\    named_E_IP4AddrPrefix_SC,
-\    named_E_IP4Addr_SC,
-\    named_E_ACLName_SC,
-\    named_Bind_Builtins,
-\    namedParenError,
-\    namedInclude,
-\    namedComment 
-\ nextgroup=namedSemicolon
-
-syn match named_E_AMLSection_Not_SC contained /!/ skipwhite skipempty
-\ nextgroup=named_E_AMLSection_SC,named_AMLSection_SC
-
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within 'acl' statement
 "
@@ -783,48 +1003,95 @@ syn match named_E_AMLSection_Not_SC contained /!/ skipwhite skipempty
 "
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-hi link named_AML_Not_Operator namedHL_Operator
-syn match named_ACL_Not_Operator contained /!/ skipwhite
+hi link namedA_AML_Nested_Semicolon namedHL_Normal
+syn match namedA_AML_Nested_Semicolon contained /;/ skipwhite skipempty 
 \ nextgroup=
-\    named_AML_Not_Operator,
-\    namedElementAMLSection,
-\    named_E_IP6AddrPrefix_SC,
-\    named_E_IP6Addr_SC,
-\    named_E_IP4AddrPrefix_SC,
-\    named_E_IP4Addr_SC,
-\    named_E_ACLName_SC,
-\    named_Bind_Builtins
+\    namedA_AML_Recursive,
+\    namedA_AML_Nested_Not_Operator,
+\    namedA_AML_Nested_Semicolon
+
+hi link namedA_AML_Not_Operator namedHL_Operator
+syn match namedA_AML_Not_Operator contained /!/ skipwhite skipempty
+\ nextgroup=
+\    namedA_AML,
+\    namedE_UnexpectedSemicolon,
+\    namedE_MissingLParen,
+\    namedE_UnexpectedRParen
+
+hi link namedA_AML_Nested_Not_Operator namedHL_Operator
+syn match namedA_AML_Nested_Not_Operator contained /!/ skipwhite skipempty
+\ nextgroup=
+\    namedInclude,
+\    namedComment,
+\    namedA_AML_Recursive,
+\    namedA_IP4Addr_SC,
+\    namedA_IP4AddrPrefix_SC,
+\    namedA_IP6Addr_SC,
+\    namedA_IP6AddrPrefix_SC,
+\    namedA_Bind_Builtins,
+\    namedA_ACL_Name,
+\    namedE_UnexpectedSemicolon,
+\    namedE_MissingLParen,
+\    namedE_UnexpectedRParen
+" \    named_E_IP4AddrPrefix_SC,
+
+
+" Keep keepend/extend on AML_Recursive!!!
+syn region namedA_AML_Recursive contained start=+{+ end=+}+ keepend extend
+\ skipnl skipwhite skipempty
+\ contains=
+\    namedA_AML_Recursive,
+\    namedInclude,
+\    namedComment,
+\    namedA_IP4Addr_SC,
+\    namedA_IP4AddrPrefix_SC,
+\    namedA_IP6Addr_SC,
+\    namedA_Bind_Builtins,
+\    namedA_ACL_Name,
+\    namedA_AML_Nested_Semicolon,
+\    namedA_AML_Nested_Not_Operator
+\ nextgroup=
+\    namedA_AML_Nested_Semicolon,
+\    namedE_MissingSemicolon
 \ containedin=
-\    namedStmtACLSection,
-\    namedElementAMLSection,
-\    named_E_AMLSection_SC
+\    namedA_AML_Recursive,
 
-hi link namedStmtACL_Not_Operator namedHL_Operator
-syn match namedStmtACL_Not_Operator contained /!/ skipwhite
-\ nextgroup=
-\    named_AML_Not_Operator,
-\    namedElementAMLSection,
-\    named_E_IP6AddrPrefix_SC,
-\    named_E_IP6Addr_SC,
-\    named_E_IP4AddrPrefix_SC,
-\    named_E_IP4Addr_SC,
-\    named_E_ACLName_SC,
-\    named_Bind_Builtins
+" \    named_E_IP6AddrPrefix_SC,
+" \    named_E_IP4AddrPrefix_SC,
 
-hi link namedStmtACLIdent namedHL_Identifier
-syn match namedStmtACLIdent contained /[0-9a-zA-Z\-_\[\]\<\>]\{1,63}/ 
+" acl <acl_name> { ... } ;
+syn region namedA_AML contained start=+{+ end=+}+  
 \ skipwhite skipnl skipempty
+\ contains=
+\    namedInclude,
+\    namedComment,
+\    namedA_IP4Addr_SC,
+\    namedA_IP4AddrPrefix_SC,
+\    namedA_IP6Addr_SC,
+\    namedA_Bind_Builtins,
+\    namedA_ACL_Name,
+\    namedA_AML_Nested_Semicolon,
+\    namedA_AML_Nested_Not_Operator
 \ nextgroup=
-\    namedStmtACL_Not_Operator,
-\    namedElementAMLSection,
-\    named_E_IP6AddrPrefix_SC,
-\    named_E_IP6Addr_SC,
-\    named_E_IP4AddrPrefix_SC,
-\    named_E_IP4Addr_SC,
-\    named_E_ACLName_SC,
-\    named_Bind_Builtins
+\    namedA_Semicolon,
+\    namedE_MissingSemicolon
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" \ contains=
+" \    named_E_IP6AddrPrefix_SC,
+" \    named_E_IP4AddrPrefix_SC,
+
+" acl <acl_name> { ... } 
+hi link namedA_ACLIdentifier  namedHL_Identifier
+syn match namedA_ACLIdentifier contained /\<[0-9a-zA-Z\-_]\{1,63}\>/ 
+\ skipwhite skipempty
+\ nextgroup=
+\    namedA_AML,
+\    namedA_AML_Not_Operator,
+\    namedE_UnexpectedSemicolon,
+\    namedE_UnexpectedRParen,
+\    namedE_MissingLParen
+
+
 " Syntaxes that are found only within 'controls' statement
 "
 " controls { inet ( * | <ip46_addr> ) 
@@ -842,6 +1109,8 @@ syn match namedStmtACLIdent contained /[0-9a-zA-Z\-_\[\]\<\>]\{1,63}/
 "          };
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Identifiers
+
+hi link namedC_InetOptACLName namedHL_Identifier
 syn match namedC_InetOptACLName contained /[0-9a-zA-Z\-_\[\]\<\>]\{1,63}/ 
 \ skipwhite skipnl skipempty
 \ contains=namedACLName
@@ -874,17 +1143,17 @@ syn match namedC_UnixOptKeysElement /[a-zA-Z0-9_\-\.]\+/
 \    namedC_UnixOptKeysSection
 
 syn region namedC_UnixOptKeysSection start=+{+ end=+}+
-\ contained skipwhite
+\ contained skipwhite skipempty skipnl
 \ contains=namedC_UnixOptKeysElement
 \ nextgroup=
 \    namedC_OptReadonlyKeyword,
 \    namedSemicolon
 
 hi link namedC_UnixOptKeysKeyword namedHL_Option
-syn match namedC_UnixOptKeysKeyword /keys/ contained skipwhite
+syn match namedC_UnixOptKeysKeyword /keys/ contained skipwhite skipempty skipnl
 \ nextgroup=namedC_UnixOptKeysSection
 
-syn match namedC_UnixOptGroupInteger /\d\+/ contained skipwhite
+syn match namedC_UnixOptGroupInteger /\d\+/ contained skipwhite skipempty skipnl
 \ contains=named_Number_GID
 \ nextgroup=
 \     namedC_OptReadonlyKeyword,
@@ -893,23 +1162,23 @@ syn match namedC_UnixOptGroupInteger /\d\+/ contained skipwhite
 \     namedError
 
 hi link namedC_UnixOptGroupKeyword namedHL_Option
-syn match namedC_UnixOptGroupKeyword /group/ contained skipwhite
+syn match namedC_UnixOptGroupKeyword /group/ contained skipwhite skipempty skipnl
 \ nextgroup=namedC_UnixOptGroupInteger,namedError
 
-syn match namedC_UnixOptOwnerInteger /\d\+/ contained skipwhite
+syn match namedC_UnixOptOwnerInteger /\d\+/ contained skipwhite skipempty skipnl
 \ contains=namedUserID
 \ nextgroup=namedC_UnixOptGroupKeyword,namedError
 
 hi link namedC_UnixOptOwnerKeyword namedHL_Option
-syn match namedC_UnixOptOwnerKeyword /owner/ contained skipwhite
+syn match namedC_UnixOptOwnerKeyword /owner/ contained skipwhite skipempty skipnl
 \ nextgroup=namedC_UnixOptOwnerInteger,namedError
 
-syn match namedC_UnixOptPermInteger /\d\+/ contained skipwhite
+syn match namedC_UnixOptPermInteger /\d\+/ contained skipwhite skipempty skipnl
 \ contains=namedFilePerm
 \ nextgroup=namedC_UnixOptOwnerKeyword,namedError
 
 hi link namedC_UnixOptPermKeyword namedHL_Option
-syn match namedC_UnixOptPermKeyword /perm/ contained skipwhite
+syn match namedC_UnixOptPermKeyword /perm/ contained skipwhite skipempty skipnl
 \ nextgroup=namedC_UnixOptPermInteger,namedError
 
 syn match namedC_UnixOptSocketName contained /[a-zA-Z\]\-\[0-9\._,:\/?<>|'"`~!@#$%\^&*\\(\\)+]\{1,1024}/
@@ -1022,7 +1291,7 @@ syn match namedC_ClauseInet contained /inet/
 \    namedC_InetOptIPaddrWild,
 \    namedC_InetOptIPaddr
 
-syn region namedStmtControlsSection contained start=+{+ end=+}+
+syn region namedStmt_ControlsSection contained start=+{+ end=+}+
 \ skipwhite skipempty skipnl
 \ contains=
 \    namedC_ClauseInet,
@@ -1125,17 +1394,19 @@ syn match namedK_E_SecretValue contained /["'0-9A-Za-z\+\=\/]\{1,4098}\s*;/
 \ nextgroup=namedSemicolon,namedError
 
 hi link namedK_E_SecretKeyword namedHL_Option
-syn match namedK_E_SecretKeyword /secret/ contained skipwhite
+syn match namedK_E_SecretKeyword contained /\<secret\>/ skipwhite skipempty
 \ nextgroup=namedK_E_SecretValue,namedError
+\ containedin=namedStmtKeySection
 
 syn match namedK_E_AlgorithmName contained /[a-zA-Z0-9\-_\.]\{1,128}\s*;/he=e-1
-\ skipwhite
+\ skipwhite skipnl skipempty
 \ contains=namedKeyAlgorithmName
 \ nextgroup=namedK_E_SecretKeyword,namedError
 
 hi link namedK_E_AlgorithmKeyword namedHL_Option
-syn match namedK_E_AlgorithmKeyword contained skipwhite /algorithm/
+syn match namedK_E_AlgorithmKeyword contained /\<algorithm\>/ skipwhite skipempty
 \ nextgroup=namedK_E_AlgorithmName,namedError
+\ containedin=namedStmtKeySection
 
 syn region namedStmtKeySection start=+{+ end=+}+
 \ contained skipwhite skipempty
@@ -1146,7 +1417,8 @@ syn region namedStmtKeySection start=+{+ end=+}+
 \    namedNotSemicolon
 
 hi link namedStmtKeyIdent namedHL_Identifier
-syn match namedStmtKeyIdent contained skipwhite /[a-zA-Z0-9_\-]\{1,63}/
+syn match namedStmtKeyIdent contained /[a-zA-Z0-9_\-]\{1,63}/
+\ skipwhite skipnl skipempty
 \ nextgroup=namedStmtKeySection,namedNotParem,namedError
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1617,8 +1889,12 @@ syn keyword namedO_AMLSection contained skipwhite
 \    blackhole
 \    listen-on
 \    listen-on-v6
-\ nextgroup=named_E_AMLSection_SC,namedInclude,namedComment
-\ containedin=namedStmt_OptionsSection
+\ nextgroup=
+\    namedA_AML,
+\    namedInclude,
+\    namedComment
+\ containedin=
+\    namedStmt_OptionsSection
 
 hi link namedO_CheckNamesType namedHL_Builtin
 syn match namedO_CheckNamesType contained /primary/ skipwhite
@@ -1752,13 +2028,13 @@ syn match namedO_DnstapOutputFilespec contained /'[ a-zA-Z\]\-\[0-9\._,:;\/?<>|"
 syn match namedO_DnstapOutputFilespec contained /"[ a-zA-Z\]\-\[0-9\._,:;\/?<>|'`~!@#$%\^&*\\(\\)+{}]\{1,1024}"/hs=s+1,he=e-1 skipwhite skipempty skipnl nextgroup=namedO_DnstapOutputSection
 
 hi link namedO_DnstapOutputType namedHL_Type
-syn keyword namedO_DnstapOutputType contained skipwhite
+syn keyword namedO_DnstapOutputType contained skipwhite skipempty
 \    file
 \    unix
 \ nextgroup=namedO_DnstapOutputFilespec
 
 hi link namedO_DnstapOutputKeyword namedHL_Option
-syn keyword namedO_DnstapOutputKeyword contained dnstap-output skipwhite
+syn keyword namedO_DnstapOutputKeyword contained dnstap-output skipwhite skipempty
 \ nextgroup=namedO_DnstapOutputType,namedO_DnstapOutputFilespec
 \ containedin=namedStmt_OptionsSection
 
@@ -1809,14 +2085,12 @@ syn keyword namedO_Number_Group contained
 \    fstrm-set-output-notify-threshold
 \    fstrm-set-output-queue-size
 \    fstrm-set-reopen-interval
-\    max-cache-size
 \    max-rsa-exponent-size
 \    nocookie-udp-size
 \    notify-rate
 \    recursive-clients
 \    reserved-sockets
 \    serial-query-rate
-\    stacksize
 \    startup-notify-rate
 \    tcp-advertised-timeout
 \    tcp-clients
@@ -1841,18 +2115,20 @@ syn keyword namedO_Ixfr_From_Diff_Opts contained
 \ skipwhite
 \ nextgroup=namedSemicolon
 
+" ixfr-from-differences is different in View/Zone sections
 hi link namedO_Ixfr_From_Diff namedHL_Option
 syn keyword namedO_Ixfr_From_Diff contained ixfr-from-differences skipwhite
 \ nextgroup=namedO_Ixfr_From_Diff_Opts
 \ containedin=namedStmt_OptionsSection
 
 hi link namedO_KeepResponseOrder namedHL_Option
-syn keyword namedO_KeepResponseOrder contained keep-response-order skipwhite
-\ nextgroup=named_E_AMLSection_SC
+syn keyword namedO_KeepResponseOrder contained skipwhite skipempty
+\     keep-response-order 
+\ nextgroup=namedA_AML
 \ containedin=namedStmt_OptionsSection
 
-hi link namedO_KeepResponseOrder namedHL_Option
-syn keyword namedO_KeepResponseOrder contained skipwhite
+hi link namedO_RecursingFile namedHL_Option
+syn keyword namedO_RecursingFile contained skipwhite
 \    recursing-file
 \ nextgroup=named_E_Filespec_SC
 \ containedin=namedStmt_OptionsSection
@@ -1898,59 +2174,37 @@ syn keyword namedO_SessionKeyfile contained session-keyfile skipwhite
 " syn keyword namedO_Keywords filter-aaaa-on-v6
 " syn keyword namedO_Keywords host-statistics
 " syn keyword namedO_Keywords host-statistics-max
-" syn keyword namedO_Keywords listen-on-v6
 " syn keyword namedO_Keywords lock-file
-" syn keyword namedO_Keywords max-cache-size
-" syn keyword namedO_Keywords max-rsa-exponent-size
-" syn keyword namedO_Keywords max-transfer-idle-in
-" syn keyword namedO_Keywords max-transfer-idle-out
-" syn keyword namedO_Keywords max-transfer-time-in
-" syn keyword namedO_Keywords max-transfer-time-out
-" syn keyword namedO_Keywords max-zone-ttl
 " syn keyword namedO_Keywords min-roots
-" syn keyword namedO_Keywords minimal-responses
 " syn keyword namedO_Keywords multiple-cnames
 " syn keyword namedO_Keywords mult-master
 " syn keyword namedO_Keywords nosit-udp-size
 " syn keyword namedO_Keywords notify
-" syn keyword namedO_Keywords notify-delay
-" syn keyword namedO_Keywords provide-ixfr
 " syn keyword namedO_Keywords queryport-port-ports
 " syn keyword namedO_Keywords queryport-port-updateinterval
 " syn keyword namedO_Keywords querylog
-" syn keyword namedO_Keywords random-device
-" syn keyword namedO_Keywords recursing-file
 " syn keyword namedO_Keywords request-nsid
 " syn keyword namedO_Keywords request-sit
 " syn keyword namedO_Keywords response-policy
 " syn keyword namedO_Keywords rfc2308-type1
 " syn keyword namedO_Keywords rrset-order
-" syn keyword namedO_Keywords secroots-file
-" syn keyword namedO_Keywords serial-query-rate
 " syn keyword namedO_Keywords sit-secret
 " syn keyword namedO_Keywords sortlist
-" syn keyword namedO_Keywords statistics-file
 " syn keyword namedO_Keywords statistics-interval
 " syn keyword namedO_Keywords support-ixfr
 " syn keyword namedO_Keywords suppress-initial-notify
-" syn keyword namedO_Keywords tcp-clients
-" syn keyword namedO_Keywords tcp-listen-queue
 " syn keyword namedO_Keywords tkey-dhkey
 " syn keyword namedO_Keywords tkey-domain
 " syn keyword namedO_Keywords tkey-gssapi-credential
 " syn keyword namedO_Keywords tkey-gssapi-keytab
 " syn keyword namedO_Keywords transfers
 " syn keyword namedO_Keywords transfers-format
-" syn keyword namedO_Keywords transfers-in
-" syn keyword namedO_Keywords transfers-out
-" syn keyword namedO_Keywords transfers-per-ns
 " syn keyword namedO_Keywords transfers-source
 " syn keyword namedO_Keywords transfers-source-v6
 " syn keyword namedO_Keywords trusted-anchor-telemetry
 " syn keyword namedO_Keywords use-v4-udp-ports
 " syn keyword namedO_Keywords use-v6-udp-ports
 " syn keyword namedO_Keywords version
-" syn keyword namedO_Keywords zero-no-soa-ttl
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within 'plugin' statement
@@ -1958,13 +2212,13 @@ syn keyword namedO_SessionKeyfile contained session-keyfile skipwhite
 
 hi link namedP_Parameter namedHL_String
 syn match namedP_Parameter contained skipwhite
-\ /"[ a-zA-Z\]\-\[0-9\._,:;\/?<>|'`~!@#$%\^&*\\(\\)=+\{\}]\{1,1024}"/hs=s+1,he=e-1
+\ /"[ a-zA-Z\]\-\[0-9\._,:;\\/?<>|'`~!@#$%\^&*\\(\\)=+\{\}]\{1,1024}"/hs=s+1,he=e-1
 \ containedin=namedP_ParametersSection
 syn match namedP_Parameter contained 
-\ /'[ a-zA-Z\]\-\[0-9\._,:;\/?<>|"`~!@#$%\^&*\\(\\)=+\{\}]\{1,1024}'/hs=s+1,he=e-1
+\ /'[ a-zA-Z\]\-\[0-9\._,:;\\/?<>|"`~!@#$%\^&*\\(\\)=+\{\}]\{1,1024}'/hs=s+1,he=e-1
 \ containedin=namedP_ParametersSection
 syn match namedP_Parameter contained 
-\ /[ a-zA-Z\]\-\[0-9\._,:;\/?<>|"`~!@#$%\^&*\\(\\)=+]\{1,1024}/
+\ /[ a-zA-Z\]\-\[0-9\._,:;\\/?<>|"`~!@#$%\^&*\\(\\)=+]\{1,1024}/
 \ containedin=namedP_ParametersSection
 
 syn region namedP_ParametersSection start=+{+ end=+}+ contained 
@@ -1973,17 +2227,17 @@ syn region namedP_ParametersSection start=+{+ end=+}+ contained
 hi link namedP_Filespec namedHL_Identifier
 hi link namedP_Filespec namedHL_String
 syn match namedP_Filespec contained skipwhite skipempty skipnl
-\ /'[ a-zA-Z\]\-\[0-9\._,:;\/?<>|"`~!@#$%\^&*\\(\\)+{}]\{1,1024}'/hs=s+1,he=e-1
+\ /'[ a-zA-Z\]\-\[0-9\._,:;\\/?<>|"`~!@#$%\^&*\\(\\)+{}]\{1,1024}'/hs=s+1,he=e-1
 \ nextgroup=namedP_ParametersSection
 syn match namedP_Filespec contained skipwhite skipempty skipnl
-\ /"[ a-zA-Z\]\-\[0-9\._,:;\/?<>|'`~!@#$%\^&*\\(\\)+{}]\{1,1024}"/hs=s+1,he=e-1
+\ /"[ a-zA-Z\]\-\[0-9\._,:;\\/?<>|'`~!@#$%\^&*\\(\\)+{}]\{1,1024}"/hs=s+1,he=e-1
 \ nextgroup=namedP_ParametersSection
 syn match namedP_Filespec contained skipwhite skipempty skipnl
-\ /[a-zA-Z\]\-\[0-9\._,:\/?<>|'"`~!@#$%\^&*\\(\\)+]\{1,1024}/ 
+\ /[a-zA-Z\]\-\[0-9\._,:\\/?<>|'"`~!@#$%\^&*\\(\\)+]\{1,1024}/ 
 \ nextgroup=namedP_ParametersSection
 
-hi link namedStmt_PluginQueryKeyword namedHL_Option
-syn keyword namedStmt_PluginQueryKeyword contained query skipwhite
+hi link namedStmt_Plugin_QueryKeyword namedHL_Option
+syn keyword namedStmt_Plugin_QueryKeyword contained query skipwhite
 \ nextgroup=namedP_Filespec
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1994,7 +2248,6 @@ hi link namedS_Bool_Group namedHL_Option
 syn keyword namedS_Bool_Group contained
 \   bogus
 \   edns
-\   provide-ixfr
 \   request-nsid
 \   tcp-keepalive
 \   tcp-only
@@ -2038,10 +2291,6 @@ syn keyword namedV_MinuteGroup contained
 \ nextgroup=namedTypeMinutes,namedComment,namedError
 \ containedin=namedStmt_ViewSection skipwhite
 
-" List of Port numbers
-
-" view statement - 'check_options': warn/fail/ignore operators
-" view statement - Filespec (directory, filename)
 hi link namedV_FilespecGroup namedHL_Option
 syn keyword namedV_FilespecGroup contained
 \    cache-file
@@ -2049,23 +2298,12 @@ syn keyword namedV_FilespecGroup contained
 \    nextgroup=named_String_QuoteForced,namedNotString
 \    containedin=namedStmt_ViewSection skipwhite
 
-" view statement - SizeSpec options
-hi link namedV_SizeSpec_Group namedHL_Statement
-syn keyword namedV_SizeSpec_Group contained 
-\    max-cache-size
-\ nextgroup=named_SizeSpec,namedComment,namedError
-\ containedin=namedStmt_ViewSection skipwhite
-
-
-" view statement - AML
 syn keyword namedV_Keywords contained skipwhite
 \    match-clients
 \    match-destinations
 \ nextgroup=named_E_AMLSection_SC,namedError
 \ containedin=namedStmt_ViewSection
 
-" TODO: Old days, keys ere defined inside views
-" I can't remember if keyname or key section came first
 hi link namedV_Key namedHL_Option
 syn  keyword namedV_Key  contained key skipwhite
 \ nextgroup=namedStmtKeyIdent,namedStmtKeySection
@@ -2077,34 +2315,21 @@ syn  keyword namedV_Boolean_Group  contained skipwhite
 \ nextgroup=@namedClusterBoolean
 \ containedin=namedStmt_ViewSection
 
-
-
 " syn keyword namedV_Keywords class
 " syn keyword namedV_Keywords filter-aaaa
 " syn keyword namedV_Keywords filter-aaaa-on-v4
 " syn keyword namedV_Keywords filter-aaaa-on-v6
-" syn keyword namedV_Keywords match-clients
-" syn keyword namedV_Keywords match-destination
-" syn keyword namedV_Keywords max-transfer-idle-in
-" syn keyword namedV_Keywords max-transfer-idle-out
-" syn keyword namedV_Keywords max-transfer-time-in
-" syn keyword namedV_Keywords max-transfer-time-out
-" syn keyword namedV_Keywords max-zone-ttl
 " syn keyword namedV_Keywords min-roots
-" syn keyword namedV_Keywords minimal-responses
 " syn keyword namedV_Keywords multiple-cnames
 " syn keyword namedV_Keywords mult-master
 " syn keyword namedV_Keywords nosit-udp-size
 " syn keyword namedV_Keywords notify
-" syn keyword namedV_Keywords notify-delay
-" syn keyword namedV_Keywords provide-ixfr
 " syn keyword namedV_Keywords queryport-port-ports
 " syn keyword namedV_Keywords queryport-port-updateinterval
 " syn keyword namedV_Keywords request-nsid
 " syn keyword namedV_Keywords request-sit
 " syn keyword namedV_Keywords response-policy
 " syn keyword namedV_Keywords rfc2308-type1
-" syn keyword namedV_Keywords session-keyname
 " syn keyword namedV_Keywords sortlist
 " syn keyword namedV_Keywords support-ixfr
 " syn keyword namedV_Keywords suppress-initial-notify
@@ -2112,7 +2337,6 @@ syn  keyword namedV_Boolean_Group  contained skipwhite
 " syn keyword namedV_Keywords transfers-format
 " syn keyword namedV_Keywords transfers-source
 " syn keyword namedV_Keywords transfers-source-v6
-" syn keyword namedV_Keywords zero-no-soa-ttl
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within 'zone' statement
@@ -2166,13 +2390,14 @@ syn keyword namedZ_Database contained database skipwhite
 \ containedin=namedStmt_ZoneSection
 
 hi link namedZ_ServerAddresses namedHL_Option
-syn keyword namedZ_ServerAddresses contained server-addresses skipwhite
-\ nextgroup=named_E_AMLSection_SC
+syn keyword namedZ_ServerAddresses contained skipwhite
+\    server-addresses
+\ nextgroup=namedA_AML
 \ containedin=namedStmt_ZoneSection
 
 hi link namedZ_ServerNames namedHL_Option
 syn keyword namedZ_ServerNames contained server-names skipwhite
-\ nextgroup=named_E_AMLSection_SC
+\ nextgroup=namedA_AML
 \ containedin=namedStmt_ZoneSection
 
 hi link namedZ_ZoneTypes namedHL_Builtin
@@ -2195,39 +2420,25 @@ syn keyword namedZ_ZoneType contained type skipwhite
 \ nextgroup=namedZ_ZoneTypes
 \ containedin=namedStmt_ZoneSection
 
-" syn keyword namedStmtZoneKeywords class
-" syn keyword namedStmtZoneKeywords client-per-query
-" syn keyword namedStmtZoneKeywords database
-" syn keyword namedStmtZoneKeywords inline-signing
-" syn keyword namedStmtZoneKeywords max-transfer-idle-in
-" syn keyword namedStmtZoneKeywords max-transfer-idle-out
-" syn keyword namedStmtZoneKeywords max-transfer-time-in
-" syn keyword namedStmtZoneKeywords max-transfer-time-out
-" syn keyword namedStmtZoneKeywords max-zone-ttl
-" syn keyword namedStmtZoneKeywords mult-master
-" syn keyword namedStmtZoneKeywords notify
-" syn keyword namedStmtZoneKeywords notify-delay
-" syn keyword namedStmtZoneKeywords rrset-order
-" syn keyword namedStmtZoneKeywords server-addresses
-" syn keyword namedStmtZoneKeywords server-names
-" syn keyword namedStmtZoneKeywords transfers-source
-" syn keyword namedStmtZoneKeywords transfers-source-v6
-" syn keyword namedStmtZoneKeywords type
-" syn keyword namedStmtZoneKeywords update-policy
-" syn keyword namedStmtZoneKeywords zero-no-soa-ttl
+" syn keyword namedZ_Keywords class
+" syn keyword namedZ_Keywords client-per-query
+" syn keyword namedZ_Keywords database
+" syn keyword namedZ_Keywords mult-master
+" syn keyword namedZ_Keywords notify
+" syn keyword namedZ_Keywords rrset-order
+" syn keyword namedZ_Keywords transfers-source
+" syn keyword namedZ_Keywords transfers-source-v6
+" syn keyword namedZ_Keywords type
+" syn keyword namedZ_Keywords update-policy
 
 " syn keyword namedO_KeywordsObsoleted acache-cleaning-interval
 " syn keyword namedO_KeywordsObsoleted acache-enable
 " syn keyword namedO_KeywordsObsoleted additional-from-auth
 " syn keyword namedO_KeywordsObsoleted additional-from-cache
-" syn keyword namedO_KeywordsObsoleted alt-transfer-source
-" syn keyword namedO_KeywordsObsoleted alt-transfer-source-v6
 " syn keyword namedO_KeywordsObsoleted fake-iquery
-" syn keyword namedO_KeywordsObsoleted fetch-glue
 " syn keyword namedO_KeywordsObsoleted has-old-clients
 " syn keyword namedO_KeywordsObsoleted maintain-ixfr-base
 " syn keyword namedO_KeywordsObsoleted max-acache-size
-" syn keyword namedO_KeywordsObsoleted named-xfer
 " syn keyword namedO_KeywordsObsoleted serial-queries
 " syn keyword namedO_KeywordsObsoleted treat-cr-as-space
 " syn keyword namedO_KeywordsObsoleted use-ixfr
@@ -2236,26 +2447,20 @@ syn keyword namedZ_ZoneType contained type skipwhite
 
 " syn keyword namedStmtServerKeywordsObsoleted edns-udp-size
 " syn keyword namedStmtServerKeywordsObsoleted keys
-" syn keyword namedStmtServerKeywordsObsoleted provide-ixfr
 " syn keyword namedStmtServerKeywordsObsoleted transfers
 " syn keyword namedStmtServerKeywordsObsoleted transfers-format
 " syn keyword namedStmtServerKeywordsObsoleted transfers-source
 " syn keyword namedStmtServerKeywordsObsoleted transfers-source-v6
 
-" syn keyword namedV_KeywordsObsoleted alt-transfer-source
-" syn keyword namedV_KeywordsObsoleted alt-transfer-source-v6
-" syn keyword namedV_KeywordsObsoleted fetch-glue
 " syn keyword namedV_KeywordsObsoleted maintain-ixfr-base
 " syn keyword namedV_KeywordsObsoleted max-acache-size
 " syn keyword namedV_KeywordsObsoleted use-queryport-pool
 " syn keyword namedV_KeywordsObsoleted use-queryport-updateinterval
 
-" syn keyword namedStmtZoneKeywordsObsoleted alt-transfer-source
-" syn keyword namedStmtZoneKeywordsObsoleted alt-transfer-source-v6
-" syn keyword namedStmtZoneKeywordsObsoleted ixfr-base
-" syn keyword namedStmtZoneKeywordsObsoleted maintain-ixfr-base
-" syn keyword namedStmtZoneKeywordsObsoleted pubkey
-" syn keyword namedStmtZoneKeywordsObsoleted use-id-pool
+" syn keyword namedZ_KeywordsObsoleted ixfr-base
+" syn keyword namedZ_KeywordsObsoleted maintain-ixfr-base
+" syn keyword namedZ_KeywordsObsoleted pubkey
+" syn keyword namedZ_KeywordsObsoleted use-id-pool
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "  Both 'options' and 'servers' only.
@@ -2613,18 +2818,40 @@ syn keyword namedOV_Filespec contained
 \    namedStmt_OptionsSection,
 \    namedStmt_ViewSection
 
+" allow-query-cache { <address_match_list>; };
+" allow-query-cache-on { <address_match_list>; };
+" allow-recursion { <address_match_list>; };
+" allow-recursion-on { <address_match_list>; };
+
+hi link namedOV_IP4Addr namedHL_Number
+syn match namedOV_IP4Addr contained /\<\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/
+
+syn region namedOV_AML_Section contained start=+{+ end=+}+
+\ skipwhite skipempty
+\ contains=
+\    namedOV_IP4Addr_SC
+\ nextgroup=
+\    namedSemicolon,
+\    namedParenError
+\ containedin=
+\    namedElementAMLSection,
+
 hi link namedOV_AML_Group namedHL_Option
-syn keyword namedOV_AML_Group contained
+syn keyword namedOV_AML_Group contained skipwhite skipempty
 \    allow-query-cache
 \    allow-query-cache-on
 \    allow-recursion
 \    allow-recursion-on
 \    no-case-compress
-\ skipwhite
-\ nextgroup=named_E_AMLSection_SC
 \ containedin=
 \    namedStmt_OptionsSection,
 \    namedStmt_ViewSection
+\ nextgroup=
+\    namedA_AML,
+\    namedA_AML_Not_Operator,
+\    namedE_UnexpectedSemicolon,
+\    namedE_UnexpectedRParen,
+\    namedE_MissingLParen
 
 hi link namedOV_AttachCache namedHL_Option
 syn keyword namedOV_AttachCache contained attach-cache skipwhite
@@ -2643,7 +2870,6 @@ syn keyword namedOV_Number_Group contained
 \    max-stale-ttl
 \    stale-answer-ttl
 \    v6-bias
-\    zero-no-soa-ttl-cache
 \ skipwhite
 \ nextgroup=named_Number_SC
 \ containedin=
@@ -3315,8 +3541,8 @@ syn region namedOV_RateLimit_ExemptClientsSection contained start=/{/ end=/}/ sk
 \    named_E_IP6Addr_SC,
 \    named_E_IP4AddrPrefix_SC,
 \    named_E_IP4Addr_SC,
-\    named_E_ACLName_SC,
 \    named_Bind_Builtins,
+\    named_E_ACLName_SC,
 \    namedParenError,
 \    namedInclude,
 \    namedComment 
@@ -3405,6 +3631,45 @@ syn region namedOV_RateLimitSection contained start=+{+ end=+}+
 hi link namedOV_RateLimit namedHL_Option
 syn keyword namedOV_RateLimit contained rate-limit skipwhite skipempty
 \ nextgroup=namedOV_RateLimitSection
+\ containedin=
+\    namedStmt_OptionsSection,
+\    namedStmt_ViewSection
+
+hi link namedOV_ResponsePadding_BlockSize namedHL_Option
+syn match namedOV_ResponsePadding_BlockSize contained skipwhite
+\    /block\-size/
+\ nextgroup=named_Number_SC
+
+hi link namedOV_ResponsePadding_Not_Operator namedHL_Operator
+syn match namedOV_ResponsePadding_Not_Operator contained skipwhite
+\    /!/
+\ nextgroup=
+\    named_E_IP6AddrPrefix_SC,
+\    named_E_IP6Addr_SC,
+\    named_E_IP4AddrPrefix_SC,
+\    named_E_IP4Addr_SC,
+\    named_Bind_Builtins,
+\    namedSemicolon
+
+syn region namedOV_ResponsePaddingSection contained start=/{/ end=/}/ 
+\ skipwhite skipempty
+\ contains=
+\    namedOV_ResponsePadding_Not_Operator,
+\    named_E_IP6AddrPrefix_SC,
+\    named_E_IP6Addr_SC,
+\    named_E_IP4AddrPrefix_SC,
+\    named_E_IP4Addr_SC,
+\    named_Bind_Builtins
+\ nextgroup=
+\     namedSemicolon,
+\     namedOV_ResponsePadding_BlockSize
+
+
+
+
+hi link namedOV_ResponsePadding namedHL_Option
+syn keyword namedOV_ResponsePadding contained response-padding skipwhite
+\ nextgroup=namedOV_ResponsePaddingSection
 \ containedin=
 \    namedStmt_OptionsSection,
 \    namedStmt_ViewSection
@@ -3564,20 +3829,23 @@ syn match namedOVZ_AML_Not_Operator contained /!/ skipwhite
 
 
 hi link namedOVZ_AML_Group namedHL_Option
-syn keyword namedOVZ_AML_Group contained skipwhite skipnl skipempty
+syn keyword namedOVZ_AML_Group contained skipwhite skipempty
 \    allow-notify
 \    allow-query
 \    allow-query-on
 \    allow-transfer
 \    allow-update
 \    allow-update-forwarding
-\ nextgroup=
-\    named_E_AMLSection_SC,
-\    namedOVZ_AML_Not_Operator
 \ containedin=
 \    namedStmt_OptionsSection,
 \    namedStmt_ViewSection,
 \    namedStmt_ZoneSection
+\ nextgroup=
+\    namedA_AML,
+\    namedA_AML_Not_Operator,
+\    namedE_UnexpectedSemicolon,
+\    namedE_UnexpectedRParen,
+\    namedE_MissingLParen
 
 
 hi link namedOVZ_Number_Max28days namedHL_Option
@@ -4572,11 +4840,13 @@ syn match namedStmt_ZoneNameIdentifier contained /\S\+/
 " 'uncontained' statements are the ones used GLOBALLY
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 hi link namedStmtKeyword namedHL_Statement
-syn match namedStmtKeyword /\_^\s*\<acl\>/ skipempty skipnl skipwhite
-\ nextgroup=namedStmtACLIdent
+syn match namedStmtKeyword /\_^\s*\<acl\>/ skipwhite skipempty
+\ nextgroup=
+\    namedA_ACLIdentifier,
+" \    namedE_UnexpectedSemicolon
 
 syn match namedStmtKeyword /\_^\s*\<controls\>/ skipempty skipnl skipwhite
-\ nextgroup=namedStmtControlsSection
+\ nextgroup=namedStmt_ControlsSection
 
 syn match namedStmtKeyword /\_^\s*\<dlz\>/ skipempty skipnl skipwhite
 \ nextgroup=namedStmt_DlzName_Identifier
@@ -4609,8 +4879,8 @@ syn match namedStmtKeyword /\_^\s*\<options\>/ skipempty skipwhite
 
 syn match namedStmtKeyword /\_^\s*\<plugin\>/ skipempty skipwhite
 \ nextgroup=
-\    namedStmt_PluginQueryKeyword,
-\    namedStmt_PluginFilespec,
+\    namedStmt_Plugin_QueryKeyword,
+\    namedP_Filespec,
 
 syn match  namedStmtKeyword /\_^\s*\<server\>/ skipempty skipwhite
 \ nextgroup=namedStmt_ServerNameIdentifier,namedComment 
@@ -4619,7 +4889,7 @@ syn match  namedStmtKeyword /\_^\s*\<server\>/ skipempty skipwhite
 syn match namedStmtKeyword /\_^\s*\<statistics-channels\>/ skipempty skipwhite
 \ nextgroup=namedIntIdent 
 
-syn match namedStmtKeyword /\_^\s*\<trusted-keys\>/ skipempty skipwhite
+syn match namedStmtKeyword /\_^\s*\<trusted-keys\>/ skipempty skipwhite skipnl
 \ nextgroup=namedIntSection 
 
 " view <namedStmt_ViewNameIdentifier> { ... };  
