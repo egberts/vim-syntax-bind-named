@@ -468,76 +468,61 @@ hi link named_E_IP6Addr_SC namedHL_Number
 syn match named_E_IP6Addr_SC contained /\%(\x\{1,4}:\)\{7,7}\x\{1,4}/ nextgroup=namedSemicolon
 \ containedin=
 \    namedElementAMLSection,
-\    namedOV_ResponsePaddingSection
 " 1::                              1:2:3:4:5:6:7::
 syn match named_E_IP6Addr_SC contained /\%(\x\{1,4}:\)\{1,7}:/ nextgroup=namedSemicolon
 \ containedin=
 \    namedElementAMLSection,
-\    namedOV_ResponsePaddingSection
 " 1::8             1:2:3:4:5:6::8  1:2:3:4:5:6::8
 syn match named_E_IP6Addr_SC contained /\%(\x\{1,4}:\)\{1,6}:\x\{1,4}/ nextgroup=namedSemicolon
 \ containedin=
 \    namedElementAMLSection,
-\    namedOV_ResponsePaddingSection
 " 1::7:8           1:2:3:4:5::7:8  1:2:3:4:5::8
 syn match named_E_IP6Addr_SC contained /\%(\x\{1,4}:\)\{1,5}\%(:\x\{1,4}\)\{1,2}/ nextgroup=namedSemicolon
 \ containedin=
 \    namedElementAMLSection,
-\    namedOV_ResponsePaddingSection
 " 1::6:7:8         1:2:3:4::6:7:8  1:2:3:4::8
 syn match named_E_IP6Addr_SC contained /\%(\x\{1,4}:\)\{1,4}\%(:\x\{1,4}\)\{1,3}/ nextgroup=namedSemicolon
 \ containedin=
 \    namedElementAMLSection,
-\    namedOV_ResponsePaddingSection
 " 1::5:6:7:8       1:2:3::5:6:7:8  1:2:3::8
 syn match named_E_IP6Addr_SC contained /\%(\x\{1,4}:\)\{1,3}\%(:\x\{1,4}\)\{1,4}/ nextgroup=namedSemicolon
 \ containedin=
 \    namedElementAMLSection,
-\    namedOV_ResponsePaddingSection
 " 1::4:5:6:7:8     1:2::4:5:6:7:8  1:2::8
 syn match named_E_IP6Addr_SC contained /\%(\x\{1,4}:\)\{1,2}\%(:\x\{1,4}\)\{1,5}/ nextgroup=namedSemicolon
 \ containedin=
 \    namedElementAMLSection,
-\    namedOV_ResponsePaddingSection
 " 1::3:4:5:6:7:8   1::3:4:5:6:7:8  1::8
 syn match named_E_IP6Addr_SC contained /\x\{1,4}:\%(\%(:\x\{1,4}\)\{1,6}\)/ nextgroup=namedSemicolon
 \ containedin=
 \    namedElementAMLSection,
-\    namedOV_ResponsePaddingSection
 " fe80::7:8%eth0   (link-local IPv6 addresses with zone index)
 syn match named_E_IP6Addr_SC contained /fe08%[a-zA-Z0-9\-_\.]\{1,64}/ nextgroup=namedSemicolon
 \ containedin=
 \    namedElementAMLSection,
-\    namedOV_ResponsePaddingSection
 " fe80::7:8%1     (link-local IPv6 addresses with zone index)
 syn match named_E_IP6Addr_SC contained /fe08::[0-9a-fA-F]\{1,4}:[0-9a-fA-F]\{1,4}%[a-zA-Z0-9]\{1,64}/ nextgroup=namedSemicolon
 \ containedin=
 \    namedElementAMLSection,
-\    namedOV_ResponsePaddingSection
 " ::2:3:4:5:6:7:8  ::2:3:4:5:6:7:8 ::8       ::
 syn match named_E_IP6Addr_SC contained /::\x\{1,4}\%(:\x\{0,3}\)\{0,6}/ nextgroup=namedSemicolon
 \ containedin=
 \    namedElementAMLSection,
-\    namedOV_ResponsePaddingSection
 " ::ffff:0:255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
 syn match named_E_IP6Addr_SC contained /::ffff:0\{1,4}:\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/ nextgroup=namedSemicolon
 \ containedin=
 \    namedElementAMLSection,
-\    namedOV_ResponsePaddingSection
 " ::ffff:255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
 syn match named_E_IP6Addr_SC contained /::ffff:\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/ nextgroup=namedSemicolon
 \ containedin=namedElementAMLSection,
-\    namedOV_ResponsePaddingSection
 " 2001:db8:3:4::192.0.2.33  64:ff9b::192.0.2.33 (IPv4-Embedded IPv6 Address)
 syn match named_E_IP6Addr_SC contained /\x\{1,4}\%(:\x\{1,4}\)\{1,3}::[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}\.[0-9]\{1,3}/ nextgroup=namedSemicolon
 \ containedin=
 \    namedElementAMLSection,
-\    namedOV_ResponsePaddingSection
 " ::255.255.255.255 (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
 syn match named_E_IP6Addr_SC contained /::\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/ nextgroup=namedSemicolon
 \ containedin=
 \    namedElementAMLSection,
-\    namedOV_ResponsePaddingSection
 
 hi link namedA_IP6Addr_SC namedHL_Number
 syn match namedA_IP6Addr_SC contained /\%(\x\{1,4}:\)\{7,7}\x\{1,4}/ 
@@ -888,7 +873,7 @@ hi link namedZoneName namedHL_Identifier
 syn match namedZoneName contained /[a-zA-Z0-9]\{1,64}/ skipwhite
 
 hi link namedElementZoneName namedHL_Identifier
-syn match namedElementZoneName contained /[a-zA-Z0-9]\{1,63}\s*;/he=e-1 skipwhite
+syn match namedElementZoneName contained /[a-zA-Z0-9]\{1,63}\s\{1,63};/he=e-1 skipwhite
 
 hi link namedDlzName namedHL_Identifier
 syn match namedDlzName contained /[a-zA-Z0-9_\.\-]\{1,63}/ skipwhite
@@ -2916,6 +2901,7 @@ syn keyword namedOV_DnssecLookasideKeyword contained
 
 hi link namedOV_Boolean_Group namedHL_Option
 syn keyword namedOV_Boolean_Group contained
+\ skipwhite skipnl skipempty
 \    allow-new-zones
 \    auth-nxdomain 
 \    dnsrps-enable
@@ -2933,9 +2919,6 @@ syn keyword namedOV_Boolean_Group contained
 \    synth-from-dnssec
 \    trust-anchor-telemetry
 \ nextgroup=@namedClusterBoolean_SC
-\ skipwhite
-\ containedin=
-\    namedStmt_ViewSection 
 
 hi link namedOV_Filespec namedHL_Option
 syn keyword namedOV_Filespec contained
@@ -2992,12 +2975,12 @@ syn keyword namedOV_Number_Group contained
 \    max-stale-ttl
 \    stale-answer-ttl
 \    v6-bias
-\ skipwhite
+\ skipwhite skipnl skipempty
 \ nextgroup=named_Number_SC
 
 hi link namedOV_DnsrpsElement namedHL_String
 syn region namedOV_DnsrpsElement start=/"/hs=s+1 skip=/\\"/ end=/"/he=e-1 contained
-\ skipwhite
+\ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
 \ containedin=namedOV_DnsrpsOptionsSection
 
@@ -3007,13 +2990,13 @@ syn region namedOV_DnsrpsElement start=/'/hs=s+1 skip=/\\'/ end=/'/he=e-1 contai
 \ containedin=namedOV_DnsrpsOptionsSection
 
 syn region namedOV_DnsrpsOptionsSection contained start=+{+ end=+}+
-\ skipwhite skipempty
+\ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon,namedNotSemicolon
 
 hi link namedOV_DnsrpsOptions namedHL_Option
 syn keyword namedOV_DnsrpsOptions contained
 \    dnsrps-options
-\ skipwhite
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedOV_DnsrpsOptionsSection
 
@@ -3713,13 +3696,13 @@ syn keyword namedOV_RateLimit contained rate-limit skipwhite skipempty
 \ nextgroup=namedOV_RateLimitSection
 
 hi link namedOV_ResponsePadding_BlockSize namedHL_Option
-syn match namedOV_ResponsePadding_BlockSize contained skipwhite
-\    /block\-size/
+syn match namedOV_ResponsePadding_BlockSize contained /\<block\-size\>/
+\ skipwhite skipnl skipempty
 \ nextgroup=named_Number_SC
 
 hi link namedOV_ResponsePadding_Not_Operator namedHL_Operator
-syn match namedOV_ResponsePadding_Not_Operator contained skipwhite
-\    /!/
+syn match namedOV_ResponsePadding_Not_Operator contained /!/
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    named_E_IP6AddrPrefix_SC,
 \    named_E_IP6Addr_SC,
@@ -3729,7 +3712,7 @@ syn match namedOV_ResponsePadding_Not_Operator contained skipwhite
 \    namedSemicolon
 
 syn region namedOV_ResponsePaddingSection contained start=/{/ end=/}/ 
-\ skipwhite skipempty
+\ skipwhite skipnl skipempty
 \ contains=
 \    namedOV_ResponsePadding_Not_Operator,
 \    named_E_IP6AddrPrefix_SC,
@@ -3742,9 +3725,445 @@ syn region namedOV_ResponsePaddingSection contained start=/{/ end=/}/
 \     namedOV_ResponsePadding_BlockSize
 
 hi link namedOV_ResponsePadding namedHL_Option
-syn keyword namedOV_ResponsePadding contained response-padding skipwhite
+syn keyword namedOV_ResponsePadding contained response-padding 
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedOV_ResponsePaddingSection
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""
+" response-policy is now namedOV_RP_*
+"""""""""""""""""""""""""""""""""""""""""""""""""""
+hi link namedOV_RP_Dnsrps_Element namedHL_String
+syn region namedOV_RP_Dnsrps_Element start=/"/hs=s+1 skip=/\\"/ end=/"/he=e-1 contained
+\ skipwhite skipnl skipempty
+\ nextgroup=namedSemicolon
+\ containedin=namedOV_RP_Dnsrps_Section
+
+syn region namedOV_RP_Dnsrps_Element start=/'/hs=s+1 skip=/\\'/ end=/'/he=e-1 contained
+\ skipwhite
+\ nextgroup=namedSemicolon
+\ containedin=namedOV_RP_Dnsrps_Section
+
+syn region namedOV_RP_Dnsrps_Section contained start=+{+ end=+}+
+\ skipwhite skipnl skipempty
+\ nextgroup=namedSemicolon,namedNotSemicolon
+
+hi link namedOV_RP_DnsrpsOption namedHL_Option
+syn keyword namedOV_RP_DnsrpsOption contained
+\    dnsrps-options
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOV_RP_Dnsrps_Section
+
+hi link namedOV_RP_DnsrpsEnable namedHL_Builtin
+syn match namedOV_RP_DnsrpsEnable /\i\{1,16}/
+\ contains=namedTypeBool
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOV_RP_BreakDnssec,
+\    namedOV_RP_MaxPolicyTtl,
+\    namedOV_RP_MinUpdateInterval,
+\    namedOV_RP_MinNs,
+\    namedOV_RP_NsipWait,
+\    namedOV_RP_QnameWait,
+\    namedOV_RP_RecursiveOnly,
+\    namedOV_RP_NsipEnable,
+\    namedOV_RP_RecursiveOnly,
+\    namedOV_RP_Nsip,
+\    namedOV_RP_Dnsrps,
+\    namedOV_RP_DnsrpsOption,
+\    namedSemicolon
+
+hi link namedOV_RP_Dnsrps namedHL_Option
+syn keyword namedOV_RP_Dnsrps contained dnsrps-enable
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOV_RP_DnsrpsEnable
+
+hi link namedOV_RP_NsdnameEnable namedHL_Builtin
+syn match namedOV_RP_NsdnameEnable /\i\{1,16}/
+\ contains=namedTypeBool
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOV_RP_BreakDnssec,
+\    namedOV_RP_MaxPolicyTtl,
+\    namedOV_RP_MinUpdateInterval,
+\    namedOV_RP_MinNs,
+\    namedOV_RP_NsipWait,
+\    namedOV_RP_QnameWait,
+\    namedOV_RP_RecursiveOnly,
+\    namedOV_RP_NsipEnable,
+\    namedOV_RP_RecursiveOnly,
+\    namedOV_RP_Nsip,
+\    namedOV_RP_Dnsrps,
+\    namedOV_RP_DnsrpsOption,
+\    namedSemicolon
+
+hi link namedOV_RP_Nsdname namedHL_Option
+syn keyword namedOV_RP_Nsdname contained nsdname-enable
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOV_RP_NsdnameEnable
+
+hi link namedOV_RP_NsipEnable namedHL_Builtin
+syn match namedOV_RP_NsipEnable /\i\{1,16}/
+\ contains=namedTypeBool
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOV_RP_BreakDnssec,
+\    namedOV_RP_MaxPolicyTtl,
+\    namedOV_RP_MinUpdateInterval,
+\    namedOV_RP_MinNs,
+\    namedOV_RP_NsipWait,
+\    namedOV_RP_QnameWait,
+\    namedOV_RP_RecursiveOnly,
+\    namedOV_RP_NsipEnable,
+\    namedOV_RP_RecursiveOnly,
+\    namedOV_RP_Nsdname,
+\    namedOV_RP_Dnsrps,
+\    namedOV_RP_DnsrpsOption,
+\    namedSemicolon
+
+hi link namedOV_RP_Nsip namedHL_Option
+syn keyword namedOV_RP_Nsip contained nsip-enable
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOV_RP_NsipEnable
+
+hi link namedOV_RP_RecursiveOnly namedHL_Builtin
+syn match namedOV_RP_RecursiveOnly contained /\i\{1,16}/
+\ skipwhite skipnl skipempty
+\ contains=namedTypeBool
+\ nextgroup=
+\    namedOV_RPZone_Section,
+\    namedOV_RP_BreakDnssec,
+\    namedOV_RP_MaxPolicy,
+\    namedOV_RP_MinUpdate,
+\    namedOV_RP_MinNs,
+\    namedOV_RP_NsipWait,
+\    namedOV_RP_QnameWait,
+\    namedOV_RP_Nsip,
+\    namedOV_RP_Nsdname,
+\    namedSemicolon
+
+hi link namedOV_RP_Recursive namedHL_Option
+syn keyword namedOV_RP_Recursive contained recursive-only 
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOV_RP_RecursiveOnly
+
+hi link namedOV_RP_QnameWaitRecurse namedHL_Number
+syn match namedOV_RP_QnameWaitRecurse contained /\i\{1,11}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOV_RPZone_Section,
+\    namedOV_RP_BreakDnssec,
+\    namedOV_RP_MaxPolicy,
+\    namedOV_RP_MinNs,
+\    namedOV_RP_MinUpdate,
+\    namedOV_RP_NsipWait,
+\    namedOV_RP_Recursive,
+\    namedOV_RP_Nsip,
+\    namedOV_RP_Nsdname,
+\    namedSemicolon
+
+hi link namedOV_RP_QnameWait namedHL_Option
+syn keyword namedOV_RP_QnameWait contained qname-wait-recurse
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOV_RP_QnameWaitRecurse
+
+hi link namedOV_RP_NsipWaitRecurse namedHL_Number
+syn match namedOV_RP_NsipWaitRecurse contained /\i\{1,11}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOV_RPZone_Section,
+\    namedOV_RP_BreakDnssec,
+\    namedOV_RP_MaxPolicy,
+\    namedOV_RP_MinNs,
+\    namedOV_RP_MinUpdate,
+\    namedOV_RP_QnameWait,
+\    namedOV_RP_Recursive,
+\    namedOV_RP_Nsip,
+\    namedOV_RP_Nsdname,
+\    namedSemicolon
+
+hi link namedOV_RP_NsipWait namedHL_Option
+syn keyword namedOV_RP_NsipWait contained nsip-wait-recurse
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOV_RP_NsipWaitRecurse
+
+hi link namedOV_RP_MinNsDots namedHL_Number
+syn match namedOV_RP_MinNsDots contained /\i\{1,11}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOV_RPZone_Section,
+\    namedOV_RP_BreakDnssec,
+\    namedOV_RP_MaxPolicy,
+\    namedOV_RP_MinNs,
+\    namedOV_RP_MinUpdate,
+\    namedOV_RP_NsipWait,
+\    namedOV_RP_QnameWait,
+\    namedOV_RP_Recursive,
+\    namedOV_RP_Nsip,
+\    namedOV_RP_Nsdname,
+\    namedSemicolon
+
+hi link namedOV_RP_MinNs namedHL_Option
+syn keyword namedOV_RP_MinNs contained min-ns-dots
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOV_RP_MinNsDots
+
+hi link namedOV_RP_MinUpdateInterval namedHL_Number
+syn match namedOV_RP_MinUpdateInterval contained /\d\{1,11}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOV_RPZone_Section,
+\    namedOV_RP_BreakDnssec,
+\    namedOV_RP_MaxPolicy,
+\    namedOV_RP_MinNs,
+\    namedOV_RP_NsipWait,
+\    namedOV_RP_QnameWait,
+\    namedOV_RP_Recursive,
+\    namedOV_RP_Nsip,
+\    namedOV_RP_Nsdname,
+\    namedSemicolon
+
+hi link namedOV_RP_MinUpdate namedHL_Option
+syn keyword namedOV_RP_MinUpdate contained min-update-interval
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOV_RP_MinUpdateInterval
+
+hi link namedOV_RP_MaxPolicyTtl namedHL_Number
+syn match namedOV_RP_MaxPolicyTtl contained /\d\{1,10}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOV_RPZone_Section,
+\    namedOV_RP_BreakDnssec,
+\    namedOV_RP_MinUpdate,
+\    namedOV_RP_MinNs,
+\    namedOV_RP_NsipWait,
+\    namedOV_RP_QnameWait,
+\    namedOV_RP_Recursive,
+\    namedOV_RP_Nsip,
+\    namedOV_RP_Nsdname,
+\    namedSemicolon
+
+hi link namedOV_RP_MaxPolicy namedHL_Option
+syn keyword namedOV_RP_MaxPolicy contained max-policy
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOV_RP_MaxPolicyTtl
+
+syn match namedOV_RP_BreakDnssecBool contained /\i\{1,16}/
+\ skipwhite skipnl skipempty
+\ contains=namedTypeBool
+\ nextgroup=
+\    namedOV_RPZone_Section,
+\    namedOV_RP_MaxPolicy,
+\    namedOV_RP_MinUpdate,
+\    namedOV_RP_MinNs,
+\    namedOV_RP_NsipWait,
+\    namedOV_RP_QnameWait,
+\    namedOV_RP_Recursive,
+\    namedOV_RP_Nsip,
+\    namedOV_RP_Nsdname,
+\    namedSemicolon
+
+hi link namedOV_RP_BreakDnssec namedHL_Option
+syn keyword namedOV_RP_BreakDnssec contained break-dnssec
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOV_RP_BreakDnssecBool
+
+"""""""""
+" namedOV_RPZone_* is within each response-policy's zone section
+"""""""""
+syn match namedOV_RPZone_NsdnameBool contained
+\    /\i\{1,16}/
+\ skipwhite skipnl skipempty
+\ contains=namedTypeBool
+\ nextgroup=
+\    namedOV_RPZone_Log,
+\    namedOV_RPZone_MaxTtl,
+\    namedOV_RPZone_MinUpdate,
+\    namedOV_RPZone_Policy,
+\    namedOV_RPZone_Recursive,
+\    namedOV_RPZone_Nsip,
+\    namedSemicolon
+
+hi link namedOV_RPZone_Nsdname namedHL_Clause
+syn keyword namedOV_RPZone_Nsdname contained
+\    nsdname-enable
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOV_RPZone_NsdnameBool
+
+syn match namedOV_RPZone_NsipBool contained
+\    /\i\{1,16}/
+\ skipwhite skipnl skipempty
+\ contains=namedTypeBool
+\ nextgroup=
+\    namedOV_RPZone_Log,
+\    namedOV_RPZone_MaxTtl,
+\    namedOV_RPZone_MinUpdate,
+\    namedOV_RPZone_Policy,
+\    namedOV_RPZone_Recursive,
+\    namedOV_RPZone_Nsdname,
+\    namedSemicolon
+
+hi link namedOV_RPZone_Recursive namedHL_Clause
+
+hi link namedOV_RPZone_Nsip namedHL_Clause
+syn keyword namedOV_RPZone_Nsip nsip-enable contained
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOV_RPZone_NsipBool
+
+syn match namedOV_RPZone_RecursiveBool contained 
+\    /\i\{1,16}/
+\ skipwhite skipnl skipempty
+\ contains=namedTypeBool
+\ nextgroup=
+\    namedOV_RPZone_Log,
+\    namedOV_RPZone_MaxTtl,
+\    namedOV_RPZone_MinUpdate,
+\    namedOV_RPZone_Policy,
+\    namedOV_RPZone_Nsip,
+\    namedOV_RPZone_Nsdname,
+\    namedSemicolon
+
+hi link namedOV_RPZone_Recursive namedHL_Clause
+syn keyword namedOV_RPZone_Recursive contained recursive-only
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOV_RPZone_RecursiveBool
+
+hi link namedOV_RPZone_PolicyTcpOnly namedHL_Clause
+syn match namedOV_RPZone_PolicyTcpOnly contained
+\    /\i\{1,64}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOV_RPZone_Log,
+\    namedOV_RPZone_MaxTtl,
+\    namedOV_RPZone_MinUpdate,
+\    namedOV_RPZone_Recursive,
+\    namedOV_RPZone_Nsip,
+\    namedOV_RPZone_Nsdname,
+\    namedSemicolon
+
+hi link namedOV_RPZone_PolicyOptions namedHL_Builtin
+syn keyword namedOV_RPZone_PolicyOptions contained
+\    tcp-only
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOV_RPZone_PolicyTcpOnly
+
+hi link namedOV_RPZone_PolicyOptions namedHL_Builtin
+syn keyword namedOV_RPZone_PolicyOptions contained
+\    cname
+\    disabled
+\    drop
+\    given
+\    no-op
+\    nodata
+\    nxdomain
+\    passthru
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOV_RPZone_Log,
+\    namedOV_RPZone_MaxTtl,
+\    namedOV_RPZone_MinUpdate,
+\    namedOV_RPZone_Recursive,
+\    namedOV_RPZone_Nsip,
+\    namedOV_RPZone_Nsdname,
+\    namedSemicolon
+
+hi link namedOV_RPZone_Policy namedHL_Clause
+syn keyword namedOV_RPZone_Policy contained policy 
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOV_RPZone_PolicyOptions
+
+hi link namedOV_RPZone_MinUpdateTtl namedHL_Number
+syn match namedOV_RPZone_MinUpdateTtl contained /\i\{1,11}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOV_RPZone_Log,
+\    namedOV_RPZone_MaxTtl,
+\    namedOV_RPZone_Policy,
+\    namedOV_RPZone_Recursive,
+\    namedOV_RPZone_Nsip,
+\    namedOV_RPZone_Nsdname,
+\    namedSemicolon
+
+hi link namedOV_RPZone_MinUpdate namedHL_Clause
+syn keyword namedOV_RPZone_MinUpdate contained min-update-interval
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOV_RPZone_MinUpdateTtl
+
+hi link namedOV_RPZone_MaxTtlFlag namedHL_Number
+syn match namedOV_RPZone_MaxTtlFlag contained /\d\{1,11}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOV_RPZone_Log,
+\    namedOV_RPZone_MinUpdate,
+\    namedOV_RPZone_Policy,
+\    namedOV_RPZone_Recursive,
+\    namedOV_RPZone_Nsip,
+\    namedOV_RPZone_Nsdname,
+\    namedSemicolon
+
+hi link namedOV_RPZone_MaxTtl namedHL_Clause
+syn keyword namedOV_RPZone_MaxTtl contained max-policy-ttl
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOV_RPZone_MaxTtlFlag
+
+syn match namedOV_RPZone_LogFlag contained /\i\{1,15}/
+\ skipwhite skipnl skipempty
+\ contains=namedTypeBool
+\ nextgroup=
+\    namedOV_RPZone_MaxTtl,
+\    namedOV_RPZone_MinUpdate,
+\    namedOV_RPZone_Policy,
+\    namedOV_RPZone_Recursive,
+\    namedOV_RPZone_Nsip,
+\    namedOV_RPZone_Nsdname,
+\    namedSemicolon
+
+hi link namedOV_RPZone_Log namedHL_Clause
+syn keyword namedOV_RPZone_Log contained log
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOV_RPZone_LogFlag
+
+hi link namedOV_RP_ZoneName namedHL_Identifier
+syn match namedOV_RP_ZoneName contained /[a-zA-Z0-9\_\.-\+~@$%^&*()=]\{1,63}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOV_RPZone_Log,
+\    namedOV_RPZone_MaxTtl,
+\    namedOV_RPZone_MinUpdate,
+\    namedOV_RPZone_Policy,
+\    namedOV_RPZone_Recursive,
+\    namedOV_RPZone_Nsip,
+\    namedOV_RPZone_Nsdname,
+\    namedSemicolon
+
+hi link namedOV_RP_Zone namedHL_Option
+syn keyword namedOV_RP_Zone contained zone
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOV_RP_ZoneName
+
+syn region namedOV_RPZone_Section contained start=/{/ end=/}/ 
+\ skipwhite skipnl skipempty
+\ contains=
+\    namedOV_RP_Zone
+\ nextgroup=
+\    namedOV_RP_BreakDnssec,
+\    namedOV_RP_MaxPolicy,
+\    namedOV_RP_MinUpdateInterval,
+\    namedOV_RP_MinNs,
+\    namedOV_RP_NsipWait,
+\    namedOV_RP_QnameWait,
+\    namedOV_RP_RecursiveOnly,
+\    namedOV_RP_Nsip,
+\    namedOV_RP_Nsdname,
+\    namedSemicolon
+
+hi link namedOV_ResponsePolicy namedHL_Option
+syn keyword namedOV_ResponsePolicy contained response-policy
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOV_RPZone_Section
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -4789,6 +5208,7 @@ syn region namedStmt_OptionsSection contained start=+{+ end=+}+
 \    namedO_RecursingFile,
 \    namedOVZ_RefreshRetry,
 \    namedOV_ResponsePadding,
+\    namedOV_ResponsePolicy,
 \    namedOV_RootDelegation,
 \    namedOVZ_SerialUpdateMethod,
 \    namedO_ServerId,
@@ -4934,6 +5354,7 @@ syn region namedStmt_ViewSection contained start=+{+ end=+}+
 \    namedOV_RateLimit,
 \    namedOVZ_RefreshRetry,
 \    namedOV_ResponsePadding,
+\    namedOV_ResponsePolicy,
 \    namedOV_RootDelegation,
 \    namedOVZ_SerialUpdateMethod,
 \    namedOVZ_SessionKeyname,
