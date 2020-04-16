@@ -2352,7 +2352,6 @@ syn keyword namedO_Version contained skipwhite skipnl skipempty
 " syn keyword namedO_Keywords request-sit
 " syn keyword namedO_Keywords response-policy
 " syn keyword namedO_Keywords rfc2308-type1
-" syn keyword namedO_Keywords rrset-order
 " syn keyword namedO_Keywords sit-secret
 " syn keyword namedO_Keywords statistics-interval
 " syn keyword namedO_Keywords support-ixfr
@@ -2582,7 +2581,6 @@ syn keyword namedZ_ZoneType contained type skipwhite
 " syn keyword namedZ_Keywords database
 " syn keyword namedZ_Keywords mult-master
 " syn keyword namedZ_Keywords notify
-" syn keyword namedZ_Keywords rrset-order
 " syn keyword namedZ_Keywords transfers-source
 " syn keyword namedZ_Keywords transfers-source-v6
 " syn keyword namedZ_Keywords type
@@ -3766,9 +3764,7 @@ syn match namedOV_RP_DnsrpsEnable /\i\{1,16}/
 \    namedOV_RP_MinNs,
 \    namedOV_RP_NsipWait,
 \    namedOV_RP_QnameWait,
-\    namedOV_RP_RecursiveOnly,
-\    namedOV_RP_NsipEnable,
-\    namedOV_RP_RecursiveOnly,
+\    namedOV_RP_Recursive,
 \    namedOV_RP_Nsip,
 \    namedOV_RP_Dnsrps,
 \    namedOV_RP_DnsrpsOption,
@@ -3790,9 +3786,7 @@ syn match namedOV_RP_NsdnameEnable /\i\{1,16}/
 \    namedOV_RP_MinNs,
 \    namedOV_RP_NsipWait,
 \    namedOV_RP_QnameWait,
-\    namedOV_RP_RecursiveOnly,
-\    namedOV_RP_NsipEnable,
-\    namedOV_RP_RecursiveOnly,
+\    namedOV_RP_Recursive,
 \    namedOV_RP_Nsip,
 \    namedOV_RP_Dnsrps,
 \    namedOV_RP_DnsrpsOption,
@@ -3815,8 +3809,8 @@ syn match namedOV_RP_NsipEnable /\i\{1,16}/
 \    namedOV_RP_NsipWait,
 \    namedOV_RP_QnameWait,
 \    namedOV_RP_RecursiveOnly,
-\    namedOV_RP_NsipEnable,
-\    namedOV_RP_RecursiveOnly,
+\    namedOV_RP_Nsip,
+\    namedOV_RP_Recursive,
 \    namedOV_RP_Nsdname,
 \    namedOV_RP_Dnsrps,
 \    namedOV_RP_DnsrpsOption,
@@ -4231,11 +4225,81 @@ hi link namedOZ_Files_Wildcard namedHL_Builtin
 syn match namedOZ_Files_Wildcard /\*/ contained skipwhite
 
 hi link namedOZ_Files namedHL_Option
-syn keyword namedOZ_Files contained files skipwhite
+syn keyword namedOZ_Files contained files skipwhite skipnl skipempty
 \ nextgroup=
 \    namedOZ_Files_Wildcard,
 \    named_DefaultUnlimited_SC,
 \    named_SizeSpec_SC
+
+hi link namedOZ_Rrset_DomainName namedHL_Builtin
+syn match namedOZ_Rrset_DomainName contained /\i\{1,1024}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOZ_Rrset_Order,
+\    namedOZ_Rrset_Class,
+\    namedOZ_Rrset_Type,
+\    namedSemicolon
+
+hi link namedOZ_Rrset_Domain namedHL_Option
+syn keyword namedOZ_Rrset_Domain contained name
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOZ_Rrset_DomainName
+
+hi link namedOZ_Rrset_TypeOpt namedHL_Builtin
+syn match namedOZ_Rrset_TypeOpt contained /\<\c\%(CHAOS\)\|\%(HESIOD\)\|\%(IN\)\|\%(CH\)\|\%(HS\)\|\%(ANY\)\>/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOZ_Rrset_Order,
+\    namedOZ_Rrset_Class,
+\    namedOZ_Rrset_Domain,
+\    namedSemicolon
+
+hi link namedOZ_Rrset_Type namedHL_Option
+syn keyword namedOZ_Rrset_Type contained type
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOZ_Rrset_TypeOpt
+
+hi link namedOZ_Rrset_ClassOpt namedHL_Builtin
+syn match namedOZ_Rrset_ClassOpt contained /\<\c\%(CHAOS\)\|\%(HESIOD\)\|\%(IN\)\|\%(CH\)\|\%(HS\)\|\%(ANY\)\>/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOZ_Rrset_Order,
+\    namedOZ_Rrset_Type,
+\    namedOZ_Rrset_Domain,
+\    namedSemicolon
+
+hi link namedOZ_Rrset_Class namedHL_Option
+syn keyword namedOZ_Rrset_Class contained class
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOZ_Rrset_ClassOpt
+
+hi link namedOZ_Rrset_OrderType namedHL_Builtin
+syn match namedOZ_Rrset_OrderType contained
+\ /\(none\)\|\(fixed\)\|\(random\)\|\(cyclic\)/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOZ_Rrset_Class,
+\    namedOZ_Rrset_Type,
+\    namedOZ_Rrset_Domain,
+\    namedSemicolon
+    
+hi link namedOZ_Rrset_Order namedHL_Option
+syn keyword namedOZ_Rrset_Order contained order skipwhite skipnl skipempty
+\ nextgroup=namedOZ_Rrset_OrderType
+
+syn region namedOZ_Rrset_Section contained start=+{+ end=+}+
+\ skipwhite skipnl skipempty
+\ contains=
+\    namedOZ_Rrset_Order,
+\    namedOZ_Rrset_Class,
+\    namedOZ_Rrset_Type,
+\    namedOZ_Rrset_Domain
+\ nextgroup=namedSemicolon
+
+hi link namedOZ_RrsetOrder namedHL_Option
+syn keyword namedOZ_RrsetOrder contained rrset-order
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOZ_Rrset_Section
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -5210,6 +5274,7 @@ syn region namedStmt_OptionsSection contained start=+{+ end=+}+
 \    namedOV_ResponsePadding,
 \    namedOV_ResponsePolicy,
 \    namedOV_RootDelegation,
+\    namedOZ_RrsetOrder,
 \    namedOVZ_SerialUpdateMethod,
 \    namedO_ServerId,
 \    namedO_SessionKeyAlg,
@@ -5419,6 +5484,7 @@ syn region namedStmt_ZoneSection contained start=+{+ end=+}+
 \    namedOVZ_Number_Max28days,
 \    namedOVZ_OptATS,
 \    namedOVZ_RefreshRetry,
+\    namedOZ_RrsetOrder,
 \    namedOVZ_SerialUpdateMethod,
 \    namedZ_ServerAddresses,
 \    namedZ_ServerNames,
