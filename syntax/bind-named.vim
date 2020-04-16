@@ -133,26 +133,21 @@ let s:save_cpo = &cpoptions
 set cpoptions-=C
 
 " First-level highlighting
-highlight namedHL_Statement1 guifg=#ffff00 guibg=#000000 gui=bold ctermfg=Yellow ctermbg=Black cterm=bold
-highlight namedHL_Statement2 guifg=#dddd00 guibg=#000000 ctermfg=Yellow ctermbg=Black
-highlight namedHL_Statement3 guifg=#bbbb00 guibg=#000000 ctermfg=Yellow ctermbg=Black
-highlight namedHL_Builtin guifg=#cc0000 guibg=#000000 ctermfg=DarkRed ctermbg=Black
-highlight namedHL_Operator guifg=#ff0000 guibg=#000000 gui=bold ctermfg=DarkRed ctermbg=Black
 
 hi link namedHL_Comment     Comment
 hi link namedHL_Include     DiffAdd
 hi link namedHL_ToDo        Todo
 hi link namedHL_Identifier  Identifier
-hi link namedHL_Statement   namedHL_Statement1
-hi link namedHL_Option      namedHL_Statement2
-hi link namedHL_Clause      namedHL_Statement3    " could use a 3rd color here
+hi link namedHL_Statement   Keyword
+hi link namedHL_Option      Label     " could use a 2nd color here
+hi link namedHL_Clause      Type    " could use a 3rd color here
 hi link namedHL_Type        Type
 " Bind has only one operator '!'
-" hi link namedHL_Operator    Operator  
+hi link namedHL_Operator    Operator  
 hi link namedHL_Number      Number
 hi link namedHL_String      String
 " Bind's builtins: 'any', 'none', 'localhost', 'localnets'
-"hi link namedHL_Builtin     Special 
+hi link namedHL_Builtin     Special 
 hi link namedHL_Underlined  Underlined
 " Do not use Vim's "Boolean" highlighter, Bind has its own syntax.
 hi link namedHL_Error       Error
@@ -1010,6 +1005,7 @@ syn match named_DefaultUnlimited_SC contained skipwhite /\cdefault/
 
 hi link namedA_AML_Nested_Semicolon namedHL_Normal
 syn match namedA_AML_Nested_Semicolon contained /;/ skipwhite skipempty 
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedA_AML_Recursive,
 \    namedA_AML_Nested_Not_Operator,
@@ -1017,6 +1013,7 @@ syn match namedA_AML_Nested_Semicolon contained /;/ skipwhite skipempty
 
 hi link namedA_AML_Not_Operator namedHL_Operator
 syn match namedA_AML_Not_Operator contained /!/ skipwhite skipempty
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedA_AML,
 \    namedE_UnexpectedSemicolon,
@@ -1025,6 +1022,7 @@ syn match namedA_AML_Not_Operator contained /!/ skipwhite skipempty
 
 hi link namedA_AML_Nested_Not_Operator namedHL_Operator
 syn match namedA_AML_Nested_Not_Operator contained /!/ skipwhite skipempty
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedInclude,
 \    namedComment,
@@ -1043,7 +1041,7 @@ syn match namedA_AML_Nested_Not_Operator contained /!/ skipwhite skipempty
 
 " Keep keepend/extend on AML_Recursive!!!
 syn region namedA_AML_Recursive contained start=+{+ end=+}+ keepend extend
-\ skipnl skipwhite skipempty
+\ skipwhite skipnl skipempty
 \ contains=
 \    namedA_AML_Recursive,
 \    namedInclude,
@@ -1051,6 +1049,7 @@ syn region namedA_AML_Recursive contained start=+{+ end=+}+ keepend extend
 \    namedA_IP4Addr_SC,
 \    namedA_IP4AddrPrefix_SC,
 \    namedA_IP6Addr_SC,
+\    namedA_IP6AddrPrefix_SC,
 \    namedA_Bind_Builtins,
 \    namedA_ACL_Name,
 \    namedA_AML_Nested_Semicolon,
@@ -1059,10 +1058,7 @@ syn region namedA_AML_Recursive contained start=+{+ end=+}+ keepend extend
 \    namedA_AML_Nested_Semicolon,
 \    namedE_MissingSemicolon
 \ containedin=
-\    namedA_AML_Recursive,
-
-" \    named_E_IP6AddrPrefix_SC,
-" \    named_E_IP4AddrPrefix_SC,
+\    namedA_AML_Recursive
 
 " acl <acl_name> { ... } ;
 syn region namedA_AML contained start=+{+ end=+}+  
@@ -1088,7 +1084,7 @@ syn region namedA_AML contained start=+{+ end=+}+
 " acl <acl_name> { ... } 
 hi link namedA_ACLIdentifier  namedHL_Identifier
 syn match namedA_ACLIdentifier contained /\<[0-9a-zA-Z\-_]\{1,63}\>/ 
-\ skipwhite skipempty
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedA_AML,
 \    namedA_AML_Not_Operator,
@@ -1124,7 +1120,8 @@ syn match namedC_InetOptACLName contained /[0-9a-zA-Z\-_\[\]\<\>]\{1,63}/
 \    namedC_InetOptAllowKeyword
 
 hi link namedC_ClauseInet namedHL_Option
-syn match namedC_OptReadonlyBool /\i/ contained skipwhite
+syn match namedC_OptReadonlyBool contained /\i/ 
+\ skipwhite skipnl skipempty
 \ contains=@namedClusterBoolean
 \ nextgroup=
 \    namedSemicolon,
@@ -1132,33 +1129,34 @@ syn match namedC_OptReadonlyBool /\i/ contained skipwhite
 \    namedError
 
 hi link namedC_OptReadonlyKeyword namedHL_Option
-syn match namedC_OptReadonlyKeyword /read\-only/ contained skipwhite
+syn match namedC_OptReadonlyKeyword contained /\<read\-only\>/ 
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedC_OptReadonlyBool,
 \    namedError
 
-syn match namedC_UnixOptKeysElement /[a-zA-Z0-9_\-\.]\+/
-\ contained 
+syn match namedC_UnixOptKeysElement contained /[a-zA-Z0-9_\-\.]\+/
+\ skipwhite skipnl skipempty
 \ contains=namedKeyName
 \ nextgroup=
 \    namedSemicolon,
 \    namedNotSemicolon,
 \    namedError
-\ containedin=
-\    namedC_UnixOptKeysSection
 
-syn region namedC_UnixOptKeysSection start=+{+ end=+}+
-\ contained skipwhite skipempty skipnl
+syn region namedC_UnixOptKeysSection contained start=+{+ end=+}+
+\ skipwhite skipnl skipempty
 \ contains=namedC_UnixOptKeysElement
 \ nextgroup=
 \    namedC_OptReadonlyKeyword,
 \    namedSemicolon
 
 hi link namedC_UnixOptKeysKeyword namedHL_Option
-syn match namedC_UnixOptKeysKeyword /keys/ contained skipwhite skipempty skipnl
+syn match namedC_UnixOptKeysKeyword contained /\<keys\>/ 
+\ skipwhite skipnl skipempty
 \ nextgroup=namedC_UnixOptKeysSection
 
-syn match namedC_UnixOptGroupInteger /\d\+/ contained skipwhite skipempty skipnl
+syn match namedC_UnixOptGroupInteger contained /\d\+/ 
+\ skipwhite skipnl skipempty
 \ contains=named_Number_GID
 \ nextgroup=
 \     namedC_OptReadonlyKeyword,
@@ -1167,27 +1165,39 @@ syn match namedC_UnixOptGroupInteger /\d\+/ contained skipwhite skipempty skipnl
 \     namedError
 
 hi link namedC_UnixOptGroupKeyword namedHL_Option
-syn match namedC_UnixOptGroupKeyword /group/ contained skipwhite skipempty skipnl
-\ nextgroup=namedC_UnixOptGroupInteger,namedError
+syn match namedC_UnixOptGroupKeyword contained /\<group\>/ 
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedC_UnixOptGroupInteger,
+\    namedError
 
-syn match namedC_UnixOptOwnerInteger /\d\+/ contained skipwhite skipempty skipnl
+syn match namedC_UnixOptOwnerInteger contained /\d\+/ 
+\ skipwhite skipnl skipempty
 \ contains=namedUserID
-\ nextgroup=namedC_UnixOptGroupKeyword,namedError
+\ nextgroup=
+\    namedC_UnixOptGroupKeyword,
+\    namedError
 
 hi link namedC_UnixOptOwnerKeyword namedHL_Option
-syn match namedC_UnixOptOwnerKeyword /owner/ contained skipwhite skipempty skipnl
-\ nextgroup=namedC_UnixOptOwnerInteger,namedError
+syn match namedC_UnixOptOwnerKeyword contained /\<owner\>/ 
+\ skipwhite skipempty skipnl
+\ nextgroup=
+\    namedC_UnixOptOwnerInteger,
+\    namedError
 
 syn match namedC_UnixOptPermInteger /\d\+/ contained skipwhite skipempty skipnl
 \ contains=namedFilePerm
 \ nextgroup=namedC_UnixOptOwnerKeyword,namedError
 
 hi link namedC_UnixOptPermKeyword namedHL_Option
-syn match namedC_UnixOptPermKeyword /perm/ contained skipwhite skipempty skipnl
-\ nextgroup=namedC_UnixOptPermInteger,namedError
+syn match namedC_UnixOptPermKeyword /\<perm\>/ contained 
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedC_UnixOptPermInteger,
+\    namedError
 
 syn match namedC_UnixOptSocketName contained /[a-zA-Z\]\-\[0-9\._,:\/?<>|'"`~!@#$%\^&*\\(\\)+]\{1,1024}/
-\ skipwhite skipempty skipnl
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \     namedC_UnixOptPermKeyword,
 \     namedC_OptReadonlyKeyword,
@@ -1197,7 +1207,7 @@ syn match namedC_UnixOptSocketName contained /[a-zA-Z\]\-\[0-9\._,:\/?<>|'"`~!@#
 " Dirty trick, use a single '"' char for a string match
 hi link namedC_UnixOptSocketName namedHL_Number
 syn match namedC_UnixOptSocketName contained /'[ a-zA-Z\]\-\[0-9\._,:;\/?<>|"`~!@#$%\^&*\\(\\)+{}]\{1,1024}'/hs=s+1,he=e-1
-\ skipwhite skipempty skipnl
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \     namedC_UnixOptPermKeyword,
 \     namedC_OptReadonlyKeyword,
@@ -1205,7 +1215,7 @@ syn match namedC_UnixOptSocketName contained /'[ a-zA-Z\]\-\[0-9\._,:;\/?<>|"`~!
 \     namedError
 
 syn match namedC_UnixOptSocketName contained /"[ a-zA-Z\]\-\[0-9\._,:;\/?<>|'`~!@#$%\^&*\\(\\)+{}]\{1,1024}"/hs=s+1,he=e-1
-\ skipwhite skipempty skipnl
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \     namedC_UnixOptPermKeyword,
 \     namedC_OptReadonlyKeyword,
@@ -1216,7 +1226,6 @@ hi link namedC_ClauseUnix namedHL_Option
 syn keyword namedC_ClauseUnix contained unix
 \ skipwhite skipnl skipempty
 \ nextgroup=namedC_UnixOptSocketName
-\ containedin=namedStmtControlSection
 
 hi link namedC_InetOptReadonlyBool namedHL_Option
 syn match namedC_InetOptReadonlyBool contained /\i/
@@ -1290,14 +1299,13 @@ syn match namedC_InetOptIPaddr contained /[0-9a-fA-F\.:]\{3,45}/
 hi link namedC_ClauseInet namedHL_Option
 syn match namedC_ClauseInet contained /inet/
 \ skipnl skipempty skipwhite 
-\ containedin=namedStmtControlSection
 \ nextgroup=
 \    namedC_InetOptACLName,
 \    namedC_InetOptIPaddrWild,
 \    namedC_InetOptIPaddr
 
-syn region namedStmt_ControlsSection contained start=+{+ end=+}+
-\ skipwhite skipempty skipnl
+syn region namedC_ControlsSection contained start=+{+ end=+}+
+\ skipwhite skipnl skipempty
 \ contains=
 \    namedC_ClauseInet,
 \    namedC_ClauseUnix,
@@ -1312,41 +1320,47 @@ syn region namedStmt_ControlsSection contained start=+{+ end=+}+
 " dlz <dlz_name> { database <string> search <boolean>; };
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-hi link namedDlzSearchBoolean namedHL_String
-syn match namedDlzSearchBoolean contained /\i/
-\ skipwhite
+hi link namedD_SearchBoolean namedHL_String
+syn match namedD_SearchBoolean contained /\i/ skipwhite
+\ skipwhite skipnl skipempty
 \ contains=namedTypeBool
-\ nextgroup=namedSemicolon,namedDlzDatabaseKeyword
+\ nextgroup=
+\    namedSemicolon,
+\    namedD_DatabaseKeyword
 
-hi link namedDlzSearchKeyword namedHL_Option
-syn match namedDlzSearchKeyword contained /\<search\>/
-\ skipwhite
-\ nextgroup=namedDlzSearchBoolean
-\ containedin=namedStmt_DlzSection
+hi link namedD_Search namedHL_Option
+syn match namedD_Search contained /\<search\>/ skipwhite
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedD_SearchBoolean,
+\    namedD_Database
 
-hi link namedDlzDatabaseString namedHL_String
-syn region namedDlzDatabaseString start=/"/ skip=/\\"/ end=/"/ contained
-syn region namedDlzDatabaseString start=/'/ skip=/\\'/ end=/'/ contained
-\ skipwhite
-\ containedin=namedStmt_DlzSection
-\ nextgroup=namedSemicolon,namedDlzSearchKeyword
+hi link namedD_DatabaseString namedHL_String
+syn region namedD_DatabaseString start=/"/ skip=/\\"/ end=/"/ contained
+syn region namedD_DatabaseString start=/'/ skip=/\\'/ end=/'/ contained
+\ skipwhite skipnl skipempty
+\ contains=named_QuotedString_SC
+\ nextgroup=
+\    namedSemicolon,
+\    namedD_Search
 
-hi link namedDlzDatabaseKeyword namedHL_Option
-syn match namedDlzDatabaseKeyword contained /\<database\>/
-\ skipwhite
-\ nextgroup=namedDlzDatabaseString
-\ containedin=namedStmt_DlzSection
+hi link namedD_Database namedHL_Option
+syn match namedD_Database contained /\<database\>/ skipwhite
+\ nextgroup=namedD_DatabaseString
 
-syn region namedStmt_DlzSection contained start=+{+ end=+}+
-\ skipwhite skipempty
-\ nextgroup=namedSemicolon,namedNotSemicolon
+syn region namedD_DlzSection contained start=+{+ end=+}+
+\ skipwhite skipnl skipempty
+\ contains=
+\    namedD_Database,
+\    namedD_Search
+\ nextgroup=
+\    namedSemicolon,
+\    namedNotSemicolon
 
-hi link namedStmt_DlzName_Identifier namedHL_Identifier
-syn match namedStmt_DlzName_Identifier contained skipwhite
-\    /\S\+/
-\ skipwhite 
-\ nextgroup=namedStmt_DlzSection
-" \    /\<[a-zA-Z0-9_\.\-]\{1,63}\>/ 
+hi link namedD_Identifier namedHL_Identifier
+syn match namedD_Identifier contained /\<[a-zA-Z0-9_\.\-]\{1,63}\>/ 
+\ skipwhite skipnl skipempty
+\ nextgroup=namedD_DlzSection
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within top-level 'dyndb' statement
@@ -1354,69 +1368,78 @@ syn match namedStmt_DlzName_Identifier contained skipwhite
 " dyndb <dyndb_name> <device_driver_filename> { <arguments> };
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-hi link   namedDyndbDriverParameters namedHL_String
-syn match namedDyndbDriverParameters contained /[<>\|:"'a-zA-Z0-9_\.\-\/\\]\+[^;]/ 
-\ skipwhite skipempty skipnl
-\ contains=named_String_QuoteForced
-\ containedin=namedStmtDyndbSection
+hi link   namedDy_DriverParameters namedHL_String
+syn match namedDy_DriverParameters contained /[<>\|:"'a-zA-Z0-9_\.\-\/\\]\+[^;]/ 
+\ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
 
-syn region namedStmtDyndbSection contained start=+{+ end=+}+
-\ skipwhite skipempty
-\ nextgroup=namedSemicolon,namedNotSemicolon
+syn region namedDy_Section contained start=+{+ end=+}+
+\ skipwhite skipnl skipempty
+\ contains=namedDy_DriverParameters
+\ nextgroup=
+\    namedSemicolon,
+\    namedNotSemicolon
 
-syn match namedStmtDyndbDriverFilespec contained 
+syn match namedDy_DriverFilespec contained 
 \ /[a-zA-Z\]\-\[0-9\._,:;\/?<>|"`~!@#$%\^&*\\(\\)+{}]\{1,1024}/hs=s+1,he=e-1
-\ skipwhite skipempty skipnl
-\ nextgroup=namedStmtDyndbSection
+\ skipwhite skipnl skipempty
 \ contains=named_String_QuoteForced
-syn match namedStmtDyndbDriverFilespec contained 
+\ nextgroup=namedDy_Section
+syn match namedDy_DriverFilespec contained 
 \ /"[ a-zA-Z\]\-\[0-9\._,:;\/?<>|'`~!@#$%\^&*\\(\\)+{}]\{1,1024}"/hs=s+1,he=e-1
-\ skipwhite skipempty skipnl
-\ nextgroup=namedStmtDyndbSection
+\ skipwhite skipnl skipempty
 \ contains=named_String_QuoteForced
-syn match namedStmtDyndbDriverFilespec contained 
+\ nextgroup=namedDy_Section
+syn match namedDy_DriverFilespec contained 
 \ /'[ a-zA-Z\]\-\[0-9\._,:;\/?<>|"`~!@#$%\^&*\\(\\)+{}]\{1,1024}'/hs=s+1,he=e-1
-\ skipwhite skipempty skipnl
-\ nextgroup=namedStmtDyndbSection
+\ skipwhite skipnl skipempty
 \ contains=named_String_QuoteForced
+\ nextgroup=namedDy_Section
 
 hi link namedStmtDyndbIdent namedHL_Identifier
 syn match namedStmtDyndbIdent contained /[a-zA-Z0-9_\.\-]\{1,63}/ 
-\ skipwhite 
-\ nextgroup=namedStmtDyndbDriverFilespec
-\ contains=namedDyndbName
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedDy_DriverFilespec
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within top-level 'key' statement
 " 
 " key <key_name> { algorithm <string>; secret <string>; };
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-hi link namedK_E_SecretValue namedHL_Base64
-syn match namedK_E_SecretValue contained /["'0-9A-Za-z\+\=\/]\{1,4098}\s*;/
-\ skipwhite
+hi link namedK_SecretValue namedHL_Base64
+syn match namedK_SecretValue contained /["'0-9A-Za-z\+\=\/]\{1,4098}\s*;/
+\ skipwhite skipnl skipempty
 \ contains=namedTypeBase64
-\ nextgroup=namedSemicolon,namedError
+\ nextgroup=
+\    namedSemicolon,
+\    namedError
 
-hi link namedK_E_SecretKeyword namedHL_Option
-syn match namedK_E_SecretKeyword contained /\<secret\>/ skipwhite skipempty
-\ nextgroup=namedK_E_SecretValue,namedError
-\ containedin=namedStmtKeySection
+hi link namedK_Secret namedHL_Option
+syn match namedK_Secret contained /\<secret\>/ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedK_SecretValue,
+\    namedError
 
-syn match namedK_E_AlgorithmName contained /[a-zA-Z0-9\-_\.]\{1,128}\s*;/he=e-1
+syn match namedK_AlgorithmName contained /[a-zA-Z0-9\-_\.]\{1,128}\s*;/he=e-1
 \ skipwhite skipnl skipempty
 \ contains=namedKeyAlgorithmName
-\ nextgroup=namedK_E_SecretKeyword,namedError
+\ nextgroup=
+\    namedK_Secret,
+\    namedError
 
-hi link namedK_E_AlgorithmKeyword namedHL_Option
-syn match namedK_E_AlgorithmKeyword contained /\<algorithm\>/ skipwhite skipempty
-\ nextgroup=namedK_E_AlgorithmName,namedError
-\ containedin=namedStmtKeySection
+hi link namedK_Algorithm namedHL_Option
+syn match namedK_Algorithm contained /\<algorithm\>/ 
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedK_AlgorithmName,
+\    namedError
 
-syn region namedStmtKeySection start=+{+ end=+}+
-\ contained skipwhite skipempty
+syn region namedK_Section contained start=+{+ end=+}+ 
+\ skipwhite skipnl skipempty
 \ contains=
-\    namedK_E_AlgorithmKeyword
+\    namedK_Algorithm,
+\    namedK_Secret
 \ nextgroup=
 \    namedSemicolon,
 \    namedNotSemicolon
@@ -1424,7 +1447,10 @@ syn region namedStmtKeySection start=+{+ end=+}+
 hi link namedStmtKeyIdent namedHL_Identifier
 syn match namedStmtKeyIdent contained /[a-zA-Z0-9_\-]\{1,63}/
 \ skipwhite skipnl skipempty
-\ nextgroup=namedStmtKeySection,namedNotParem,namedError
+\ nextgroup=
+\    namedK_Section,
+\    namedNotParem,
+\    namedError
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within 'logging' statement
@@ -1450,116 +1476,132 @@ syn match namedStmtKeyIdent contained /[a-zA-Z0-9_\-]\{1,63}/
 "    }; ]
 "    ...
 " }
-hi link namedLoggingCategoryChannelName namedHL_Type
-syn match namedLoggingCategoryChannelName contained /\i\+/ skipwhite
-\ containedin=namedLoggingCategorySection
-
-syn region namedLoggingCategorySection contained start=+{+ end=+}+ 
-\ skipwhite
+hi link namedL_CategoryChannelName namedHL_Type
+syn match namedL_CategoryChannelName contained /\i\{1,63}/ 
+\ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
 
-hi link namedLoggingCategoryBuiltins namedHL_Builtin
-syn keyword namedLoggingCategoryBuiltins contained skipwhite 
+syn region namedL_CategorySection contained start=+{+ end=+}+ 
+\ skipwhite skipnl skipempty
+\ contains=namedL_CategoryChannelName
+\ nextgroup=namedSemicolon
+
+hi link namedL_CategoryBuiltins namedHL_Builtin
+syn keyword namedL_CategoryBuiltins contained skipwhite skipnl skipempty
 \    client cname config database default delegation-only dnssec dispatch
 \    dnstap edns-disabled general lame-servers
 \    network notify nsid queries query-errors 
 \    rate-limit resolver rpz security serve-stale spill 
 \    trust-anchor-telemetry unmatched update update-security
 \    xfer-in xfer-out zoneload 
-\ nextgroup=namedLoggingCategorySection
-\ containedin=namedStmtLoggingSection
 
-hi link namedLoggingCategoryCustom Identifier
-syn match namedLoggingCategoryCustom contained skipwhite /\i\+/
-\ containedin=namedStmtLoggingSection
+hi link namedL_CategoryCustom Identifier
+syn match namedL_CategoryCustom contained skipwhite /\<\i\{1,63}\>/
 
-hi link namedLoggingCategoryIdent Identifier
-syn match namedLoggingCategoryIdent /\i\+/ skipwhite contained
-\ contains=namedLoggingCategoryBuiltins
-\ nextgroup=namedLoggingCategorySection,namedError
-\ containedin=namedStmtLoggingSection
+hi link namedL_CategoryIdentifier Identifier
+syn match namedL_CategoryIdentifier /\<\i\{1,63}\>/ skipwhite contained
+\ contains=
+\    namedL_CategoryCustom,
+\    namedL_CategoryBuiltins
+\ nextgroup=
+\    namedL_CategorySection,
+\    namedError
 
-hi link namedLoggingOptCategoryKeyword namedHL_Option
-syn match namedLoggingOptCategoryKeyword contained skipwhite /category/
-\ nextgroup=namedLoggingCategoryIdent,namedError skipwhite
-\ containedin=namedStmtLoggingSection
+hi link namedL_Category namedHL_Option
+syn match namedL_Category contained /category/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedL_CategoryIdentifier,
+\    namedError 
 
 " logging { channel xxxxx { ... }; };
 
-hi link namedLoggingChannelSeverityDebugValue namedHL_Number
-syn match namedLoggingChannelSeverityDebugValue /[0-9]\{1,5}/ 
+hi link namedL_ChannelSeverityDebugValue namedHL_Number
+syn match namedL_ChannelSeverityDebugValue /[0-9]\{1,5}/ 
 \ contained skipwhite 
-\ nextgroup=namedComment,namedSemicolon,namedNotSemicolon,namedError
-
-hi link namedLoggingChannelSeverityDebug namedHL_Builtin
-syn match namedLoggingChannelSeverityDebug contained /debug\s*[^;]/me=e-1
 \ nextgroup=
-\    namedLoggingChannelSeverityDebugValue,
+\    namedComment,
+\    namedSemicolon,
+\    namedNotSemicolon,
+\    namedError
+
+hi link namedL_ChannelSeverityDebug namedHL_Builtin
+syn match namedL_ChannelSeverityDebug contained /debug\s*[^;]/me=e-1
+\ nextgroup=
+\    namedL_ChannelSeverityDebugValue,
 \    namedComment,
 \    namedSemicolon,
 \    namedNotSemicolon_SC,
 \    namedNotComment,
 \    namedError
-syn match namedLoggingChannelSeverityDebug contained /debug\s*;/he=e-1
+syn match namedL_ChannelSeverityDebug contained /debug\s*;/he=e-1
 
-hi link namedLoggingChannelSeverityType namedHL_Builtin
-syn keyword namedLoggingChannelSeverityType contained
+hi link namedL_ChannelSeverityType namedHL_Builtin
+syn keyword namedL_ChannelSeverityType contained skipwhite
 \    info
 \    notice
 \    warning
 \    error
 \    critical
 \    dynamic
-\ skipwhite
-\ nextgroup=namedSemicolon,namedError
+\ nextgroup=
+\    namedSemicolon,
+\    namedError
 
-hi link namedLoggingChannelOptNull namedHL_Clause
-syn keyword namedLoggingChannelOptNull null contained skipwhite
-\ nextgroup=namedComment,namedSemicolon,namedNotSemicolon,namedError
-syn keyword namedLoggingChannelOptNull stderr contained skipwhite
-\ nextgroup=namedSemicolon,namedNotSemicolon,namedComment,namedError
+hi link namedL_ChannelOptNull namedHL_Clause
+syn keyword namedL_ChannelOptNull null contained skipwhite
+\ nextgroup=
+\    namedComment,
+\    namedSemicolon,
+\    namedNotSemicolon,
+\    namedError
+syn keyword namedL_ChannelOptNull stderr contained skipwhite
+\ nextgroup=
+\    namedSemicolon,
+\    namedNotSemicolon,
+\    namedComment,
+\    namedError
 
-hi link namedLoggingChannelOpts namedHL_Option
-syn keyword namedLoggingChannelOpts contained skipwhite 
+hi link namedL_ChannelOpts namedHL_Option
+syn keyword namedL_ChannelOpts contained skipwhite 
 \    buffered
 \    print-category
 \    print-severity
 \ nextgroup=@namedClusterBoolean_SC,namedError
-" \    /\(buffered\)\|\(print\-category\)\|\(print\-severity\)/
 
 " BUG: You can specify 'severity' twice on same line before semicolon
-hi link namedLoggingChannelOptSeverity namedHL_Option
-syn keyword namedLoggingChannelOptSeverity contained severity skipwhite skipempty
+hi link namedL_ChannelOptSeverity namedHL_Option
+syn keyword namedL_ChannelOptSeverity contained severity skipwhite skipempty
 \ nextgroup=
-\    namedLoggingChannelSeverityType,
-\    namedLoggingChannelSeverityDebug,
+\    namedL_ChannelSeverityType,
+\    namedL_ChannelSeverityDebug,
 \    namedComment,
 \    namedError
 
-" hi link namedLoggingChannelSyslogFacilityKern namedHL_Builtin
-" syn keyword namedLoggingChannelSyslogFacilityKern kern contained skipwhite
-" \ nextgroup=namedSemicolon,namedNotSemicolon,namedComment,namedError
-
-hi link namedLoggingChannelSyslogFacility namedHL_Builtin
-syn keyword namedLoggingChannelSyslogFacility contained
+hi link namedL_ChannelSyslogFacility namedHL_Builtin
+syn keyword namedL_ChannelSyslogFacility contained
 \    user kern mail daemon
 \    auth syslog lpr news
 \    uucp cron authpriv
 \    local0 local1 local2 local3 local4
 \    local5 local6 local7 local8 local9
-\ nextgroup=namedSemicolon,namedComment,namedParenError,namedError
-
-hi link namedLoggingChannelOptSyslog namedHL_Option
-sy keyword namedLoggingChannelOptSyslog syslog contained skipwhite 
 \ nextgroup=
-\    namedLoggingChannelSyslogFacilityKern,
-\    namedLoggingChannelSyslogFacilityUser,
-\    namedLoggingChannelSyslogFacility,
+\    namedSemicolon,
+\    namedComment,
+\    namedParenError,
+\    namedError
+
+hi link namedL_ChannelOptSyslog namedHL_Option
+sy keyword namedL_ChannelOptSyslog syslog contained skipwhite 
+\ nextgroup=
+\    namedL_ChannelSyslogFacilityKern,
+\    namedL_ChannelSyslogFacilityUser,
+\    namedL_ChannelSyslogFacility,
 \    namedParenError,
 \    @namedClusterCommonNext,
 
-hi link namedLoggingChannelOptPrinttimeISOs namedHL_Builtin
-syn keyword namedLoggingChannelOptPrinttimeISOs contained skipwhite
+hi link namedL_ChannelOptPrinttimeISOs namedHL_Builtin
+syn keyword namedL_ChannelOptPrinttimeISOs contained skipwhite
 \    iso8601
 \    iso8601-utc
 \    local
@@ -1568,134 +1610,135 @@ syn keyword namedLoggingChannelOptPrinttimeISOs contained skipwhite
 \    namedComment,
 \    namedError
 
-hi link namedLoggingChannelOptPrintTime namedHL_Option
-syn match namedLoggingChannelOptPrintTime /print\-time/ contained skipwhite
+hi link namedL_ChannelOptPrintTime namedHL_Option
+syn match namedL_ChannelOptPrintTime /print\-time/ contained skipwhite
 \ nextgroup=
-\    namedLoggingChannelOptPrinttimeISOs,
+\    namedL_ChannelOptPrinttimeISOs,
 \    @namedClusterBoolean_SC,
 \    namedParenError,
 \    @namedClusterCommonNext,
 \    namedError,
 
-hi link namedLoggingChannelFileVersionOptUnlimited namedHL_Builtin
-syn match namedLoggingChannelFileVersionOptUnlimited /unlimited/
+hi link namedL_ChannelFileVersionOptUnlimited namedHL_Builtin
+syn match namedL_ChannelFileVersionOptUnlimited /unlimited/
 \ contained skipwhite
-\ nextgroup=namedLoggingChannelFileOptSuffix,
-\           namedLoggingChannelFileOptSize,
+\ nextgroup=namedL_ChannelFileOptSuffix,
+\           namedL_ChannelFileOptSize,
 \           namedSemicolon
-syn match namedLoggingChannelFileVersionOptInteger contained skipwhite
+syn match namedL_ChannelFileVersionOptInteger contained skipwhite
 \    /[0-9]\{1,11}/
 \    contains=namedNumber
-\ nextgroup=namedLoggingChannelFileOptSuffix,
-\           namedLoggingChannelFileOptSize,
+\ nextgroup=namedL_ChannelFileOptSuffix,
+\           namedL_ChannelFileOptSize,
 \           namedSemicolon
-hi link namedLoggingChannelFileOptVersions namedHL_Option
-syn match namedLoggingChannelFileOptVersions contained skipwhite /versions/
+hi link namedL_ChannelFileOptVersions namedHL_Option
+syn match namedL_ChannelFileOptVersions contained skipwhite /versions/
 \ nextgroup=
-\    namedLoggingChannelFileVersionOptInteger,
-\    namedLoggingChannelFileVersionOptUnlimited,
+\    namedL_ChannelFileVersionOptInteger,
+\    namedL_ChannelFileVersionOptUnlimited,
 
-hi link namedLoggingChannelFileSizeOpt namedHL_Number
+hi link namedL_ChannelFileSizeOpt namedHL_Number
 " [0-9]\{1,12}\([BbKkMmGgPp]\{1}\)/
-syn match namedLoggingChannelFileSizeOpt 
+syn match namedL_ChannelFileSizeOpt 
 \ /[0-9]\{1,11}\([BbKkMmGgPp]\)\{0,1}/
 \ contains=named_SizeSpec
 \ contained skipwhite
-\ nextgroup=namedLoggingChannelFileOptSuffix,
-\           namedLoggingChannelFileOptVersions,
+\ nextgroup=namedL_ChannelFileOptSuffix,
+\           namedL_ChannelFileOptVersions,
 \           namedSemicolon
 
-hi link namedLoggingChannelFileOptSize namedHL_Option
-syn match namedLoggingChannelFileOptSize /size/
+hi link namedL_ChannelFileOptSize namedHL_Option
+syn match namedL_ChannelFileOptSize /size/
 \ contained  skipwhite
-\ nextgroup=namedLoggingChannelFileSizeOpt
+\ nextgroup=namedL_ChannelFileSizeOpt
 
-hi link namedLoggingChannelFileSuffixOpt namedHL_Builtin
-syn match namedLoggingChannelFileSuffixOpt /\(\(increment\)\|\(timestamp\)\)/
+hi link namedL_ChannelFileSuffixOpt namedHL_Builtin
+syn match namedL_ChannelFileSuffixOpt /\(\(increment\)\|\(timestamp\)\)/
 \ contained 
 \ skipwhite skipnl skipempty
 \ nextgroup=
-\    namedLoggingChannelFileOptSize,
-\    namedLoggingChannelFileOptVersions,
+\    namedL_ChannelFileOptSize,
+\    namedL_ChannelFileOptVersions,
 \    namedSemicolon
 
-hi link namedLoggingChannelFileOptSuffix namedHL_Option
-syn match namedLoggingChannelFileOptSuffix contained /suffix/
+hi link namedL_ChannelFileOptSuffix namedHL_Option
+syn match namedL_ChannelFileOptSuffix contained /suffix/
 \ skipwhite skipnl skipempty
 \ nextgroup=
-\    namedLoggingChannelFileSuffixOpt,
+\    namedL_ChannelFileSuffixOpt,
 \    namedEParenError
 
-syn match namedLoggingChannelFileIdent contained 
+syn match namedL_ChannelFileIdent contained 
 \ /[a-zA-Z\]\-\[0-9\._,:\/?<>|'"`~!@#$%\^&*\\(\\)+]\{1,1024}/
 \ contained
 \ skipwhite skipnl skipempty
 \ nextgroup=
-\    namedLoggingChannelFileOptSuffix,
-\    namedLoggingChannelFileOptSize,
-\    namedLoggingChannelFileOptVersions,
+\    namedL_ChannelFileOptSuffix,
+\    namedL_ChannelFileOptSize,
+\    namedL_ChannelFileOptVersions,
 \    namedSemicolon
 
-hi link namedLoggingChannelFileIdent namedHL_String
-syn match namedLoggingChannelFileIdent contained 
+hi link namedL_ChannelFileIdent namedHL_String
+syn match namedL_ChannelFileIdent contained 
 \ /"[ a-zA-Z\]\-\[0-9\._,:;\/?<>|'`~!@#$%\^&*\\(\\)+{}]\{1,1024}"/hs=s+1,he=e-1
-\ contained
 \ skipwhite skipnl skipempty
 \ nextgroup=
-\    namedLoggingChannelFileOptSuffix,
-\    namedLoggingChannelFileOptSize,
-\    namedLoggingChannelFileOptVersions,
+\    namedL_ChannelFileOptSuffix,
+\    namedL_ChannelFileOptSize,
+\    namedL_ChannelFileOptVersions,
 \    namedSemicolon
 
-syn match namedLoggingChannelFileIdent contained 
+syn match namedL_ChannelFileIdent contained 
 \ /'[ a-zA-Z\]\-\[0-9\._,:;\/?<>|"`~!@#$%\^&*\\(\\)+{}]\{1,1024}'/hs=s+1,he=e-1
 \ contained
 \ skipwhite skipnl skipempty
 \ contains=named_Filespec
 \ nextgroup=
-\    namedLoggingChannelFileOptSuffix,
-\    namedLoggingChannelFileOptSize,
-\    namedLoggingChannelFileOptVersions,
+\    namedL_ChannelFileOptSuffix,
+\    namedL_ChannelFileOptSize,
+\    namedL_ChannelFileOptVersions,
 \    namedSemicolon
 
-" file <namedLoggingChannelOptFile> [ ... ];
-hi link namedLoggingChannelOptFile namedHL_Option
-syn match namedLoggingChannelOptFile /file/ contained 
+hi link namedL_ChannelOptFile namedHL_Option
+syn match namedL_ChannelOptFile /file/ contained 
 \ skipwhite skipempty
 \ nextgroup=
-\    namedLoggingChannelFileIdent,
+\    namedL_ChannelFileIdent,
 \    namedParenError
 
-syn region namedLoggingChannelSection contained start=+{+ end=+}+ 
+syn region namedL_ChannelSection contained start=+{+ end=+}+ 
 \ skipwhite skipnl skipempty
 \ contains=
-\    namedLoggingChannelOpts,
-\    namedLoggingChannelOptFile,
-\    namedLoggingChannelOptPrintTime,
-\    namedLoggingChannelOptSyslog,
-\    namedLoggingChannelOptNull,
-\    namedLoggingChannelOptSeverity,
+\    namedL_ChannelOpts,
+\    namedL_ChannelOptFile,
+\    namedL_ChannelOptPrintTime,
+\    namedL_ChannelOptSyslog,
+\    namedL_ChannelOptNull,
+\    namedL_ChannelOptSeverity,
 \    namedComment,
 \    namedInclude,
 \    namedParenError
 \ nextgroup=namedSemicolon
 
-hi link namedLoggingChannelIdent namedHL_Identifier
-syn match namedLoggingChannelIdent /\S\+/ contained skipwhite
-\ nextgroup=namedLoggingChannelSection
+hi link namedL_ChannelIdent namedHL_Identifier
+syn match namedL_ChannelIdent contained /\S\+/ skipwhite
+\ nextgroup=namedL_ChannelSection
 
-hi link namedLoggingOptChannelKeyword namedHL_Option
-syn match namedLoggingOptChannelKeyword contained skipwhite /channel/
-\ nextgroup=namedLoggingChannelIdent,namedError
-\ containedin=namedStmtLoggingSection
+hi link namedL_Channel namedHL_Option
+syn match namedL_Channel contained /\<channel\>/ skipwhite
+\ nextgroup=
+\    namedL_ChannelIdent,
+\    namedError
 
-syn region namedStmtLoggingSection contained start=+{+ end=+}+ 
+syn region namedL_LoggingSection contained start=+{+ end=+}+ 
+\ skipwhite skipnl skipempty
 \ contains=
-\    namedLoggingOptCategoryKeyword,
-\    namedLoggingOptChannelKeyword,
-\    namedComment,namedInclude,namedParenError
+\    namedL_Category,
+\    namedL_Channel,
+\    namedComment,
+\    namedInclude,
+\    namedParenError
 \ nextgroup=namedSemicolon
-\ skipwhite
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within 'managed-keys' statement
@@ -1705,32 +1748,47 @@ syn region namedStmtLoggingSection contained start=+{+ end=+}+
 
 hi link namedMk_E_KeySecret namedKeySecretValue
 syn match namedMk_E_KeySecret contained /["'0-9A-Za-z\+\=\/]\{1,4098}/ 
-\ skipwhite skipempty
+\ skipwhite skipnl skipempty
 \ contains=namedKeySecretValue
-\ nextgroup=namedSemicolon,namedNotSemicolon,namedError
+\ nextgroup=namedSemicolon,
+\    namedNotSemicolon,
+\    namedError
 
 hi link namedMk_E_AlgorithmType namedHL_Number
-syn match namedMk_E_AlgorithmType contained skipwhite /\d\{1,3}/ skipempty
-\ nextgroup=namedMk_E_KeySecret,namedError
+syn match namedMk_E_AlgorithmType contained /\d\{1,3}/ 
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedMk_E_KeySecret,
+\    namedError
 
 hi link namedMk_E_ProtocolType namedHL_Number
-syn match namedMk_E_ProtocolType contained skipwhite /\d\{1,3}/ skipempty
-\ nextgroup=namedMk_E_AlgorithmType,namedError
+syn match namedMk_E_ProtocolType contained /\d\{1,3}/ 
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedMk_E_AlgorithmType,
+\    namedError
 
 hi link namedMk_E_FlagType namedHL_Number
-syn match namedMk_E_FlagType contained skipwhite /\d\{1,3}/ skipempty
-\ nextgroup=namedMk_E_ProtocolType,namedError
+syn match namedMk_E_FlagType contained /\d\{1,3}/ 
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedMk_E_ProtocolType,
+\    namedError
 
 hi link namedMk_E_InitialKey namedHL_Number
 syn match namedMk_E_InitialKey contained /[0-9A-Za-z][-0-9A-Za-z.]\{1,4096}/ 
-\ skipwhite skipempty
+\ skipwhite skipnl skipempty
 \ contains=namedString
-\ nextgroup=namedMk_E_FlagType,namedError
+\ nextgroup=
+\    namedMk_E_FlagType,
+\    namedError
 
 hi link namedMk_E_DomainName namedHL_Identifier
 syn match namedMk_E_DomainName contained /[0-9A-Za-z][_\-0-9A-Za-z.]\{1,1024}/
-\ skipwhite skipempty 
-\ nextgroup=namedMk_E_InitialKey,namedError
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedMk_E_InitialKey,
+\    namedError
 
 syn region namedStmt_ManagedKeysSection contained start=+{+ end=+}+
 \ skipwhite skipempty skipnl
@@ -1742,67 +1800,77 @@ syn region namedStmt_ManagedKeysSection contained start=+{+ end=+}+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " masters <masterIdentifier> { <masters_statement>; ... };
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-hi link namedM_E_MasterKeyName namedHL_Identifier
-syn match namedM_E_MasterKeyName contained /[a-zA-Z][0-9a-zA-Z\-_]\{1,64}/
-\ skipwhite
+hi link namedM_KeyName namedHL_Identifier
+syn match namedM_KeyName contained /[a-zA-Z][0-9a-zA-Z\-_]\{1,64}/
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedSemicolon,
 \    namedNotSemicolon,
 \    namedError
 
-hi link namedM_E_KeyKeyword namedHL_Option
-syn match namedM_E_KeyKeyword contained skipwhite /key/
+hi link namedM_Key namedHL_Option
+syn match namedM_Key contained /\<key\>/
+\ skipwhite skipnl skipempty
 \ nextgroup=
-\    namedM_E_MasterKeyName,
+\    namedM_KeyName,
 \    namedError
 
-hi link namedM_E_IPaddrPortNumber namedHL_Error
-syn match namedM_E_IPaddrPortNumber contained /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
-\ skipwhite
+hi link namedM_IPaddrPortNumber namedHL_Error
+syn match namedM_IPaddrPortNumber contained /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+\ skipwhite skipnl skipempty
 \ contains=named_Port
 \ nextgroup=
-\    namedM_E_KeyKeyword,
+\    namedM_Key
 
-hi link namedM_E_IPaddrPortKeyword namedHL_Option
-syn match namedM_E_IPaddrPortKeyword contained skipwhite /port/
+hi link namedM_IPaddrPort namedHL_Option
+syn match namedM_IPaddrPort contained /\<port\>/
+\ skipwhite skipnl skipempty
 \ nextgroup=
-\    namedM_E_IPaddrPortNumber,
+\    namedM_IPaddrPortNumber,
 \    namedError
 
-hi link namedM_E_MasterName namedHL_Identifier
-syn match namedM_E_MasterName contained skipwhite /[a-zA-Z][a-zA-Z0-9_\-]\+/
+hi link namedM_MasterName namedHL_Identifier
+syn match namedM_MasterName contained /[a-zA-Z][a-zA-Z0-9_\-]\+/
+\ skipwhite skipnl skipempty
 \ nextgroup=
-\    namedM_E_KeyKeyword,
+\    namedM_Key,
 \    namedSemicolon,
-\   namedComment, namedInclude,
+\    namedComment, 
+\    namedInclude,
 \    namedError
-\ containedin=namedStmtMastersSection
 
-" hi link namedM_E_IP6addr namedHL_Number
-syn match namedM_E_IP6addr contained skipwhite /[0-9a-fA-F:\.]\{6,48}/
+hi link namedM_IP6addr namedHL_Number
+syn match namedM_IP6addr contained /[0-9a-fA-F:\.]\{6,48}/
+\ skipwhite skipnl skipempty
 \ contains=named_IP6Addr
 \ nextgroup=
 \   namedSemicolon,
-\   namedM_E_IPaddrPortKeyword,
-\   namedM_E_KeyKeyword,
-\   namedComment, namedInclude,
+\   namedM_IPaddrPort,
+\   namedM_Key,
+\   namedComment, 
+\   namedInclude,
 \   namedError
-\ containedin=namedStmtMastersSection
 
-hi link namedM_E_IP4addr namedHL_Number
-syn match namedM_E_IP4addr contained skipwhite 
+hi link namedM_IP4addr namedHL_Number
+syn match namedM_IP4addr contained 
 \ /\<\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \   namedSemicolon,
-\   namedM_E_IPaddrPortKeyword,
-\   namedM_E_KeyKeyword,
+\   namedM_IPaddrPort,
+\   namedM_Key,
 \   namedComment, namedInclude,
 \   namedError
-\ containedin=namedStmtMastersSection
 
-syn region namedStmtMastersSection contained start=/{/ end=/}/
-\ skipwhite skipempty
-\ contains=namedComment
+syn region namedM_MastersSection contained start=/{/ end=/}/
+\ skipwhite skipnl skipempty
+\ contains=
+\    namedInclude,
+\    namedComment,
+\    namedM_MasterName,
+\    namedM_IP4addr,
+\    namedM_IP6addr,
+\    namedError
 \ nextgroup=
 \    namedSemicolon,
 \    namedInclude,
@@ -1810,39 +1878,45 @@ syn region namedStmtMastersSection contained start=/{/ end=/}/
 
 hi link namedM_Dscp_Number namedHL_Number
 syn match namedM_Dscp_Number contained /6[0-3]\|[0-5][0-9]\|[1-9]/
-\ skipwhite
-\ nextgroup=namedM_Port,namedStmtMastersSection,namedSemicolon
-
-hi link namedM_Port_Number namedHL_Number
-syn match namedM_Port_Number contained skipwhite
-\ /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
-\ nextgroup=namedM_Dscp,namedStmtMastersSection,namedSemicolon
-
-hi link namedM_Port  namedHL_Option
-syn match namedM_Port /port/ contained skipwhite
-\ nextgroup=namedM_Port_Number
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedM_Port,
+\    namedM_MastersSection,
+\    namedSemicolon
 
 hi link namedM_Dscp  namedHL_Option
-syn match namedM_Dscp /dscp/ contained skipwhite
+syn match namedM_Dscp contained /\<dscp\>/ skipwhite skipnl skipempty
 \ nextgroup=namedM_Dscp_Number
 
-hi link namedStmt_MastersNameIdentifier namedHL_Identifier
-syn match namedStmt_MastersNameIdentifier contained /\<[0-9a-zA-Z\-_\.]\{1,64}/
-\ contains=namedMasterName
-\ skipwhite skipempty skipnl
+hi link namedM_Port_Number namedHL_Number
+syn match namedM_Port_Number contained 
+\ /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+\ skipwhite skipnl skipempty
 \ nextgroup=
-\    namedStmtMastersSection,
+\    namedM_Dscp,
+\    namedM_MastersSection,
+\    namedSemicolon
+
+hi link namedM_Port  namedHL_Option
+syn match namedM_Port contained /\<port\>/ skipwhite skipnl skipempty
+\ nextgroup=namedM_Port_Number
+
+hi link namedM_Identifier namedHL_Identifier
+syn match namedM_Identifier contained /\<[0-9a-zA-Z\-_\.]\{1,64}/
+\ skipwhite skipnl skipempty
+\ contains=namedMasterName
+\ nextgroup=
 \    namedM_Port,
 \    namedM_Dscp,
+\    namedM_MastersSection,
 \    namedComment, namedInclude,
 \    namedError
 
-" End of Masters section
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within 'options' statement
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 hi link namedO_Boolean_Group namedHL_Option
-syn keyword namedO_Boolean_Group contained 
+syn keyword namedO_Boolean_Group contained skipwhite skipnl skipempty
 \     automatic-interface-scan 
 \     answer-cookie
 \     flush-zones-on-shutdown
@@ -1850,21 +1924,23 @@ syn keyword namedO_Boolean_Group contained
 \     memstatistics
 \     querylog
 \ nextgroup=@namedClusterBoolean_SC
-\ skipwhite
 
 hi link namedO_UdpPorts namedHL_Option
-syn keyword namedO_UdpPorts contained skipwhite
-\    avoid-v4-udp-ports
-\    avoid-v6-udp-ports
-\ nextgroup=named_PortSection,namedInclude,namedComment,namedError
+syn match namedO_UdpPorts contained skipwhite skipnl skipempty
+\    /\<\(avoid\-v4\-udp\-ports\)\|\(avoid\-v6\-udp\-ports\)\>/
+\ nextgroup=
+\    named_PortSection,
+\    namedInclude,
+\    namedComment,
+\    namedError
 
 hi link named_Hostname_SC namedHL_Builtin
-syn keyword named_Hostname_SC contained skipwhite
+syn keyword named_Hostname_SC contained skipwhite skipnl skipempty
 \    hostname
 \ nextgroup=namedSemicolon
 
 hi link namedO_ServerId namedHL_Option
-syn keyword namedO_ServerId contained skipwhite
+syn keyword namedO_ServerId contained skipwhite skipnl skipempty
 \    server-id
 \ nextgroup=
 \    named_Builtin_None_SC,
@@ -1872,7 +1948,7 @@ syn keyword namedO_ServerId contained skipwhite
 \    named_QuotedDomain_SC
 
 hi link namedO_String_QuoteForced namedHL_Option
-syn keyword namedO_String_QuoteForced contained skipwhite
+syn keyword namedO_String_QuoteForced contained skipwhite skipnl skipempty
 \    bindkeys-file
 \    cache-file
 \    directory
@@ -1887,26 +1963,24 @@ syn keyword namedO_String_QuoteForced contained skipwhite
 \    namedNotString
 
 hi link namedO_ListenOn_DscpValue namedHL_Number
-syn match namedO_ListenOn_DscpValue contained skipwhite skipnl skipempty
-\ /\d\{1,11}/
-\ nextgroup=
-\    namedA_AML
+syn match namedO_ListenOn_DscpValue contained /\d\{1,11}/
+\ skipwhite skipnl skipempty
+\ nextgroup=namedA_AML
 
 hi link namedO_ListenOn_Dscp namedHL_Option
 syn keyword namedO_ListenOn_Dscp contained dscp skipwhite skipnl skipempty
 \ nextgroup=namedO_ListenOn_DscpValue
 
 hi link namedO_ListenOn_PortValue namedHL_Number
-syn match namedO_ListenOn_PortValue contained skipwhite skipnl skipempty
-\ /\d\{1,5}/
+syn match namedO_ListenOn_PortValue contained /\d\{1,5}/
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedA_AML,
 \    namedO_ListenOn_Dscp
 
 hi link namedO_ListenOn_Port namedHL_Option
 syn keyword namedO_ListenOn_Port contained port skipwhite skipnl skipempty
-\ nextgroup=
-\    namedO_ListenOn_PortValue
+\ nextgroup=namedO_ListenOn_PortValue
 
 hi link namedO_ListenOn namedHL_Option
 syn keyword namedO_ListenOn contained skipwhite skipnl skipempty
@@ -1920,68 +1994,64 @@ syn keyword namedO_ListenOn contained skipwhite skipnl skipempty
 \    namedComment
 
 hi link namedO_Blackhole namedHL_Option
-syn keyword namedO_Blackhole contained skipwhite
-\    blackhole
+syn keyword namedO_Blackhole contained blackhole skipwhite skipnl skipempty
 \ nextgroup=
 \    namedA_AML,
 \    namedInclude,
 \    namedComment
 
 hi link namedO_CheckNamesType namedHL_Builtin
-syn match namedO_CheckNamesType contained /primary/ skipwhite
+syn match namedO_CheckNamesType contained /primary/ skipwhite skipnl skipempty
 \ nextgroup=named_IgnoreWarnFail_SC
-syn match namedO_CheckNamesType contained /secondary/ skipwhite
+syn match namedO_CheckNamesType contained /secondary/ skipwhite skipnl skipempty
 \ nextgroup=named_IgnoreWarnFail_SC
-syn match namedO_CheckNamesType contained /response/ skipwhite
+syn match namedO_CheckNamesType contained /response/ skipwhite skipnl skipempty
 \ nextgroup=named_IgnoreWarnFail_SC
-syn match namedO_CheckNamesType contained /master/ skipwhite
+syn match namedO_CheckNamesType contained /master/ skipwhite skipnl skipempty
 \ nextgroup=named_IgnoreWarnFail_SC
-syn match namedO_CheckNamesType contained /slave/ skipwhite
+syn match namedO_CheckNamesType contained /slave/ skipwhite skipnl skipempty
 \ nextgroup=named_IgnoreWarnFail_SC 
 
 " not the same as 'check-names' in View or Zone
 hi link namedO_CheckNames namedHL_Option
-syn keyword namedO_CheckNames contained check-names skipwhite
+syn keyword namedO_CheckNames contained check-names skipwhite skipnl skipempty
 \ nextgroup=
 \    namedO_CheckNamesType,
 \    namedError
 
 hi link namedO_CookieAlgorithmChoices namedHL_Type
-syn match namedO_CookieAlgorithmChoices contained skipwhite
+syn match namedO_CookieAlgorithmChoices contained skipwhite skipnl skipempty
 \ /\%(aes\)\|\%(sha256\)\|\%(sha1\)/
 \ nextgroup=namedSemicolon,namedError
 
 hi link namedO_CookieAlgs namedHL_Option
 syn keyword namedO_CookieAlgs contained cookie-algorithm
-\ skipwhite
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedO_CookieAlgorithmChoices
 
 hi link namedO_CookieSecretValue namedHL_Identifier
-syn match namedO_CookieSecretValue contained 
-\ /\c['"][0-9a-f]\{32}['"]/
+syn match namedO_CookieSecretValue contained /\c['"][0-9a-f]\{32}['"]/
+\ skipwhite skipnl skipempty
 \ contains=namedHexSecretValue
-\ skipwhite
 \ nextgroup=namedSemicolon
-syn match namedO_CookieSecretValue contained 
-\ /\c['"][0-9a-f]\{20}['"]/
+syn match namedO_CookieSecretValue contained /\c['"][0-9a-f]\{20}['"]/
+\ skipwhite skipnl skipempty
 \ contains=namedHexSecretValue
-\ skipwhite
 \ nextgroup=namedSemicolon
-syn match namedO_CookieSecretValue contained 
-\ /\c['"][0-9a-f]\{16}['"]/
+syn match namedO_CookieSecretValue contained /\c['"][0-9a-f]\{16}['"]/
+\ skipwhite skipnl skipempty
 \ contains=namedHexSecretValue
-\ skipwhite
 \ nextgroup=namedSemicolon
 
 hi link namedO_CookieSecret namedHL_Option
 syn keyword namedO_CookieSecret contained cookie-secret
-\ skipwhite
+\ skipwhite skipnl skipempty
 \ nextgroup=namedO_CookieSecretValue
 
 hi link named_NumberSize_SC namedHL_Number
-syn match named_NumberSize_SC contained
-\ /\<\d\{1,10}[bBkKMmGgPp]\{0,1}\>/he=e-1
+syn match named_NumberSize_SC contained /\<\d\{1,10}[bBkKMmGgPp]\{0,1}\>/he=e-1
+\ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
 
 hi link namedO_DefaultUnlimitedSize namedHL_Option
@@ -1989,82 +2059,88 @@ syn keyword namedO_DefaultUnlimitedSize contained
 \     coresize
 \     datasize
 \     stacksize
-\ skipwhite
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    named_DefaultUnlimited_SC,
 \    named_SizeSpec_SC
 
-hi link namedO_DnstapOutputSuffix namedHL_Builtin
-syn keyword namedO_DnstapOutputSuffix contained 
+hi link namedO_DnstapOutputSuffixType namedHL_Builtin
+syn keyword namedO_DnstapOutputSuffixType contained 
 \    increment
 \    timestamp
-\ skipwhite
+\ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
 
-hi link namedO_DnstapOutputSize namedHL_Number
-syn match namedO_DnstapOutputSize contained /[0-9]\+/
-\ skipwhite
+hi link namedO_DnstapOutputSizeValue namedHL_Number
+syn match namedO_DnstapOutputSizeValue contained /[0-9]\{1,10}/
+\ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
     
 hi link namedO_DnstapOutputSizeBuiltin namedHL_Builtin
 syn keyword namedO_DnstapOutputSizeBuiltin contained 
 \    unlimited
-\ skipwhite
+\ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
 
 hi link namedO_DnstapOutputVersionBuiltin namedHL_Builtin
 syn keyword namedO_DnstapOutputVersionBuiltin contained 
 \    unlimited
-\ skipwhite
+\ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
 
-hi link namedO_DnstapOutputVersion namedHL_Number
-syn match namedO_DnstapOutputVersion contained /\d\+/
-\ skipwhite
+hi link namedO_DnstapOutputVersionNumber namedHL_Number
+syn match namedO_DnstapOutputVersionNumber contained /\d\+/
+\ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
 
-hi link namedO_DnstapOutputKywdVersion namedHL_Option
-syn keyword namedO_DnstapOutputKywdVersion contained version 
-\ skipwhite
+hi link namedO_DnstapOutputVersion namedHL_Clause
+syn keyword namedO_DnstapOutputVersion contained version 
+\ skipwhite skipnl skipempty
 \ nextgroup=
-\    namedO_DnstapOutputVersionBuiltin
-\    namedO_DnstapOutputVersion
-\ containedin=
-\    namedO_DnstapOutputSection
+\    namedO_DnstapOutputVersionBuiltin,
+\    namedO_DnstapOutputVersionNumber
 
-hi link namedO_DnstapOutputKywdSize namedHL_Option
-syn keyword namedO_DnstapOutputKywdSize contained size 
+hi link namedO_DnstapOutputSize namedHL_Clause
+syn keyword namedO_DnstapOutputSize contained size 
 \ skipwhite
 \ nextgroup=
 \    namedO_DnstapOutputSizeBuiltin,
-\    namedO_DnstapOutputSize
-\ containedin=
-\    namedO_DnstapOutputSection
+\    namedO_DnstapOutputSizeValue
 
-hi link namedO_DnstapOutputKywdSuffix namedHL_Option
-syn keyword namedO_DnstapOutputKywdSuffix contained suffix 
-\ skipwhite
-\ nextgroup=namedO_DnstapOutputSuffix
-\ containedin=
-\    namedO_DnstapOutputSection
+hi link namedO_DnstapOutputSuffix namedHL_Clause
+syn keyword namedO_DnstapOutputSuffix contained suffix 
+\ skipwhite skipnl skipempty
+\ nextgroup=namedO_DnstapOutputSuffixType
 
 syn region namedO_DnstapOutputSection contained start=/\zs\S\ze/ end=/;/me=e-1
-\ skipwhite
+\ skipwhite skipnl skipempty
+\ contains=
+\    namedO_DnstapOutputSuffix,
+\    namedO_DnstapOutputVersion,
+\    namedO_DnstapOutputSize
 \ nextgroup=namedSemicolon
 
 hi link namedO_DnstapOutputFilespec namedHL_String
-syn match namedO_DnstapOutputFilespec contained /[a-zA-Z\]\-\[0-9\._,:\/?<>|'"`~!@#$%\^&*\\(\\)+]\{1,1024}/ skipwhite skipempty skipnl  nextgroup=namedO_DnstapOutputSection
-syn match namedO_DnstapOutputFilespec contained /'[ a-zA-Z\]\-\[0-9\._,:;\/?<>|"`~!@#$%\^&*\\(\\)+{}]\{1,1024}'/hs=s+1,he=e-1 skipwhite skipempty skipnl nextgroup=namedO_DnstapOutputSection
-syn match namedO_DnstapOutputFilespec contained /"[ a-zA-Z\]\-\[0-9\._,:;\/?<>|'`~!@#$%\^&*\\(\\)+{}]\{1,1024}"/hs=s+1,he=e-1 skipwhite skipempty skipnl nextgroup=namedO_DnstapOutputSection
+syn match namedO_DnstapOutputFilespec contained /[a-zA-Z\]\-\[0-9\._,:\/?<>|'"`~!@#$%\^&*\\(\\)+]\{1,1024}/ 
+\ skipwhite skipempty skipnl 
+\ nextgroup=namedO_DnstapOutputSection
+syn match namedO_DnstapOutputFilespec contained /'[ a-zA-Z\]\-\[0-9\._,:;\/?<>|"`~!@#$%\^&*\\(\\)+{}]\{1,1024}'/hs=s+1,he=e-1 
+\ skipwhite skipempty skipnl 
+\ nextgroup=namedO_DnstapOutputSection
+syn match namedO_DnstapOutputFilespec contained /"[ a-zA-Z\]\-\[0-9\._,:;\/?<>|'`~!@#$%\^&*\\(\\)+{}]\{1,1024}"/hs=s+1,he=e-1 
+\ skipwhite skipempty skipnl 
+\ nextgroup=namedO_DnstapOutputSection
 
-hi link namedO_DnstapOutputType namedHL_Type
-syn keyword namedO_DnstapOutputType contained skipwhite skipempty
+hi link namedO_DnstapOutputType namedHL_Clause
+syn keyword namedO_DnstapOutputType contained skipwhite skipnl skipempty
 \    file
 \    unix
 \ nextgroup=namedO_DnstapOutputFilespec
 
-hi link namedO_DnstapOutputKeyword namedHL_Option
-syn keyword namedO_DnstapOutputKeyword contained dnstap-output skipwhite skipempty
+hi link namedO_DnstapOutput namedHL_Option
+syn keyword namedO_DnstapOutput contained
+\    dnstap-output 
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedO_DnstapOutputType,
 \    namedO_DnstapOutputFilespec
@@ -2072,40 +2148,40 @@ syn keyword namedO_DnstapOutputKeyword contained dnstap-output skipwhite skipemp
 hi link namedO_DnstapVersion namedHL_Option
 syn keyword namedO_DnstapVersion contained
 \    dnstap-version
-\ skipwhite
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    named_Builtin_None_SC,
 \    named_E_Filespec_SC
 
 hi link namedO_DscpNumber namedHL_Number
 syn match namedO_DscpNumber contained /6[0-3]\|[0-5][0-9]\|[1-9]/
-\ skipwhite
+\ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
 
 hi link namedO_Dscp namedHL_Option
-syn keyword namedO_Dscp contained dscp skipwhite
+syn keyword namedO_Dscp contained dscp skipwhite skipnl skipempty
 \ nextgroup=namedO_DscpNumber
 
 hi link namedO_Fstrm_ModelValue namedHL_Builtin
 syn keyword namedO_Fstrm_ModelValue contained
 \    mpsc
 \    spsc
-\ skipwhite
+\ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
 
 hi link namedO_Fstrm_Model namedHL_Option
 syn keyword namedO_Fstrm_Model contained
 \    fstrm-set-output-queue-model
-\ skipwhite
+\ skipwhite skipnl skipempty
 \ nextgroup=namedO_Fstrm_ModelValue
 
 hi link namedO_InterfaceInterval namedHL_Option
-syn keyword namedO_InterfaceInterval contained skipwhite
+syn keyword namedO_InterfaceInterval contained skipwhite skipnl skipempty
 \    interface-interval
 \ nextgroup=named_Number_Max28day_SC
 
 hi link namedO_Number_Group namedHL_Option
-syn keyword namedO_Number_Group contained
+syn keyword namedO_Number_Group contained skipwhite skipnl skipempty
 \    fstrm-set-buffer-hint
 \    fstrm-set-flush-timeout
 \    fstrm-set-input-queue-size
@@ -2129,42 +2205,42 @@ syn keyword namedO_Number_Group contained
 \    transfers-in
 \    transfers-out
 \    transfers-per-ns
-\ skipwhite
 \ nextgroup=named_Number_SC
 
 hi link namedO_Ixfr_From_Diff_Opts namedHL_Builtin
-syn keyword namedO_Ixfr_From_Diff_Opts contained
+syn keyword namedO_Ixfr_From_Diff_Opts contained skipwhite skipnl skipempty
 \    primary
 \    master
 \    secondary
 \    slave
-\ skipwhite
 \ nextgroup=namedSemicolon
 
 " ixfr-from-differences is different in View/Zone sections
 hi link namedO_Ixfr_From_Diff namedHL_Option
-syn keyword namedO_Ixfr_From_Diff contained ixfr-from-differences skipwhite
+syn keyword namedO_Ixfr_From_Diff contained ixfr-from-differences 
+\ skipwhite skipnl skipempty
 \ nextgroup=namedO_Ixfr_From_Diff_Opts
 
 hi link namedO_KeepResponseOrder namedHL_Option
-syn keyword namedO_KeepResponseOrder contained skipwhite skipempty
+syn keyword namedO_KeepResponseOrder contained skipwhite skipnl skipempty
 \     keep-response-order 
 \ nextgroup=namedA_AML
 
 hi link namedO_RecursingFile namedHL_Option
-syn keyword namedO_RecursingFile contained skipwhite
+syn keyword namedO_RecursingFile contained skipwhite skipnl skipempty
 \    recursing-file
 \ nextgroup=named_E_Filespec_SC
 
 hi link namedO_Filespec_None_ForcedQuoted_Group namedHL_Option
-syn keyword namedO_Filespec_None_ForcedQuoted_Group contained skipwhite
+syn keyword namedO_Filespec_None_ForcedQuoted_Group contained 
+\ skipwhite skipnl skipempty
 \    random-device
 \ nextgroup=
 \    named_E_Filespec_SC,
 \    named_Builtin_None_SC
 
 hi link namedO_Filespec_Group namedHL_Option
-syn keyword namedO_Filespec_Group contained skipwhite
+syn keyword namedO_Filespec_Group contained skipwhite skipnl skipempty
 \    secroots-file
 \    statistics-file
 \ nextgroup=
@@ -2172,35 +2248,105 @@ syn keyword namedO_Filespec_Group contained skipwhite
 \    named_Builtin_None_SC
 
 hi link namedO_Port namedHL_Option
-syn keyword namedO_Port contained port skipwhite
+syn keyword namedO_Port contained port skipwhite skipnl skipempty
 \ nextgroup=named_Port_SC
 
 hi link namedO_SessionKeyAlg namedHL_Option
-syn keyword namedO_SessionKeyAlg contained session-keyalg skipwhite
+syn keyword namedO_SessionKeyAlg contained session-keyalg 
+\ skipwhite skipnl skipempty
 \ nextgroup=named_AlgorithmName_SC
 
 hi link namedO_SessionKeyfile namedHL_Option
-syn keyword namedO_SessionKeyfile contained session-keyfile skipwhite
+syn keyword namedO_SessionKeyfile contained session-keyfile 
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    named_Filespec_SC,
 \    named_Builtin_None_SC
 
 " RNDC/rndc keywords
 hi link namedO_DefaultKey namedHL_Option
-syn keyword namedO_DefaultKey contained default-key skipwhite skipnl skipempty
+syn keyword namedO_DefaultKey contained default-key 
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedKeyName_SC
 
 hi link namedO_DefaultServer namedHL_Option
-syn keyword namedO_DefaultServer contained default-server skipwhite skipnl skipempty
+syn keyword namedO_DefaultServer contained default-server 
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    named_E_IP4Addr_SC,
 \    named_E_IP6Addr_SC
 
 hi link namedO_DefaultPort namedHL_Option
-syn keyword namedO_DefaultPort contained default-port skipwhite skipnl skipempty
+syn keyword namedO_DefaultPort contained default-port 
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    named_Port_SC
+
+hi link namedO_TkeyDhkeyId namedHL_Number
+syn match namedO_TkeyDhkeyId contained /\d\{1,5}/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedSemicolon
+
+hi link namedO_TkeyDhkeyName namedHL_String
+syn match namedO_TkeyDhkeyName contained skipwhite skipempty skipnl
+\ /'[ a-zA-Z\]\-\[0-9\._,:;\\/?<>|"`~!@#$%\^&*\\(\\)+{}]\{1,1024}'/hs=s+1,he=e-1
+\ skipwhite skipnl skipempty
+\ nextgroup=namedO_TkeyDhkeyId
+syn match namedO_TkeyDhkeyName contained skipwhite skipempty skipnl
+\ /"[ a-zA-Z\]\-\[0-9\._,:;\\/?<>|'`~!@#$%\^&*\\(\\)+{}]\{1,1024}"/hs=s+1,he=e-1
+\ skipwhite skipnl skipempty
+\ nextgroup=namedO_TkeyDhkeyId
+syn match namedO_TkeyDhkeyName contained skipwhite skipempty skipnl
+\ /[a-zA-Z\]\-\[0-9\._,:\\/?<>|'"`~!@#$%\^&*\\(\\)+]\{1,1024}/ 
+\ skipwhite skipnl skipempty
+\ nextgroup=namedO_TkeyDhkeyId
+
+hi link namedO_TkeyDhkey namedHL_Option
+syn keyword namedO_TkeyDhkey contained skipwhite skipnl skipempty
+\    tkey-dhkey
+\ nextgroup=
+\    namedO_TkeyDhkeyName
+
+hi link namedO_TkeyDomainName namedHL_String
+syn match namedO_TkeyDomainName contained skipwhite skipempty skipnl
+\ /'[ a-zA-Z\]\-\[0-9\._,:;\\/?<>|"`~!@#$%\^&*\\(\\)+{}]\{1,1024}'/hs=s+1,he=e-1
+\ skipwhite skipnl skipempty
+\ nextgroup=namedSemicolon
+syn match namedO_TkeyDomainName contained skipwhite skipempty skipnl
+\ /"[ a-zA-Z\]\-\[0-9\._,:;\\/?<>|'`~!@#$%\^&*\\(\\)+{}]\{1,1024}"/hs=s+1,he=e-1
+\ skipwhite skipnl skipempty
+\ nextgroup=namedSemicolon
+syn match namedO_TkeyDomainName contained skipwhite skipempty skipnl
+\ /[a-zA-Z\]\-\[0-9\._,:\\/?<>|'"`~!@#$%\^&*\\(\\)+]\{1,1024}/ 
+\ skipwhite skipnl skipempty
+\ nextgroup=namedSemicolon
+
+hi link namedO_TkeyDomain namedHL_Option
+syn keyword namedO_TkeyDomain contained skipwhite skipnl skipempty
+\    tkey-domain
+\ nextgroup=
+\    namedO_TkeyDomainName
+
+hi link namedO_TkeyGSSAPICredential namedHL_Option
+syn keyword namedO_TkeyGSSAPICredential contained skipwhite skipnl skipempty
+\    tkey-gssapi-credential
+\ nextgroup=
+\    namedO_TkeyDomainName
+
+hi link namedO_TkeyGSSAPIKeytab namedHL_Option
+syn keyword namedO_TkeyGSSAPIKeytab contained skipwhite skipnl skipempty
+\    tkey-gssapi-keytab
+\ nextgroup=
+\    namedO_TkeyDomainName
+
+hi link namedO_Version namedHL_Option
+syn keyword namedO_Version contained skipwhite skipnl skipempty
+\    version
+\ nextgroup=
+\    namedO_TkeyDomainName
+
 " syn keyword namedO_Keywords deallocate-on-exit
 " syn keyword namedO_Keywords deallocate-on-exit
 " syn keyword namedO_Keywords filter-aaaa
@@ -2226,7 +2372,6 @@ syn keyword namedO_DefaultPort contained default-port skipwhite skipnl skipempty
 " syn keyword namedO_Keywords statistics-interval
 " syn keyword namedO_Keywords support-ixfr
 " syn keyword namedO_Keywords suppress-initial-notify
-" syn keyword namedO_Keywords tkey-dhkey
 " syn keyword namedO_Keywords tkey-domain
 " syn keyword namedO_Keywords tkey-gssapi-credential
 " syn keyword namedO_Keywords tkey-gssapi-keytab
@@ -2397,21 +2542,20 @@ syn keyword namedZ_Filespec_Group contained journal skipwhite
 \ nextgroup=named_E_Filespec_SC
 
 hi link namedZ_Masters namedHL_Option
-syn keyword namedZ_Masters contained masters skipwhite
+syn keyword namedZ_Masters contained masters skipwhite skipnl skipempty
 \ nextgroup=
 \    namedComment,
 \    namedInclude,
-\    namedStmtMastersSection,
 \    namedM_Port,
 \    namedM_Dscp,
+\    namedM_MastersSection,
 \    namedError
-\ containedin=namedStmt_ZoneSection
 
 hi link namedOVZ_DefaultUnlimitedSize_Group namedHL_Option
 syn keyword namedOVZ_DefaultUnlimitedSize_Group contained 
 \    max-journal-size
 \    max-ixfr-log-size
-\ skipwhite
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    named_DefaultUnlimited_SC,
 \    named_SizeSpec_SC
@@ -2658,8 +2802,8 @@ syn keyword namedOSV_QuerySource_Address6 contained address skipwhite
 \ nextgroup=namedOSV_QuerySource_IP6Addr
 
 hi link namedOSV_QuerySourceIP6 namedHL_Option
-syn match namedOSV_QuerySourceIP6 contained skipwhite
-\    /\<query-source-v6\>/
+syn keyword namedOSV_QuerySourceIP6 contained skipwhite
+\    query-source-v6
 \ nextgroup=
 \    namedOSV_QuerySource_Address6,
 \    namedOSV_QuerySource_IP6Addr,
@@ -2919,14 +3063,11 @@ syn region namedOV_DenyAnswerAddrSection contained start=/{/ end=/}/
 \    namedSemicolon
 
 " deny-answer-addresses { } ...
-hi link namedStmtOptionsViewDenyAnswerAddrKeyword namedHL_Option
-syn keyword namedStmtOptionsViewDenyAnswerAddrKeyword contained 
+hi link namedOV_DenyAnswerAddresses namedHL_Option
+syn keyword namedOV_DenyAnswerAddresses contained 
 \    deny-answer-addresses
 \ skipwhite
 \ nextgroup=namedOV_DenyAnswerAddrSection
-\ containedin=
-\    namedStmt_OptionsSection,
-\    namedStmt_ViewSection
 
 " deny-answer-aliases { <AML>; } ...
 syn region namedOV_DenyAnswerAliasSection contained start=/{/ end=/}/
@@ -3065,7 +3206,7 @@ syn match namedOV_Dns64Ident contained /[0-9a-fA-F:%\.\/]\{7,48}/
 
 " dns64 <netprefix> 
 hi link namedOV_Dns64 namedHL_Option
-syn keyword namedOV_Dns64 contained dns64 skipwhite
+syn match namedOV_Dns64 contained /\<dns64\>/ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedOV_Dns64Ident,
 \    namedError
@@ -3076,9 +3217,12 @@ syn keyword namedOV_Dns64 contained dns64 skipwhite
 " dns64-contact <string>
 " dns64-server <string>
 hi link namedOV_Dns64_Group namedHL_Option
-syn keyword namedOV_Dns64_Group contained skipwhite
-\    dns64-contact
-\    dns64-server
+syn match namedOV_Dns64_Group contained skipwhite skipnl skipempty
+\    /\(\<dns64\-contact\>\)\|\(dns64\-server\)/
+\ nextgroup=
+\    named_QuotedDomain_SC,
+\    namedError
+syn keyword namedOV_Dns64_Group contained skipwhite skipnl skipempty
 \    empty-server
 \    empty-contact
 \ nextgroup=
@@ -3568,7 +3712,7 @@ hi link namedOV_RateLimit namedHL_Option
 syn keyword namedOV_RateLimit contained rate-limit skipwhite skipempty
 \ nextgroup=namedOV_RateLimitSection
 
-hi link namedOV_ResponsePadding_BlockSize namedHL_Clause
+hi link namedOV_ResponsePadding_BlockSize namedHL_Option
 syn match namedOV_ResponsePadding_BlockSize contained skipwhite
 \    /block\-size/
 \ nextgroup=named_Number_SC
@@ -4093,12 +4237,13 @@ syn match named_A6orAAAA_SC /\caaaa/ contained skipwhite nextgroup=namedSemicolo
 syn match named_A6orAAAA_SC /\ca6/ contained skipwhite nextgroup=namedSemicolon
 
 hi link namedOSV_OptAV6S namedHL_Option
-syn keyword namedOSV_OptAV6S contained skipwhite
-\    allow-v6-synthesis
+syn match namedOSV_OptAV6S contained /\<allow\-v6\-synthesis\>/
+\ skipwhite skipnl skipempty
 \ nextgroup=named_A6orAAAA_SC 
 
 hi link namedOSV_Boolean_Group namedHL_Option
-syn keyword namedOSV_Boolean_Group contained skipwhite
+syn keyword namedOSV_Boolean_Group contained 
+\ skipwhite skipnl skipempty
 \    provide-ixfr
 \    request-nsid
 \    send-cookie
@@ -4521,8 +4666,8 @@ syn match namedOSVZ_NotifySource_IP6Addr contained /::\%(\%(25[0-5]\|\%(2[0-4]\|
 
 " Do both IPv4 and IPv6 for notify-source
 hi link namedOSVZ_NotifySource namedHL_Option
-syn match namedOSVZ_NotifySource contained skipwhite
-\    /\<notify-source-v6\>/
+syn keyword namedOSVZ_NotifySource contained skipwhite
+\    notify-source-v6
 \ nextgroup=
 \    namedOSVZ_NotifySource_IP6Addr
 
@@ -4581,6 +4726,7 @@ syn region namedStmt_OptionsSection contained start=+{+ end=+}+
 \    namedO_DefaultUnlimitedSize,
 \    namedOV_DefaultUnlimitedSize_Group,
 \    namedOVZ_DefaultUnlimitedSize_Group,
+\    namedOV_DenyAnswerAddresses,
 \    namedOVZ_Dialup,
 \    namedOV_DisableAlgorithms,
 \    namedOV_DisableDsDigests,
@@ -4597,7 +4743,7 @@ syn region namedStmt_OptionsSection contained start=+{+ end=+}+
 \    namedOV_DnssecValidation,
 \    namedOV_Dnstap,
 \    namedOZ_DnstapIdentity,
-\    namedO_DnstapOutputKeyword,
+\    namedO_DnstapOutput,
 \    namedO_DnstapVersion,
 \    namedO_DscpNumber,
 \    namedOV_DualStack,
@@ -4634,6 +4780,7 @@ syn region namedStmt_OptionsSection contained start=+{+ end=+}+
 \    namedOV_NxdomainRedirect,
 \    namedOVZ_OptATS,
 \    namedOSV_OptAV6S,
+\    namedO_Port,
 \    namedOV_Prefetch,
 \    namedOV_QnameMin,
 \    namedOSV_QuerySource,
@@ -4651,6 +4798,10 @@ syn region namedStmt_OptionsSection contained start=+{+ end=+}+
 \    namedOVZ_SigSigning,
 \    namedOV_SizeSpec_Group,
 \    namedO_String_QuoteForced,
+\    namedO_TkeyDhkey,
+\    namedO_TkeyDomain,
+\    namedO_TkeyGSSAPICredential,
+\    namedO_TkeyGSSAPIKeytab,
 \    namedOSV_TransferFormat,
 \    namedOSVZ_TransferSource,
 \    namedOSVZ_TransferSourceIP6,
@@ -4660,6 +4811,7 @@ syn region namedStmt_OptionsSection contained start=+{+ end=+}+
 \    namedOV_Ttl90sec_Group,
 \    namedO_UdpPorts,
 \    namedOSV_UdpSize,
+\    namedO_Version,
 \    namedOVZ_ZoneStat,
 \    namedParenError
 
@@ -4730,6 +4882,7 @@ syn region namedStmt_ViewSection contained start=+{+ end=+}+
 \    namedOVZ_CleaningInterval,
 \    namedOV_DefaultUnlimitedSize_Group,
 \    namedOVZ_DefaultUnlimitedSize_Group,
+\    namedOV_DenyAnswerAddresses,
 \    namedOVZ_Dialup,
 \    namedOV_DisableAlgorithms,
 \    namedOV_DisableDsDigests,
@@ -4837,6 +4990,7 @@ syn region namedStmt_ZoneSection contained start=+{+ end=+}+
 \    namedVZ_Ixfr_From_Diff,
 \    namedOVZ_MasterFileFormat,
 \    namedOVZ_MasterFileStyle,
+\    namedZ_Masters,
 \    namedOVZ_MaxZoneTtl,
 \    namedOVZ_Notify,
 \    namedOSVZ_NotifySource,
@@ -4883,10 +5037,10 @@ syn match namedStmtKeyword /\_^\s*\<acl\>/ skipwhite skipempty
 " \    namedE_UnexpectedSemicolon
 
 syn match namedStmtKeyword /\_^\s*\<controls\>/ skipempty skipnl skipwhite
-\ nextgroup=namedStmt_ControlsSection
+\ nextgroup=namedC_ControlsSection
 
 syn match namedStmtKeyword /\_^\s*\<dlz\>/ skipempty skipnl skipwhite
-\ nextgroup=namedStmt_DlzName_Identifier
+\ nextgroup=namedD_Identifier
 \ containedin=
 \    namedStmt_ViewSection,
 \    namedStmt_ZoneSection
@@ -4899,14 +5053,14 @@ syn match namedStmtKeyword /\_^\s*\<key\>/ skipwhite skipempty
 \ nextgroup=namedStmtKeyIdent 
 
 syn match namedStmtKeyword /\_^\s*\<logging\>/ skipempty skipwhite
-\ nextgroup=namedStmtLoggingSection 
+\ nextgroup=namedL_LoggingSection 
 
 syn match namedStmtKeyword /\_^\s*\<managed-keys\>/ skipempty skipwhite
 \ nextgroup=namedStmt_ManagedKeysSection 
 
 syn match namedStmtKeyword /\_^\s*\<masters\>/ skipwhite skipnl skipempty 
 \ nextgroup=
-\    namedStmt_MastersNameIdentifier,
+\    namedM_Identifier,
 \    namedComment, 
 \    namedInclude,
 " \ namedError prevents a linefeed between 'master' and '<master_name'
