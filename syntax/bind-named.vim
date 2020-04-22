@@ -946,6 +946,9 @@ syn match named_E_SuffixDomain_SC contained /\<[0-9A-Za-z\._\-]{1,1023}[A-Za-z\.
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Nesting of PATTERNS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi link namedStmtKeywordUnknown namedHL_Error
+syn match namedStmtKeywordUnknown /\<\S\{1,1111}\>/
+
 
 hi link namedInclude namedHL_Include
 syn match namedInclude /\_s*include/ 
@@ -2881,9 +2884,9 @@ syn keyword namedOS_Boolean_Group contained
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 hi link namedOSV_UdpSize namedHL_Option
 syn keyword namedOSV_UdpSize contained 
-\ skipwhite skipnl skipempty
 \    edns-udp-size
 \    max-udp-size
+\ skipwhite skipnl skipempty
 \ nextgroup=named_Number_UdpSize
 
 " query-source [address] 
@@ -5405,6 +5408,10 @@ hi link namedOSVZ_NotifySource_Port namedHL_Option
 syn keyword namedOSVZ_NotifySource_Port contained port skipwhite
 \ nextgroup=namedOSVZ_NotifySource_PortValue
 
+hi link namedOSVZ_NotifySource_Wildcard namedHL_Builtin
+syn match namedOSVZ_NotifySource_Wildcard contained "\*" skipwhite
+\ nextgroup=namedOSVZ_NotifySource_Port
+
 hi link namedOSVZ_NotifySource_IP4Addr namedHL_Number
 syn match namedOSVZ_NotifySource_IP4Addr contained /\<\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/
 \ skipwhite
@@ -5414,11 +5421,13 @@ syn match namedOSVZ_NotifySource_IP4Addr contained /\<\%(\%(25[0-5]\|\%(2[0-4]\|
 \    namedSemicolon
 
 hi link namedOSVZ_NotifySource namedHL_Option
-syn keyword namedOSVZ_NotifySource contained skipwhite
+syn keyword namedOSVZ_NotifySource contained 
 \    notify-source
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedOSVZ_NotifySource_IP4Addr,
-\    namedOSVZ_NotifySource_Port
+\    namedOSVZ_NotifySource_IP6Addr,
+\    namedOSVZ_NotifySource_Wildcard
 
 " notify-source-v6 [address] 
 "              ( * | <ip6_addr> )
@@ -6046,9 +6055,6 @@ syn match namedStmt_ZoneNameIdentifier contained /\S\+/
 " Top-level statment (formerly clause) keywords
 " 'uncontained' statements are the ones used GLOBALLY
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-hi link namedStmtKeywordUnknown namedHL_Error
-syn match namedStmtKeywordUnknown /\<\S\*\>/ 
-
 hi link namedStmtKeyword namedHL_Statement
 syn match namedStmtKeyword /\_^\s*\<acl\>/ 
 \ skipwhite skipnl skipempty
