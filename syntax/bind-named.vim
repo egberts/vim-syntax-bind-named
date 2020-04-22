@@ -4038,7 +4038,7 @@ syn keyword namedOV_RP_DnsrpsOption contained
 \    namedOV_RP_Dnsrps_Section
 
 hi link namedOV_RP_DnsrpsEnable namedHL_Builtin
-syn match namedOV_RP_DnsrpsEnable /\i\{1,16}/
+syn match namedOV_RP_DnsrpsEnable contained /\i\{1,16}/
 \ contains=namedTypeBool
 \ skipwhite skipnl skipempty
 \ nextgroup=
@@ -4062,7 +4062,7 @@ syn keyword namedOV_RP_Dnsrps contained dnsrps-enable
 \ nextgroup=namedOV_RP_DnsrpsEnable
 
 hi link namedOV_RP_NsdnameEnable namedHL_Builtin
-syn match namedOV_RP_NsdnameEnable /\i\{1,16}/
+syn match namedOV_RP_NsdnameEnable contained /\i\{1,16}/
 \ contains=namedTypeBool
 \ skipwhite skipnl skipempty
 \ nextgroup=
@@ -6046,6 +6046,9 @@ syn match namedStmt_ZoneNameIdentifier contained /\S\+/
 " Top-level statment (formerly clause) keywords
 " 'uncontained' statements are the ones used GLOBALLY
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi link namedStmtKeywordUnknown namedHL_Error
+syn match namedStmtKeywordUnknown /\<\S\*\>/ 
+
 hi link namedStmtKeyword namedHL_Statement
 syn match namedStmtKeyword /\_^\s*\<acl\>/ 
 \ skipwhite skipnl skipempty
