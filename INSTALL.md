@@ -14,7 +14,7 @@ create that subdirectory:
 ```bash
 mkdir $HOME/.vim
 ````
-If you do not have a `syntax` or `ftdetect` subdirectory under that `.vim` directory, create one:
+If you do not have a `syntax` or `ftdetect` subdirectory under that `.vim` directory, create them as needed:
 
 ```bash
 mkdir $HOME/.vim/syntax
