@@ -4086,7 +4086,7 @@ syn keyword namedOV_RP_Nsdname contained nsdname-enable
 \ nextgroup=namedOV_RP_NsdnameEnable
 
 hi link namedOV_RP_NsipEnable namedHL_Builtin
-syn match namedOV_RP_NsipEnable /\i\{1,16}/
+syn match namedOV_RP_NsipEnable contained /\i\{1,16}/
 \ contains=namedTypeBool
 \ skipwhite skipnl skipempty
 \ nextgroup=
