@@ -35,10 +35,10 @@ cp -R vim-syntax-bind-named/ftdetect/* ~/.vim/ftdetect/
 
 See the Highlightings
 ---------------------
-To highlighting in action, use the enclosed test file for highlighting of ISC Bind named configuration file:
+To see highlighting in action, use the enclosed test file for highlighting of ISC Bind named configuration file:
 
 ```bash
-vim vim-syntax-bind-named/example-named.conf
+vim vim-syntax-bind-named/test/example-named.conf
 ```
 
 
