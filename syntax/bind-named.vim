@@ -946,8 +946,9 @@ syn match named_E_SuffixDomain_SC contained /\<[0-9A-Za-z\._\-]{1,1023}[A-Za-z\.
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Nesting of PATTERNS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-hi link namedStmtKeywordUnknown namedHL_Error
-syn match namedStmtKeywordUnknown /\<\S\{1,1111}\>/
+""""" We are not ready for solid RED highlighting yet, too many errors
+"""""hi link namedStmtKeywordUnknown namedHL_Error
+"""""syn match namedStmtKeywordUnknown /\<\S\{1,1111}\>/
 
 
 hi link namedInclude namedHL_Include
