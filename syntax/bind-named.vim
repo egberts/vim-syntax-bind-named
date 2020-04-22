@@ -3210,7 +3210,7 @@ syn keyword namedOV_Boolean_Group contained
 \    dnsrps-enable
 \    dnssec-accept-expired
 \    dnssec-enable
-\    empty-zone-enable
+\    empty-zones-enable
 \    fetch-glue
 \    glue-cache
 \    message-compression
