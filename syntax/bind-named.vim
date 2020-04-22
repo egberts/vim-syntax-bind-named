@@ -159,6 +159,12 @@ hi link namedHL_Domain      namedHL_String
 hi link namedHL_Hexidecimal namedHL_Number
 hi link namedHL_Wildcard    namedHL_Builtin
 hi link namedHL_Base64      namedHL_Identifier "  RFC 3548
+hi link namedHL_ACLName     namedHL_Identifier
+hi link namedHL_Filespec    namedHL_Identifier
+hi link namedHL_KeyName     namedHL_Identifier
+hi link namedHL_MasterName  namedHL_Identifier
+hi link namedHL_ViewName    namedHL_Identifier
+hi link namedHL_ZoneName    namedHL_Identifier
 
 " Third-level highlight alias should be next to their keywords
 
@@ -244,21 +250,21 @@ hi link named_Number_SC namedHL_Number
 syn match named_Number_SC contained "\d\{1,10}" skipwhite 
 \ nextgroup=namedSemicolon
 
-hi link named_Keyname_SC namedHL_String
+hi link named_Keyname_SC namedHL_KeyName
 syn match named_Keyname_SC contained skipwhite
 \    /\<[0-9A-Za-z][-0-9A-Za-z\.\-_]\+\>/ 
 \ nextgroup=namedSemicolon
 
 " Variable-length variable-characters patterns - String
-hi link named_Filespec namedHL_String
+hi link named_Filespec namedHL_Filespec
 syn match named_Filespec contained skipwhite skipempty skipnl
-\ /'[ a-zA-Z\]\-\[0-9\._,:;\/?<>|"`~!@#$%\^&*\\(\\)+{}]\{1,1024}'/hs=s+1,he=e-1
+\ /'[ a-zA-Z\]\-\[0-9\._,:;\/\\?<>|"`~!@#$%\^&*\\(\\)+{}]\{1,1024}'/hs=s+1,he=e-1
 syn match named_Filespec contained skipwhite skipempty skipnl
-\ /"[ a-zA-Z\]\-\[0-9\._,:;\/?<>|'`~!@#$%\^&*\\(\\)+{}]\{1,1024}"/hs=s+1,he=e-1
+\ /"[ a-zA-Z\]\-\[0-9\._,:;\/\\?<>|'`~!@#$%\^&*\\(\\)+{}]\{1,1024}"/hs=s+1,he=e-1
 syn match named_Filespec contained skipwhite skipempty skipnl
-\ /[a-zA-Z\]\-\[0-9\._,:\/?<>|'"`~!@#$%\^&*\\(\\)+]\{1,1024}/ 
+\ /[a-zA-Z\]\-\[0-9\._,:\/\\?<>|'"`~!@#$%\^&*\\(\\)+]\{1,1024}/ 
 
-hi link named_E_Filespec_SC namedHL_String
+hi link named_E_Filespec_SC namedHL_Filespec
 " TODO those curly braces and semicolon MUST be able to work within quotes.
 syn match named_E_Filespec_SC contained /\'[ a-zA-Z\]\-\[0-9\._,:\;\/?<>|"`~!@#$%\^&*\\(\\)=\+{}]\{1,1024}\'/hs=s+1,he=e-1 skipwhite skipempty skipnl nextgroup=namedSemicolon
 syn match named_E_Filespec_SC contained /"[ a-zA-Z\]\-\[0-9\._,:\;\/?<>|'`~!@#$%\^&*\\(\\)=\+{}]\{1,1024}"/hs=s+1,he=e-1 skipwhite skipempty skipnl nextgroup=namedSemicolon
@@ -400,10 +406,10 @@ syn match named_StrictRelaxedDisabledOff  contained /\crelaxed/ skipwhite nextgr
 syn match named_StrictRelaxedDisabledOff  contained /\cdisabled/ skipwhite nextgroup=namedSemicolon
 syn match named_StrictRelaxedDisabledOff  contained /\coff/ skipwhite nextgroup=namedSemicolon
 
-hi link namedACLName namedHL_Identifier
+hi link namedACLName namedHL_ACLName
 syn match namedACLName contained /[0-9a-zA-Z\-_\[\]\<\>]\{1,63}/ skipwhite
 
-hi link named_E_ACLName_SC namedHL_Identifier
+hi link named_E_ACLName_SC namedHL_ACLName
 syn match named_E_ACLName_SC contained /\<[0-9a-zA-Z\-_\[\]\<\>]\{1,63}\>/
 \ skipwhite
 \ nextgroup=
@@ -414,12 +420,12 @@ syn match named_E_ACLName_SC contained /\<[0-9a-zA-Z\-_\[\]\<\>]\{1,63}\>/
 " REGEX PATTERNS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-hi link namedOV_CZ_MasterName_SC namedHL_Identifier
+hi link namedOV_CZ_MasterName_SC namedHL_MasterName
 syn match namedOV_CZ_MasterName_SC contained /\<[0-9a-zA-Z\-_\.]\{1,63}/
 \ skipwhite
 \ nextgroup=namedSemicolon
 
-hi link namedA_ACL_Name namedHL_String
+hi link namedA_ACL_Name namedHL_ACLName
 syn match namedA_ACL_Name contained "\<\(\w\|\.\|\-\)\{1,63}\ze[^;]*" 
 \ skipwhite skipnl skipempty
 \ nextgroup=
@@ -442,7 +448,7 @@ syn match named_E_IP4Addr_SC contained /\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)
 hi link named_E_IP4AddrPrefix_SC namedHL_Number
 syn match named_E_IP4AddrPrefix_SC contained /\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\/[0-9]\{1,3}/ nextgroup=namedSemicolon
 
-hi link namedA_IP4Addr_SC namedHL_Type
+hi link namedA_IP4Addr_SC namedHL_Number
 syn match namedA_IP4Addr_SC contained /\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\ze[^;]*\ze[^;]*/
 \ skipwhite skipnl skipempty
 \ nextgroup=
@@ -848,23 +854,23 @@ syn match namedTypeBase64 contained /\<[0-9a-zA-Z\/\-\_\,+=]\{1,4099}/
 hi link namedKeySecretValue   namedHL_Base64
 syn match namedKeySecretValue contained /\<[0-9a-zA-Z\+\=\/]\{1,4099}\s*;/he=e-1 skipwhite
 
-hi link namedKeyName namedHL_Identifier
+hi link namedKeyName namedHL_KeyName
 syn match namedKeyName contained /\<[0-9a-zA-Z\-_]\{1,63}/ skipwhite
 
 hi link namedKeyAlgorithmName namedHL_String
 syn match namedKeyAlgorithmName contained /\<[0-9A-Za-z\-_]\{1,4096}/ skipwhite
 
-hi link namedMasterName namedHL_Identifier
+hi link namedMasterName namedHL_MasterName
 syn match namedMasterName contained /\<[0-9a-zA-Z\-_\.]\{1,64}/ skipwhite
 
-hi link namedElementMasterName namedHL_Identifier
+hi link namedElementMasterName namedHL_MasterName
 syn match namedElementMasterName contained /\<[0-9a-zA-Z\-_\.]\{1,64}\s*;/he=e-1 skipwhite
 
 hi link namedHexSecretValue   namedHL_Hexidecimal
 syn match namedHexSecretValue contained /\<'[0-9a-fA-F]\+'\>/ skipwhite
 syn match namedHexSecretValue contained /\<"[0-9a-fA-F]\+"\>/ skipwhite
 
-hi link namedViewName namedHL_Identifier
+hi link namedViewName namedHL_ViewName
 syn match namedViewName contained /\<[a-zA-Z0-9_\.\-]\{1,63}\>/
 \ skipwhite skipnl skipempty
 syn region namedViewName start=/"/hs=s+1 skip=/\\"/ end=/"/he=e-1 contained
@@ -873,7 +879,7 @@ syn region namedViewName start=/'/hs=s+1 skip=/\\'/ end=/'/he=e-1 contained
 \ skipwhite skipnl skipempty
 
 
-hi link named_E_ViewName_SC namedHL_Identifier
+hi link named_E_ViewName_SC namedHL_ViewName
 syn match named_E_ViewName_SC contained /[a-zA-Z0-9\-_\.]\{1,63}/ skipwhite
 \ nextgroup=namedSemicolon
 \ skipwhite skipnl skipempty
@@ -884,10 +890,10 @@ syn region named_E_ViewName_SC start=/'/hs=s+1 skip=/\\'/ end=/'/he=e-1 containe
 \ nextgroup=namedSemicolon
 \ skipwhite skipnl skipempty
 
-hi link namedZoneName namedHL_Identifier
+hi link namedZoneName namedHL_ZoneName
 syn match namedZoneName contained /[a-zA-Z0-9]\{1,64}/ skipwhite
 
-hi link namedElementZoneName namedHL_Identifier
+hi link namedElementZoneName namedHL_ZoneName
 syn match namedElementZoneName contained /[a-zA-Z0-9]\{1,63}\s\{1,63};/he=e-1 skipwhite
 
 hi link namedDlzName namedHL_Identifier
@@ -1006,9 +1012,15 @@ syn match named_DefaultUnlimited_SC contained skipwhite /\cdefault/
 " };
 "
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi link namedA_KeyName namedHL_KeyName
+syn match namedA_KeyName contained 
+\    /\S\{1,63}/
+\ skipwhite skipnl skipempty
+\ nextgroup=namedSemicolon
+
 hi link namedA_Key namedHL_Option
 syn keyword namedA_Key contained key skipwhite skipnl skipempty
-\ nextgroup=namedKeyName_SC
+\ nextgroup=namedA_KeyName
 
 hi link namedA_AML_Nested_Semicolon namedHL_Normal
 syn match namedA_AML_Nested_Semicolon contained /;/ skipwhite skipempty 
@@ -1087,7 +1099,7 @@ syn region namedA_AML contained start=+{+ end=+}+
 \    namedE_MissingSemicolon
 
 " acl <string> { <address_match_element>; ... }; // may occur multiple times
-hi link namedA_ACLIdentifier  namedHL_Identifier
+hi link namedA_ACLIdentifier  namedHL_ACLName
 syn match namedA_ACLIdentifier contained /\<[0-9a-zA-Z\-_]\{1,63}\>/ 
 \ skipwhite skipnl skipempty
 \ nextgroup=
@@ -1114,7 +1126,7 @@ syn match namedA_ACLIdentifier contained /\<[0-9a-zA-Z\-_]\{1,63}\>/
 "                 [ read-only <boolean> ]; 
 "          };
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-hi link namedC_InetOptACLName namedHL_Identifier
+hi link namedC_InetOptACLName namedHL_ACLName
 syn match namedC_InetOptACLName contained /[0-9a-zA-Z\-_\[\]\<\>]\{1,63}/ 
 \ skipwhite skipnl skipempty
 \ contains=namedACLName
@@ -1138,6 +1150,7 @@ syn match namedC_OptReadonlyKeyword contained /\<read\-only\>/
 \    namedC_OptReadonlyBool,
 \    namedError
 
+hi link namedC_UnixOptKeysElement namedHL_KeyName
 syn match namedC_UnixOptKeysElement contained /[a-zA-Z0-9_\-\.]\+/
 \ skipwhite skipnl skipempty
 \ contains=namedKeyName
@@ -1158,7 +1171,8 @@ syn match namedC_UnixOptKeysKeyword contained /\<keys\>/
 \ skipwhite skipnl skipempty
 \ nextgroup=namedC_UnixOptKeysSection
 
-syn match namedC_UnixOptGroupInteger contained /\d\+/ 
+hi link namedC_UnixOptGroupInteger namedHL_Number
+syn match namedC_UnixOptGroupInteger contained /\d\{1,5}/ 
 \ skipwhite skipnl skipempty
 \ contains=named_Number_GID
 \ nextgroup=
@@ -1174,7 +1188,8 @@ syn match namedC_UnixOptGroupKeyword contained /\<group\>/
 \    namedC_UnixOptGroupInteger,
 \    namedError
 
-syn match namedC_UnixOptOwnerInteger contained /\d\+/ 
+hi link namedC_UnixOptOwnerInteger namedHL_Number
+syn match namedC_UnixOptOwnerInteger contained /\d\{1,5}/ 
 \ skipwhite skipnl skipempty
 \ contains=namedUserID
 \ nextgroup=
@@ -1188,7 +1203,8 @@ syn match namedC_UnixOptOwnerKeyword contained /\<owner\>/
 \    namedC_UnixOptOwnerInteger,
 \    namedError
 
-syn match namedC_UnixOptPermInteger /\d\+/ contained skipwhite skipempty skipnl
+hi link namedC_UnixOptPermInteger namedHL_Number
+syn match namedC_UnixOptPermInteger /\d\{1,4}/ contained skipwhite skipempty skipnl
 \ contains=namedFilePerm
 \ nextgroup=namedC_UnixOptOwnerKeyword,namedError
 
@@ -1230,7 +1246,7 @@ syn keyword namedC_ClauseUnix contained unix
 \ skipwhite skipnl skipempty
 \ nextgroup=namedC_UnixOptSocketName
 
-hi link namedC_InetOptReadonlyBool namedHL_Option
+hi link namedC_InetOptReadonlyBool namedHL_Builtin
 syn match namedC_InetOptReadonlyBool contained /\i/
 \ skipwhite skipnl skipempty
 \ contains=@namedClusterBoolean
@@ -1291,7 +1307,6 @@ syn match namedC_InetOptIPaddrWild contained /\*/
 \    namedC_InetOptPortKeyword,
 \    namedC_InetOptAllowKeyword
 
-" hi link namedC_InetOptIPaddr namedHL_Number
 syn match namedC_InetOptIPaddr contained /[0-9a-fA-F\.:]\{3,45}/ 
 \ skipwhite skipnl skipempty
 \ contains=named_IP6Addr,named_IP4Addr
@@ -1300,7 +1315,7 @@ syn match namedC_InetOptIPaddr contained /[0-9a-fA-F\.:]\{3,45}/
 \    namedC_InetOptAllowKeyword
 
 hi link namedC_ClauseInet namedHL_Option
-syn match namedC_ClauseInet contained /inet/
+syn match namedC_ClauseInet contained /\<inet\>/
 \ skipnl skipempty skipwhite 
 \ nextgroup=
 \    namedC_InetOptACLName,
