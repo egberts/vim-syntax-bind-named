@@ -4800,12 +4800,14 @@ syn match namedOptATS_IP6wild contained /\S\+/ skipwhite
 \    namedSemicolon
 
 hi link namedOVZ_OptATS namedHL_Option
-syn keyword namedOVZ_OptATS contained skipwhite
-\    alt-transfer-source-v6
+syn match namedOVZ_OptATS contained 
+\    /\<alt\-transfer\-source\-v6\>/
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedOptATS_IP6wild 
 syn keyword namedOVZ_OptATS contained
 \    alt-transfer-source
+\ skipwhite skipnl skipempty
 \ nextgroup=namedOptATS_IP4wild skipwhite
 
 hi link namedOVZ_AutoDNSSEC namedHL_Option
