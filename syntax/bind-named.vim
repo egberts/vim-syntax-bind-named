@@ -160,6 +160,7 @@ hi link namedHL_Hexidecimal namedHL_Number
 hi link namedHL_Wildcard    namedHL_Builtin
 hi link namedHL_Base64      namedHL_Identifier "  RFC 3548
 hi link namedHL_ACLName     namedHL_Identifier
+hi link namedHL_ClassName   namedHL_Identifier
 hi link namedHL_Filespec    namedHL_Identifier
 hi link namedHL_KeyName     namedHL_Identifier
 hi link namedHL_MasterName  namedHL_Identifier
@@ -6038,12 +6039,22 @@ syn region namedStmt_ViewSection contained start=+{+ end=+}+
 \    namedParenError
 
 " charset_view_name_base = alphanums + '_-.+~@$%^&*()=[]\\|:<>`?'  # no semicolon nor curly braces allowed
+"
+hi link namedStmt_ViewClass namedHL_ClassName
+syn match namedStmt_ViewClass contained 
+\    /\<\c\%(CHAOS\)\|\%(HESIOD\)\|\%(IN\)\|\%(CH\)\|\%(HS\)\>/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedStmt_ViewSection,
+\    namedInclude,
+\    namedComment
 hi link namedStmt_ViewNameIdentifier namedHL_ViewName
 syn match namedStmt_ViewNameIdentifier contained /\S\{1,63}/ 
 \ contains=namedViewName
 \ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedStmt_ViewSection,
+\    namedStmt_ViewClass,
 \    namedInclude,
 \    namedComment
 
