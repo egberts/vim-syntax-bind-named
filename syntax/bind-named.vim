@@ -2166,9 +2166,9 @@ syn keyword namedO_ListenOn_Port contained port skipwhite skipnl skipempty
 \ nextgroup=namedO_ListenOn_PortValue
 
 hi link namedO_ListenOn namedHL_Option
-syn keyword namedO_ListenOn contained skipwhite skipnl skipempty
-\    listen-on
-\    listen-on-v6
+syn match namedO_ListenOn contained 
+\    /\<\(listen\-on\-v6\)\|\(listen\-on\)\>/
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedO_ListenOn_Port,
 \    namedO_ListenOn_Dscp,
@@ -3039,9 +3039,9 @@ syn keyword namedOSV_QuerySource_Address6 contained address
 \ nextgroup=namedOSV_QuerySource_IP6Addr
 
 hi link namedOSV_QuerySourceIP6 namedHL_Option
-syn keyword namedOSV_QuerySourceIP6 contained 
+syn match namedOSV_QuerySourceIP6 contained 
+\    /\<query\-source\-v6\>/
 \ skipwhite skipnl skipempty
-\    query-source-v6
 \ nextgroup=
 \    namedOSV_QuerySource_Address6,
 \    namedOSV_QuerySource_IP6Addr,
