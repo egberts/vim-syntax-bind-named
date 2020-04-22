@@ -5821,20 +5821,14 @@ syn keyword namedTa_Key contained skipwhite skipnl skipempty
 \ nextgroup=namedTk_Flag
 
 hi link namedTa_Domain namedHL_String
-syn match namedTa_Domain  contained skipwhite skipnl skipempty
-\    /\S\{1,1023}/
-\ contains=namedDomainName
+syn match namedTa_Domain  contained /\<\S\{1,256}\>/
+\ skipwhite skipnl skipempty
 \ nextgroup=namedTa_Key
 
 syn region namedTa_Section contained start=+{+ end=+}+
 \ skipwhite skipnl skipempty
 \ contains=namedTa_Domain
 \ nextgroup=namedSemicolon
-
-hi link namedStmt_TrustAnchors namedHL_String
-syn match namedStmt_TrustAnchors contained /\S{1,1023}/
-\ skipwhite skipnl skipempty
-\ nextgroup=namedTa_Key
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " trusted-keys { <domain_name> <flag_type> <protocol> <algorithm> <secret>;
@@ -6121,8 +6115,8 @@ syn match namedStmtKeyword /\_^\s*\<statistics-channels\>/
 
 syn match namedStmtKeyword /\_^\s*\<trust-anchors\>/ 
 \ skipwhite skipnl skipempty 
-\ nextgroup=namedStmt_TrustAnchors
-\ containedin=namedStmt_OptionsSection
+\ nextgroup=namedTa_Section
+" \ containedin=namedStmt_OptionsSection
 
 syn match namedStmtKeyword /\_^\s*\<trusted-anchors\>/ 
 \ skipwhite skipnl skipempty 
