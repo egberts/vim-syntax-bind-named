@@ -109,7 +109,7 @@
 "       only line position of statements of those referenced by 
 "       that 'nextgroup'.
 "
-" NOTE: DON'T put inline comment on continuation lines for `syntax ...`.
+" NOTE: DON'T put Vim inline comment on continuation lines for `syntax ...`.
 "       It hurts, badly.
 "
 " quit when a syntax file was already loaded
@@ -865,12 +865,24 @@ syn match namedHexSecretValue contained /\<'[0-9a-fA-F]\+'\>/ skipwhite
 syn match namedHexSecretValue contained /\<"[0-9a-fA-F]\+"\>/ skipwhite
 
 hi link namedViewName namedHL_Identifier
-" syn match namedViewName contained /[a-zA-Z0-9_\-\.+~@$%\^&*()=\[\]\\|:<>`?]\{1,64}/ skipwhite
-syn match namedViewName contained /[a-zA-Z0-9\-_\.]\{1,64}/ skipwhite
+syn match namedViewName contained /\<[a-zA-Z0-9_\.\-]\{1,63}\>/
+\ skipwhite skipnl skipempty
+syn region namedViewName start=/"/hs=s+1 skip=/\\"/ end=/"/he=e-1 contained
+\ skipwhite skipnl skipempty
+syn region namedViewName start=/'/hs=s+1 skip=/\\'/ end=/'/he=e-1 contained
+\ skipwhite skipnl skipempty
+
 
 hi link named_E_ViewName_SC namedHL_Identifier
 syn match named_E_ViewName_SC contained /[a-zA-Z0-9\-_\.]\{1,63}/ skipwhite
 \ nextgroup=namedSemicolon
+\ skipwhite skipnl skipempty
+syn region named_E_ViewName_SC start=/"/hs=s+1 skip=/\\"/ end=/"/he=e-1 contained
+\ nextgroup=namedSemicolon
+\ skipwhite skipnl skipempty
+syn region named_E_ViewName_SC start=/'/hs=s+1 skip=/\\'/ end=/'/he=e-1 contained
+\ nextgroup=namedSemicolon
+\ skipwhite skipnl skipempty
 
 hi link namedZoneName namedHL_Identifier
 syn match namedZoneName contained /[a-zA-Z0-9]\{1,64}/ skipwhite
@@ -994,6 +1006,9 @@ syn match named_DefaultUnlimited_SC contained skipwhite /\cdefault/
 " };
 "
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi link namedA_Key namedHL_Option
+syn keyword namedA_Key contained key skipwhite skipnl skipempty
+\ nextgroup=namedKeyName_SC
 
 hi link namedA_AML_Nested_Semicolon namedHL_Normal
 syn match namedA_AML_Nested_Semicolon contained /;/ skipwhite skipempty 
@@ -1024,6 +1039,7 @@ syn match namedA_AML_Nested_Not_Operator contained /!/ skipwhite skipempty
 \    namedA_IP6Addr_SC,
 \    namedA_IP6AddrPrefix_SC,
 \    namedA_Bind_Builtins,
+\    namedA_Key,
 \    namedA_ACL_Name,
 \    namedE_UnexpectedSemicolon,
 \    namedE_MissingLParen,
@@ -1041,6 +1057,7 @@ syn region namedA_AML_Recursive contained start=+{+ end=+}+ keepend extend
 \    namedA_IP6Addr_SC,
 \    namedA_IP6AddrPrefix_SC,
 \    namedA_Bind_Builtins,
+\    namedA_Key,
 \    namedA_ACL_Name,
 \    namedA_AML_Nested_Semicolon,
 \    namedA_AML_Nested_Not_Operator
@@ -1061,6 +1078,7 @@ syn region namedA_AML contained start=+{+ end=+}+
 \    namedA_IP6Addr_SC,
 \    namedA_IP6AddrPrefix_SC,
 \    namedA_Bind_Builtins,
+\    namedA_Key,
 \    namedA_ACL_Name,
 \    namedA_AML_Nested_Semicolon,
 \    namedA_AML_Nested_Not_Operator
@@ -5973,10 +5991,15 @@ syn region namedStmt_ViewSection contained start=+{+ end=+}+
 \    namedOVZ_ZoneStat,
 \    namedParenError
 
+" charset_view_name_base = alphanums + '_-.+~@$%^&*()=[]\\|:<>`?'  # no semicolon nor curly braces allowed
 hi link namedStmt_ViewNameIdentifier namedHL_Identifier
-syn match namedStmt_ViewNameIdentifier contained /\i\+/ 
+syn match namedStmt_ViewNameIdentifier contained /\S\{1,63}/ 
+\ contains=namedViewName
 \ skipwhite skipnl skipempty
-\ nextgroup=namedStmt_ViewSection
+\ nextgroup=
+\    namedStmt_ViewSection,
+\    namedInclude,
+\    namedComment
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " zone <namedStmt_ZoneNameIdentifier> { ... };
@@ -6043,7 +6066,7 @@ syn match namedStmtZoneClass contained /\<\c\%(CHAOS\)\|\%(HESIOD\)\|\%(IN\)\|\%
 \    namedComment
 
 hi link namedStmt_ZoneNameIdentifier namedHL_Identifier
-syn match namedStmt_ZoneNameIdentifier contained /\S\+/ 
+syn match namedStmt_ZoneNameIdentifier contained /\S\{1,63}/ 
 \ skipwhite skipempty skipnl
 \ contains=named_QuotedDomain
 \ nextgroup=
@@ -6141,7 +6164,10 @@ syn match namedStmtKeyword /\_^\s*\<trusted-keys\>/
 " view <namedStmt_ViewNameIdentifier> { ... };  
 syn match namedStmtKeyword /\_^\s*\<view\>/ 
 \ skipwhite skipnl skipempty
-\ nextgroup=namedStmt_ViewNameIdentifier 
+\ nextgroup=
+\    namedStmt_ViewNameIdentifier,
+\    namedInclude,
+\    namedComment
 
 " TODO: namedStmtError, how to get namedHL_Error to appear
 " zone <namedStmt_ZoneNameIdentifier> { ... };
