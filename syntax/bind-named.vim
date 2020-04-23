@@ -2620,15 +2620,11 @@ syn match namedO_UseV4UdpPorts contained /use\-v4\-udp\-ports/
 " syn keyword namedO_Keywords host-statistics
 " syn keyword namedO_Keywords host-statistics-max
 " syn keyword namedO_Keywords lock-file
-" syn keyword namedO_Keywords min-roots
 " syn keyword namedO_Keywords multiple-cnames
-" syn keyword namedO_Keywords mult-master
 " syn keyword namedO_Keywords nosit-udp-size
-" syn keyword namedO_Keywords notify
 " syn keyword namedO_Keywords queryport-port-ports
 " syn keyword namedO_Keywords queryport-port-updateinterval
 " syn keyword namedO_Keywords querylog
-" syn keyword namedO_Keywords request-nsid
 " syn keyword namedO_Keywords request-sit
 " syn keyword namedO_Keywords response-policy
 " syn keyword namedO_Keywords rfc2308-type1
@@ -2639,10 +2635,7 @@ syn match namedO_UseV4UdpPorts contained /use\-v4\-udp\-ports/
 " syn keyword namedO_Keywords tkey-domain
 " syn keyword namedO_Keywords tkey-gssapi-credential
 " syn keyword namedO_Keywords tkey-gssapi-keytab
-" syn keyword namedO_Keywords transfers
-" syn keyword namedO_Keywords transfers-format
-" syn keyword namedO_Keywords transfers-source
-" syn keyword namedO_Keywords transfers-source-v6
+" syn keyword namedO_Keywords transfer-format
 " syn keyword namedO_Keywords trusted-anchor-telemetry
 " syn keyword namedO_Keywords version
 
@@ -2691,7 +2684,6 @@ hi link namedS_Bool_Group namedHL_Option
 syn keyword namedS_Bool_Group contained
 \   bogus
 \   edns
-\   request-nsid
 \   tcp-keepalive
 \   tcp-only
 \ nextgroup=@namedClusterBoolean_SC
@@ -2763,27 +2755,19 @@ syn  keyword namedV_Boolean_Group  contained skipwhite
 \    match-recursive-only
 \ nextgroup=@namedClusterBoolean
 
-" syn keyword namedV_Keywords class
 " syn keyword namedV_Keywords filter-aaaa
 " syn keyword namedV_Keywords filter-aaaa-on-v4
 " syn keyword namedV_Keywords filter-aaaa-on-v6
-" syn keyword namedV_Keywords min-roots
 " syn keyword namedV_Keywords multiple-cnames
-" syn keyword namedV_Keywords mult-master
 " syn keyword namedV_Keywords nosit-udp-size
-" syn keyword namedV_Keywords notify
 " syn keyword namedV_Keywords queryport-port-ports
 " syn keyword namedV_Keywords queryport-port-updateinterval
-" syn keyword namedV_Keywords request-nsid
 " syn keyword namedV_Keywords request-sit
 " syn keyword namedV_Keywords response-policy
 " syn keyword namedV_Keywords rfc2308-type1
 " syn keyword namedV_Keywords support-ixfr
 " syn keyword namedV_Keywords suppress-initial-notify
-" syn keyword namedV_Keywords transfers
-" syn keyword namedV_Keywords transfers-format
-" syn keyword namedV_Keywords transfers-source
-" syn keyword namedV_Keywords transfers-source-v6
+" syn keyword namedV_Keywords transfer-format
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within 'zone' statement
@@ -2870,13 +2854,6 @@ syn keyword namedZ_DnssecPolicy contained dnssec-policy
 \ skipwhite skipnl skipempty
 \ nextgroup=named_E_Domain_SC
 
-" syn keyword namedZ_Keywords class
-" syn keyword namedZ_Keywords client-per-query
-" syn keyword namedZ_Keywords database
-" syn keyword namedZ_Keywords mult-master
-" syn keyword namedZ_Keywords notify
-" syn keyword namedZ_Keywords transfers-source
-" syn keyword namedZ_Keywords transfers-source-v6
 " syn keyword namedZ_Keywords update-policy
 
 " syn keyword namedO_KeywordsObsoleted acache-cleaning-interval
@@ -2894,10 +2871,9 @@ syn keyword namedZ_DnssecPolicy contained dnssec-policy
 
 " syn keyword namedStmtServerKeywordsObsoleted edns-udp-size
 " syn keyword namedStmtServerKeywordsObsoleted keys
-" syn keyword namedStmtServerKeywordsObsoleted transfers
-" syn keyword namedStmtServerKeywordsObsoleted transfers-format
-" syn keyword namedStmtServerKeywordsObsoleted transfers-source
-" syn keyword namedStmtServerKeywordsObsoleted transfers-source-v6
+" syn keyword namedStmtServerKeywordsObsoleted transfer-format
+" syn keyword namedStmtServerKeywordsObsoleted transfer-source
+" syn keyword namedStmtServerKeywordsObsoleted transfer-source-v6
 
 " syn keyword namedV_KeywordsObsoleted max-acache-size
 " syn keyword namedV_KeywordsObsoleted use-queryport-pool
@@ -2940,9 +2916,17 @@ syn keyword namedOSV_QuerySource_Dscp contained dscp
 \ skipwhite skipnl skipempty
 \ nextgroup=named_Dscp_SC
 
-hi link namedOSV_QuerySource_PortValue namedHL_Number
+" Specifying port in query-source restricts port randomization, so error that
+hi link namedOSV_QuerySource_PortValue namedHL_Error
 syn match namedOSV_QuerySource_PortValue contained 
-\ /\*\|\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+\ /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOSV_QuerySource_Dscp,
+\    namedSemicolon
+hi link namedOSV_QuerySource_PortWild namedHL_Builtin
+syn match namedOSV_QuerySource_PortWild contained 
+\    /\*/
 \ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedOSV_QuerySource_Dscp,
@@ -2951,7 +2935,9 @@ syn match namedOSV_QuerySource_PortValue contained
 hi link namedOSV_QuerySource_Port namedHL_Option
 syn keyword namedOSV_QuerySource_Port contained port 
 \ skipwhite skipnl skipempty
-\ nextgroup=namedOSV_QuerySource_PortValue
+\ nextgroup=
+\    namedOSV_QuerySource_PortWild,
+\    namedOSV_QuerySource_PortValue
 
 hi link namedOSV_QuerySource_IP4Addr namedHL_Number
 syn match namedOSV_QuerySource_IP4Addr contained /\<\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/
@@ -3277,6 +3263,7 @@ syn keyword namedOV_Number_Group contained
 \    max-recursion-depth
 \    max-recursion-queries
 \    max-stale-ttl
+\    min-roots
 \    stale-answer-ttl
 \    v6-bias
 \ skipwhite skipnl skipempty
