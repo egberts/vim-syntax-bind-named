@@ -1,11 +1,11 @@
-" Vim syntax file for ISC BIND named configuration file
-" Language:     ISC BIND named configuration file
+" Vim syntax file for ISC BIND v9.16 named.conf configuration file
+" Language:     ISC BIND named.conf configuration file
 " Maintainer:   egberts <egberts@github.com>
-" Last change:  2020-04-04
+" Last change:  2020-04-22
 " Filenames:    named.conf, rndc.conf
 " Filenames:    named[-_]*.conf, rndc[-_]*.conf
 " Filenames:    *[-_]named.conf
-" Location:     http://github.com/egberts/bind-named-vim-syntax
+" Location:     http://github.com/egberts/vim-syntax-bind-named
 " License:      MIT license
 " Remarks:
 "
@@ -2132,6 +2132,7 @@ syn keyword namedO_Boolean_Group contained skipwhite skipnl skipempty
 \     additional-from-cache
 \     automatic-interface-scan 
 \     answer-cookie
+\     deallocate-on-exit
 \     fake-iquery
 \     geoip-use-ecs
 \     has-old-clients
@@ -2139,7 +2140,10 @@ syn keyword namedO_Boolean_Group contained skipwhite skipnl skipempty
 \     flush-zones-on-shutdown
 \     match-mapped-addresses
 \     memstatistics
+\     multiple-cnames
 \     querylog
+\     treat-cr-as-space
+\     use-id-pool
 \ nextgroup=@namedClusterBoolean_SC
 
 hi link namedO_UdpPorts namedHL_Option
@@ -2421,8 +2425,10 @@ syn keyword namedO_Number_Group contained skipwhite skipnl skipempty
 \    notify-rate
 \    recursive-clients
 \    reserved-sockets
+\    serial-queries
 \    serial-query-rate
 \    startup-notify-rate
+\    statistics-interval
 \    tcp-advertised-timeout
 \    tcp-clients
 \    tcp-idle-timeout
@@ -2612,24 +2618,16 @@ syn match namedO_UseV4UdpPorts contained /use\-v4\-udp\-ports/
 \ nextgroup=
 \    namedO_UseUdpPort_Section
 
-" syn keyword namedO_Keywords deallocate-on-exit
-" syn keyword namedO_Keywords deallocate-on-exit
 " syn keyword namedO_Keywords filter-aaaa
 " syn keyword namedO_Keywords filter-aaaa-on-v4
 " syn keyword namedO_Keywords filter-aaaa-on-v6
-" syn keyword namedO_Keywords host-statistics
-" syn keyword namedO_Keywords host-statistics-max
-" syn keyword namedO_Keywords lock-file
 " syn keyword namedO_Keywords multiple-cnames
 " syn keyword namedO_Keywords nosit-udp-size
 " syn keyword namedO_Keywords queryport-port-ports
 " syn keyword namedO_Keywords queryport-port-updateinterval
-" syn keyword namedO_Keywords querylog
-" syn keyword namedO_Keywords request-sit
 " syn keyword namedO_Keywords response-policy
 " syn keyword namedO_Keywords rfc2308-type1
 " syn keyword namedO_Keywords sit-secret
-" syn keyword namedO_Keywords statistics-interval
 " syn keyword namedO_Keywords support-ixfr
 " syn keyword namedO_Keywords suppress-initial-notify
 " syn keyword namedO_Keywords tkey-domain
@@ -2674,7 +2672,7 @@ hi link namedStmt_Plugin_QueryKeyword namedHL_Option
 syn keyword namedStmt_Plugin_QueryKeyword contained query 
 \ skipwhite skipnl skipempty
 \ nextgroup=namedP_Filespec
-\ containedin=namedStmt_ViewSection
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within 'server' statement
@@ -2709,16 +2707,19 @@ hi link namedS_Keys namedHL_Option
 syn keyword namedS_Keys contained keys skipwhite
 \ nextgroup=namedS_Keys_Id
 
-" syn keyword namedStmtServerKeywords request-sit
 " syn keyword namedStmtServerKeywords support-ixfr
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within 'view' statement
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi link namedV_Plugin namedHL_Option
+syn keyword namedV_Plugin contained plugin
+\ skipwhite skipnl skipempty
+\ nextgroup=namedStmt_Plugin_QueryKeyword
 
 " view statement - minute_type
-hi link namedV_MinuteGroup namedHL_Statement
+hi link namedV_MinuteGroup namedHL_Option
 syn keyword namedV_MinuteGroup contained 
 \    heartbeat-interval
 \ skipwhite
@@ -2762,8 +2763,6 @@ syn  keyword namedV_Boolean_Group  contained skipwhite
 " syn keyword namedV_Keywords nosit-udp-size
 " syn keyword namedV_Keywords queryport-port-ports
 " syn keyword namedV_Keywords queryport-port-updateinterval
-" syn keyword namedV_Keywords request-sit
-" syn keyword namedV_Keywords response-policy
 " syn keyword namedV_Keywords rfc2308-type1
 " syn keyword namedV_Keywords support-ixfr
 " syn keyword namedV_Keywords suppress-initial-notify
@@ -2861,10 +2860,8 @@ syn keyword namedZ_DnssecPolicy contained dnssec-policy
 " syn keyword namedO_KeywordsObsoleted additional-from-auth
 " syn keyword namedO_KeywordsObsoleted additional-from-cache
 " syn keyword namedO_KeywordsObsoleted fake-iquery
-" syn keyword namedO_KeywordsObsoleted has-old-clients
 " syn keyword namedO_KeywordsObsoleted max-acache-size
 " syn keyword namedO_KeywordsObsoleted serial-queries
-" syn keyword namedO_KeywordsObsoleted treat-cr-as-space
 " syn keyword namedO_KeywordsObsoleted use-ixfr
 " syn keyword namedO_KeywordsObsoleted use-queryport-pool
 " syn keyword namedO_KeywordsObsoleted use-queryport-updateinterval
@@ -5147,6 +5144,7 @@ syn keyword namedOSV_Boolean_Group contained
 \ skipwhite skipnl skipempty
 \    provide-ixfr
 \    request-nsid
+\    request-sit
 \    send-cookie
 \ nextgroup=@namedClusterBoolean 
 
@@ -6000,6 +5998,7 @@ syn region namedStmt_ViewSection contained start=+{+ end=+}+
 \    namedOVZ_OptATS,
 \    namedOSV_OptAV6S,
 \    namedOV_Prefetch,
+\    namedV_Plugin,
 \    namedOV_QnameMin,
 \    namedOSV_QuerySource,
 \    namedOSV_QuerySourceIP6,
