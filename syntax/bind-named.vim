@@ -2853,6 +2853,166 @@ syn keyword namedZ_DnssecPolicy contained dnssec-policy
 \ skipwhite skipnl skipempty
 \ nextgroup=named_E_Domain_SC
 
+" update-policy local
+" update-policy { ( deny | grant ) 
+"                     <key_name>
+"                     ( 6to4-self | external | krb5-self | krb5-selfsub | 
+"                       krb5-subdomain | ms-self | ms-selfsub | ms-subdomain | 
+"                       name | self | selfsub | selfwild | subdomain | 
+"                       tcp-self | wildcard | zonesub ) 
+"                     [ <domain_name> ]
+"                     <rrtypelist>; 
+"                  ... 
+"                };
+" Most broadest pattern first
+hi link namedZ_UP_DomainName namedHL_DomainName
+syn match namedZ_UP_DomainName contained /\<[0-9A-Za-z][_\-0-9A-Za-z\.]\{1,256}\>/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedZ_UP_RRTypeList
+
+" From IANA DNS Assignment Parameter List
+" https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-4
+hi link namedZ_UP_RRTypeList namedHL_Type
+" Reordered from largest fixed to smallest fixed, then alphanumeric order
+" 1-char RRTYpe name
+syn match namedZ_UP_RRTypeList contained
+\    /\c\<[A\*]\{1,1}\>/
+\ nextgroup=namedSemicolon
+" 2-char RRTYpe name
+syn match namedZ_UP_RRTypeList contained
+\    /\c\<\(A6\)\|\(DS\)\|\(KX\)\|\(LP\)\|\(MB\)\|\(MD\)\>/
+\ nextgroup=namedSemicolon
+" 2-char RRTYpe name
+syn match namedZ_UP_RRTypeList contained
+\    /\c\<\(MF\)\|\(MG\)\|\(MP\)\|\(MR\)\|\(MX\)\|\(NS\)\>/
+\ nextgroup=namedSemicolon
+" 2-char RRTYpe name
+syn match namedZ_UP_RRTypeList contained
+\    /\c\<\(PX\)\|\(RP\)\|\(RT\)\|\(TA\)\>/
+\ nextgroup=namedSemicolon
+" 3-char RRTYpe name
+syn match namedZ_UP_RRTypeList contained
+\    /\c\<\(APL\)\|\(AVC\)\|\(CAA\)\|\(CDS\)\|\(DOA\)\|\(DLV\)\>/
+\ nextgroup=namedSemicolon
+" 3-char RRTYpe name
+syn match namedZ_UP_RRTypeList contained
+\    /\c\<\(EID\)\|\(GID\)\|\(HIP\)\|\(L32\)\|\(L64\)\|\(LOC\)\>/
+\ nextgroup=namedSemicolon
+" 3-char RRTYpe name
+syn match namedZ_UP_RRTypeList contained
+\    /\c\<\(KEY\)\|\(OPT\)\|\(NID\)\|\(NXT\)\|\(PTR\)\|\(SIG\)\>/
+\ nextgroup=namedSemicolon
+" 3-char RRTYpe name
+syn match namedZ_UP_RRTypeList contained
+\    /\c\<\(SOA\)\|\(SPF\)\|\(SRV\)\|\(TXT\)\|\(UID\)\|\(URI\)\>/
+\ nextgroup=namedSemicolon
+" 3-char RRTYpe name
+syn match namedZ_UP_RRTypeList contained
+\    /\c\<\(X25\)\|\(WKS\)\|\(ANY\)\>/
+\ nextgroup=namedSemicolon
+" 4-char RRTYpe name
+syn match namedZ_UP_RRTypeList contained
+\    /\c\<\(AAAA\)\|\(ATMA\)\|\(AXFR\)\|\(CERT\)\|\(GPOS\)\>/
+\ nextgroup=namedSemicolon
+" 4-char RRTYpe name
+syn match namedZ_UP_RRTypeList contained
+\    /\c\<\(ISDN\)\|\(IXFR\)\|\(NSAP\)\|\(NSEC\)\|\(NULL\)\>/
+\ nextgroup=namedSemicolon
+" 4-char RRTYpe name
+syn match namedZ_UP_RRTypeList contained
+\    /\c\<\(RKEY\)\|\(SINK\)\|\(TKEY\)\|\(TLSA\)\|\(TSIG\)\>/
+\ nextgroup=namedSemicolon
+" 5-char RRTYpe name
+syn match namedZ_UP_RRTypeList contained
+\    /\c\<\(AFSDB\)\|\(CNAME\)\|\(CSYNC\)\|\(DHCID\)\|\(DNAME\)\>/
+\ nextgroup=namedSemicolon
+" 5-char RRTYpe name
+syn match namedZ_UP_RRTypeList contained
+\    /\c\<\(EUI48\)\|\(EUI64\)\|\(HINFO\)\|\(MAILA\)\|\(MAILB\)\>/
+\ nextgroup=namedSemicolon
+" 5-char RRTYpe name
+syn match namedZ_UP_RRTypeList contained
+\    /\c\<\(MINFO\)\|\(NAPTR\)\|\(NINFO\)\|\(NSEC3\)\|\(RRSIG\)\>/
+\ nextgroup=namedSemicolon
+" 5-char RRTYpe name
+syn match namedZ_UP_RRTypeList contained
+\    /\c\<\(SSHFP\)\|\(UINFO\)\>/
+\ nextgroup=namedSemicolon
+" 6-char RRTYpe name
+syn match namedZ_UP_RRTypeList contained
+\    /\c\<\(DNSKEY\)\|\(NIMLOC\)\|\(SMIMEA\)\|\(TALINK\)\|\(UNSPEC\)\|\(ZONEMD\)\>/
+\ nextgroup=namedSemicolon
+" 7-char RRType name
+syn match namedZ_UP_RRTypeList contained
+\    /\c\<\(CDNSKEY\)\>/
+\ nextgroup=namedSemicolon
+" 8-char RRType name
+syn match namedZ_UP_RRTypeList contained
+\    /\c\<\(AMTRELAY\)\|\(IPSECKEY\)\|\(NSAP\-PTR\)\>/
+\ nextgroup=namedSemicolon
+" 10 or more char RRType name
+syn match namedZ_UP_RRTypeList contained
+\    /\c\<\(NSEC3PARAM\)\|\(OPENPGPKEY\)\>/
+\ nextgroup=namedSemicolon
+
+hi link namedZ_UP_KeyType namedHL_Type
+syn match namedZ_UP_KeyType contained skipwhite skipnl skipempty
+\    /\<\(6to4\-self\)\|\(krb5\-self\)\|\(krb5\-selfsub\)\|\(krb5\-subdomain\)\>/
+\ nextgroup=
+\    namedZ_UP_RRTypeList,
+\    namedZ_UP_DomainName,
+syn keyword namedZ_UP_KeyType contained skipwhite skipnl skipempty
+\    external
+\    ms-self
+\    ms-selfsub
+\    ms-subdomain
+\    name
+\    self
+\    selfsub
+\    selfwild
+\    subdomain
+\    tcp-self wildcard zonesub
+\ nextgroup=
+\    namedZ_UP_RRTypeList,
+\    namedZ_UP_DomainName,
+
+hi link namedZ_UP_KeyName namedHL_KeyName
+syn match namedZ_UP_KeyName contained 
+\    /\<[0-9A-Za-z][-0-9A-Za-z\.\-_]\+\>/ 
+\ skipwhite skipnl skipempty
+\ nextgroup=namedZ_UP_KeyType
+
+hi link namedZ_UP_Action namedHL_Builtin
+syn keyword namedZ_UP_Action contained skipwhite skipnl skipempty
+\    deny
+\    grant
+\ nextgroup=
+\    namedZ_UP_KeyName
+
+syn region namedZ_UP_Section contained start=+{+ end=+}+
+\ skipwhite skipnl skipempty
+\ contains=
+\    namedZ_UP_Action,
+\    namedComment,
+\    namedInclude
+\ nextgroup=
+\    namedSemicolon
+
+hi link namedZ_UP_Local namedHL_Builtin
+syn keyword namedZ_UP_Local contained local skipwhite skipnl skipempty
+\ nextgroup=
+\    namedSemicolon
+
+hi link namedZ_UpdatePolicy namedHL_Option
+syn keyword namedZ_UpdatePolicy contained update-policy
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedZ_UP_Local,
+\    namedZ_UP_Section,
+\    namedComment,
+\    namedInclude
+
 " syn keyword namedZ_Keywords update-policy
 
 " syn keyword namedO_KeywordsObsoleted acache-cleaning-interval
@@ -6097,6 +6257,7 @@ syn region namedStmt_ZoneSection contained start=+{+ end=+}+
 \    namedOVZ_SigSigning,
 \    namedOSVZ_TransferSource,
 \    namedOSVZ_TransferSourceIP6,
+\    namedZ_UpdatePolicy,
 \    namedOVZ_ZoneStat,
 \    namedZ_ZoneType,
 \    namedParenError
