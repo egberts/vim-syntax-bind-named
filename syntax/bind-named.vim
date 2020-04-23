@@ -1,15 +1,15 @@
 " Vim syntax file for ISC BIND v9.16 named.conf configuration file
 " Language:     ISC BIND named.conf configuration file
 " Maintainer:   egberts <egberts@github.com>
-" Last change:  2020-04-22
+" Last change:  2020-04-24
 " Filenames:    named.conf, rndc.conf
 " Filenames:    named[-_]*.conf, rndc[-_]*.conf
 " Filenames:    *[-_]named.conf
-" Location:     http://github.com/egberts/vim-syntax-bind-named
+" Location:     https://github.com/egberts/vim-syntax-bind-named
 " License:      MIT license
 " Remarks:
+" Bug Report:   https://github.com/egberts/vim-syntax-bind-named/issues
 "
-" Still in BETA version
 "
 " Inspired by Nick Hibma <nick@van-laarhoven.org> 'named.vim',
 " also by glory hump <rnd@web-drive.ru>, and Marcin Dalecki.
@@ -17,18 +17,21 @@
 " Jumpstarted to Bind 9.15 by Egberts <egberts@github.com>
 "
 " This file could do with a lot of improvements, so comments are welcome.
-" Please submit the named.conf (segment) with any comments.
+" Please submit the afflicted but privatized version of your 
+" named.conf (segment) file snippet with any comments.
 "
 " Basic highlighting is covered for all Bind configuration 
-" options.  Only normal (defaults is white) highlight gets 
-" used to show 'undetected' Bind syntax.  
+" options.  Only 'Normal' (default to black; if dark backgroud, white) 
+" highlight gets used to show 'undetected' Bind syntax.  
 "
 " Every valid keywords get colorized. Every character-valid 
-" values get colorized, some range-checking here.
+" values get colorized, some range-checking done here.
 "
-" New Bind 9.13+ terminologies here:
-"    Stmt   - top-level keyword (formerly 'clause' from Bind 4 
-"             to 9.11)
+" Most importantly, every semicolon must be colorized.
+"
+" New Bind 9.13+ terminologies/notation used here:
+"    Stmt   - top-level statement keyword (formerly 'clause' 
+"             from Bind 4 to 9.11)
 "    Opt    - an option keyword found within each of its 
 "             top-level keywords.
 "    Clause - very specific keywords used within each of its 
@@ -36,7 +39,8 @@
 "
 " Syntax Naming Convention: 
 "    All macro names that are defined here start with 
-"    'named' prefix. This is a Vim standard.
+"    'named' prefix. This is a Vim standard to ensure
+"    no conflict with global Vim namespace.
 "
 "    Each macro name contains a camel-case notation to 
 "    denote each shorten word that identifies the:
@@ -88,7 +92,8 @@
 " like Vim identifier here.
 " Another reason why you shouldn't use period or slashes 
 " in ACL names because it would only confuses our 
-" simplistic IP address syntax processing here.
+" simplistic IP address syntax processing here. But I 
+" do test for these corner-cases, in case.
 "
 " isident is used for the most-lax naming convention of 
 " all Bind identifiers combined.  Those naming convention
@@ -160,6 +165,7 @@ hi link namedHL_Hexidecimal namedHL_Number
 hi link namedHL_Wildcard    namedHL_Builtin
 hi link namedHL_Base64      namedHL_Identifier "  RFC 3548
 hi link namedHL_ACLName     namedHL_Identifier
+hi link namedHL_Algorithm   namedHL_Identifier
 hi link namedHL_ClassName   namedHL_Identifier
 hi link namedHL_Filespec    namedHL_Identifier
 hi link namedHL_KeyName     namedHL_Identifier
@@ -858,7 +864,7 @@ syn match namedKeySecretValue contained /\<[0-9a-zA-Z\+\=\/]\{1,4099}\s*;/he=e-1
 hi link namedKeyName namedHL_KeyName
 syn match namedKeyName contained /\<[0-9a-zA-Z\-_]\{1,63}/ skipwhite
 
-hi link namedKeyAlgorithmName namedHL_String
+hi link namedKeyAlgorithmName namedHL_Algorithm
 syn match namedKeyAlgorithmName contained /\<[0-9A-Za-z\-_]\{1,4096}/ skipwhite
 
 hi link namedMasterName namedHL_MasterName
@@ -965,9 +971,10 @@ syn match named_E_SuffixDomain_SC contained /\<[0-9A-Za-z\._\-]{1,1023}[A-Za-z\.
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Nesting of PATTERNS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-""""" We are not ready for solid RED highlighting yet, too many errors
+" We'll do error RED highlighting on all statement firstly, then later on
+" all the options, then all the clauses.
 hi link namedStmtKeywordUnknown namedHL_Error
-syn match namedStmtKeywordUnknown /\<\S\{1,1111}\>/
+syn match namedStmtKeywordUnknown /\<\S\{1,64}\>/
 
 
 hi link namedInclude namedHL_Include
