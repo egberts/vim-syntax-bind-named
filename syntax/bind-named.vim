@@ -3454,12 +3454,15 @@ syn keyword namedOV_DnsrpsOptions contained
 \ nextgroup=
 \    namedOV_DnsrpsOptionsSection
 
+" deny-answer-addresses { <address_match_element>; ... }
+"                       [ except-from { <domain_name>; ... } ];
+
 syn match namedOV_DenyAnswerElementDomainName /['"][_\-0-9A-Za-z\.]\{1,1024}['"]/
 \ contained skipwhite skipempty 
 \ contains=namedDomain
 \ nextgroup=namedSemicolon
 
-" deny-answer-addresses { <AML>; } [ except from { <domain_name>; }; } ];
+" deny-answer-addresses { <AML>; } [ except-from { <domain_name>; }; } ];
 syn region namedOV_DenyAnswerExceptSection contained start=/{/ end=/}/
 \ skipwhite skipempty
 \ contains=
@@ -3474,15 +3477,26 @@ syn region namedOV_DenyAnswerExceptSection contained start=/{/ end=/}/
 \ nextgroup=
 \    namedSemicolon
 
-" deny-answer-addresses { <AML>; } [ except from { ... }; } ];
-hi link namedOV_DenyAnswerExceptKeyword namedHL_Option
-syn match namedOV_DenyAnswerExceptKeyword contained
-\    /\(except\)\s\+\(from\)/
-\ skipwhite
+hi link namedOV_DenyAnswerExceptFromKeywords namedHL_Option
+syn match namedOV_DenyAnswerExceptFromKeywords contained 
+\    /\<except\-from\>/
+\ skipwhite skipnl skipempty
 \ nextgroup=
-\    namedOV_DenyAnswerExceptSection,
-\    namedSemicolon
+\    namedOV_DenyAnswerExceptSection
  
+hi link namedOV_DenyAnswerExceptFrom namedHL_Option
+syn keyword namedOV_DenyAnswerExceptFrom contained from 
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOV_DenyAnswerExceptSection
+
+" deny-answer-addresses { <AML>; } [ except-from { ... }; } ];
+hi link namedOV_DenyAnswerExceptKeyword namedHL_Option
+syn keyword namedOV_DenyAnswerExceptKeyword contained except
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOV_DenyAnswerExceptFrom
+
 " deny-answer-addresses { <AML>; } ...
 syn region namedOV_DenyAnswerAddrSection contained start=/{/ end=/}/
 \ skipwhite skipempty
@@ -3497,6 +3511,7 @@ syn region namedOV_DenyAnswerAddrSection contained start=/{/ end=/}/
 \    namedComment 
 \ nextgroup=
 \    namedOV_DenyAnswerExceptKeyword,
+\    namedOV_DenyAnswerExceptFromKeywords,
 \    namedSemicolon
 
 " deny-answer-addresses { } ...
@@ -3506,7 +3521,8 @@ syn keyword namedOV_DenyAnswerAddresses contained
 \ skipwhite
 \ nextgroup=namedOV_DenyAnswerAddrSection
 
-" deny-answer-aliases { <AML>; } ...
+" deny-answer-aliases { <domain_name>; ... } 
+"                     [ except-from { <domain_name>; ... } ];
 syn region namedOV_DenyAnswerAliasSection contained start=/{/ end=/}/
 \ skipwhite skipempty
 \ contains=
@@ -3516,6 +3532,7 @@ syn region namedOV_DenyAnswerAliasSection contained start=/{/ end=/}/
 \    namedComment 
 \ nextgroup=
 \    namedOV_DenyAnswerExceptKeyword,
+\    namedOV_DenyAnswerExceptFromKeywords,
 \    namedSemicolon
 
 " deny-answer-aliases { } ...
