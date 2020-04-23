@@ -6,7 +6,7 @@ This project aims to replace the stock Vim syntax highlighting for ISC Bind
 the last few decade and also to highlight more keywords that ISC Bind9/10 has
 incorporated as of late.
 
-[[https://raw.githubusercontent.com/egberts/gist/master/vim-syntax-bind-named-front-page.png]]
+![Example](https://raw.githubusercontent.com/egberts/gist/master/vim-syntax-bind-named-front-page.png "Example")
 
 As comment lines throughout this `bind-named.vim` syntax file, I incorporate
 nearly all the revised psuedo-BNF syntax for every `named.conf` statement
