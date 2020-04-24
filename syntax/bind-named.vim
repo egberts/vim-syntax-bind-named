@@ -1108,6 +1108,22 @@ syn region namedA_AML contained start=+{+ end=+}+
 
 " acl <string> { <address_match_element>; ... }; // may occur multiple times
 hi link namedA_ACLIdentifier  namedHL_ACLName
+syn region namedA_ACLIdentifier contained start=+'+ skip="\\'" end=+'+
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML,
+\    namedA_AML_Not_Operator,
+\    namedE_UnexpectedSemicolon,
+\    namedE_UnexpectedRParen,
+\    namedE_MissingLParen
+syn region namedA_ACLIdentifier contained start=+"+ skip="\\'" end=+"+
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedA_AML,
+\    namedA_AML_Not_Operator,
+\    namedE_UnexpectedSemicolon,
+\    namedE_UnexpectedRParen,
+\    namedE_MissingLParen
 syn match namedA_ACLIdentifier contained /\<[0-9a-zA-Z\-_]\{1,63}\>/ 
 \ skipwhite skipnl skipempty
 \ nextgroup=
@@ -1647,7 +1663,20 @@ syn region namedK_Section contained start=+{+ end=+}+
 \    namedSemicolon,
 \    namedNotSemicolon
 
-hi link namedStmtKeyIdent namedHL_Identifier
+hi link namedStmtKeyIdent namedHL_Identifie
+syn region namedStmtKeyIdent contained start=+"+ skip="\\'" end=+"+
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedK_Section,
+\    namedNotParem,
+\    namedError
+syn region namedStmtKeyIdent contained start=+'+ skip="\\'" end=+'+
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedK_Section,
+\    namedNotParem,
+\    namedError
+
 syn match namedStmtKeyIdent contained /[a-zA-Z0-9_\-]\{1,63}/
 \ skipwhite skipnl skipempty
 \ nextgroup=
