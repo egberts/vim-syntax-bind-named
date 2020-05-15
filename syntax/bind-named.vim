@@ -216,7 +216,8 @@ syn keyword named_ToDo xxx contained XXX FIXME TODO TODO: FIXME:
 
 hi link namedComment namedHL_Comment
 syn match namedComment "//.*" contains=named_ToDo
-syn match namedComment "#.*" contains=named_ToDo
+" syn match namedComment \"#.*\" contains=named_ToDo
+syn region namedComment start=/#/ end=/$/ contains=named_ToDo
 syn region namedComment start="/\*" end="\*/" contains=named_ToDo
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
