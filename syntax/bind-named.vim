@@ -2982,7 +2982,7 @@ syn match namedZ_UP_RRTypeList contained
 \ nextgroup=namedSemicolon
 " 7-char RRType name
 syn match namedZ_UP_RRTypeList contained
-\    /\c\<\(CDNSKEY\)\>/
+\    /\c\<\(CDSKEY\)\>/
 \ nextgroup=namedSemicolon
 " 8-char RRType name
 syn match namedZ_UP_RRTypeList contained
