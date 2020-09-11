@@ -2336,36 +2336,46 @@ syn keyword namedO_DnstapOutputSuffixType contained
 \    increment
 \    timestamp
 \ skipwhite skipnl skipempty
-\ nextgroup=namedSemicolon
+\ nextgroup=namedSemicolon,
+\    namedO_DnstapOutputSize,
+\    namedO_DnstapOutputVersions
 
 hi link namedO_DnstapOutputSizeValue namedHL_Number
 syn match namedO_DnstapOutputSizeValue contained /[0-9]\{1,10}/
 \ skipwhite skipnl skipempty
-\ nextgroup=namedSemicolon
+\ nextgroup=namedSemicolon,
+\    namedO_DnstapOutputSuffix,
+\    namedO_DnstapOutputVersions
     
 hi link namedO_DnstapOutputSizeBuiltin namedHL_Builtin
 syn keyword namedO_DnstapOutputSizeBuiltin contained 
 \    unlimited
 \ skipwhite skipnl skipempty
-\ nextgroup=namedSemicolon
+\ nextgroup=namedSemicolon,
+\    namedO_DnstapOutputSuffix,
+\    namedO_DnstapOutputVersions
 
-hi link namedO_DnstapOutputVersionBuiltin namedHL_Builtin
-syn keyword namedO_DnstapOutputVersionBuiltin contained 
+hi link namedO_DnstapOutputVersionsBuiltin namedHL_Builtin
+syn keyword namedO_DnstapOutputVersionsBuiltin contained 
 \    unlimited
 \ skipwhite skipnl skipempty
-\ nextgroup=namedSemicolon
+\ nextgroup=namedSemicolon,
+\     namedO_DnstapOutputSuffix,
+\     namedO_DnstapOutputSize,
 
-hi link namedO_DnstapOutputVersionNumber namedHL_Number
-syn match namedO_DnstapOutputVersionNumber contained /\d\+/
+hi link namedO_DnstapOutputVersionsNumber namedHL_Number
+syn match namedO_DnstapOutputVersionsNumber contained /\d\+/
 \ skipwhite skipnl skipempty
-\ nextgroup=namedSemicolon
+\ nextgroup=namedSemicolon,
+\    namedO_DnstapOutputSuffix,
+\    namedO_DnstapOutputSize
 
-hi link namedO_DnstapOutputVersion namedHL_Clause
-syn keyword namedO_DnstapOutputVersion contained version 
+hi link namedO_DnstapOutputVersions namedHL_Clause
+syn keyword namedO_DnstapOutputVersions contained versions
 \ skipwhite skipnl skipempty
 \ nextgroup=
-\    namedO_DnstapOutputVersionBuiltin,
-\    namedO_DnstapOutputVersionNumber
+\    namedO_DnstapOutputVersionsBuiltin,
+\    namedO_DnstapOutputVersionsNumber
 
 hi link namedO_DnstapOutputSize namedHL_Clause
 syn keyword namedO_DnstapOutputSize contained size 
@@ -2379,24 +2389,20 @@ syn keyword namedO_DnstapOutputSuffix contained suffix
 \ skipwhite skipnl skipempty
 \ nextgroup=namedO_DnstapOutputSuffixType
 
-syn region namedO_DnstapOutputSection contained start=/\zs\S\ze/ end=/;/me=e-1
-\ skipwhite skipnl skipempty
-\ contains=
-\    namedO_DnstapOutputSuffix,
-\    namedO_DnstapOutputVersion,
-\    namedO_DnstapOutputSize
-\ nextgroup=namedSemicolon
-
 hi link namedO_DnstapOutputFilespec namedHL_String
-syn match namedO_DnstapOutputFilespec contained /[a-zA-Z\]\-\[0-9\._,:\/?<>|'"`~!@#$%\^&*\\(\\)+]\{1,1024}/ 
-\ skipwhite skipempty skipnl 
-\ nextgroup=namedO_DnstapOutputSection
-syn match namedO_DnstapOutputFilespec contained /'[ a-zA-Z\]\-\[0-9\._,:;\/?<>|"`~!@#$%\^&*\\(\\)+{}]\{1,1024}'/hs=s+1,he=e-1 
-\ skipwhite skipempty skipnl 
-\ nextgroup=namedO_DnstapOutputSection
-syn match namedO_DnstapOutputFilespec contained /"[ a-zA-Z\]\-\[0-9\._,:;\/?<>|'`~!@#$%\^&*\\(\\)+{}]\{1,1024}"/hs=s+1,he=e-1 
-\ skipwhite skipempty skipnl 
-\ nextgroup=namedO_DnstapOutputSection
+syn match namedO_DnstapOutputFilespec contained /'[ a-zA-Z\]\-\[0-9\._,:;\/?<>|`~!@#$%\^&*\\(\\)+{}]\{1,256}'/hs=s+1,he=e-1 
+\ skipwhite skipempty skipnl
+\ nextgroup=namedSemicolon,
+\    namedO_DnstapOutputSuffix,
+\    namedO_DnstapOutputSize,
+\    namedO_DnstapOutputVersions
+
+syn match namedO_DnstapOutputFilespec contained /"[ a-zA-Z\]\-\[0-9\._,:;\/?<>|`~!@#$%\^&*\\(\\)+{}]\{1,256}"/hs=s+1,he=e-1 
+\ skipwhite skipempty skipnl
+\ nextgroup=namedSemicolon,
+\     namedO_DnstapOutputSuffix,
+\     namedO_DnstapOutputSize,
+\     namedO_DnstapOutputVersions
 
 hi link namedO_DnstapOutputType namedHL_Clause
 syn keyword namedO_DnstapOutputType contained skipwhite skipnl skipempty
