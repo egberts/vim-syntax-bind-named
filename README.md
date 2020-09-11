@@ -165,6 +165,9 @@ Bug Reporting
 -------------
 If you have any issues with this syntax file, see if you can:
 
+* pay attention to the closing semicolon and ensure that it is highlighted as soft or light green.
+  If the semicolon is dark-cyan, then that is the point of syntax failure.
+
 * keep narrowing down the offending line until it stopped offending, hopefully
   it is just to just one (or few) lines.  No need to expose your entire `named.conf`
   Don't forget to change all IP addresses (unless that breaks too) for
