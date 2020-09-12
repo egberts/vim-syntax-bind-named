@@ -640,6 +640,8 @@ syn match named_E_IP6AddrPrefix_SC /\%(\x\{1,4}:\)\{7,7}\x\{1,4}\/[0-9]\{1,3}/ c
 \ nextgroup=
 \    named_A_AML_Nested_Semicolon,
 \    named_E_MissingSemicolon
+" ::/123
+syn match named_E_IP6AddrPrefix_SC /::\/[0-9]\{1,3}/ contained nextgroup=namedSemicolon
 " 1::                              1:2:3:4:5:6:7::
 syn match named_E_IP6AddrPrefix_SC /\%(\x\{1,4}:\)\{1,7}:\/[0-9]\{1,3}/ contained nextgroup=namedSemicolon
 " 1::8             1:2:3:4:5:6::8  1:2:3:4:5:6::8
