@@ -2,7 +2,7 @@
 " Language:     BIND zone files (RFC1035)
 " Maintainer:   Mathieu Arnold <mat@mat.cc>
 " URL:          https://github.com/Absolight/vim-bind
-" Last Change:  Mon 2012-12-17 19:33:55 CET
+" Last Change:  Mon 2020-09-13 16:50:13 UTC
 "
 " Based on an earlier version by Julian Mehnle, with heavy modifications.
 
@@ -122,6 +122,7 @@ endfunction
 syn keyword     zoneRRType              contained A nextgroup=zoneIPAddr skipwhite
 syn keyword     zoneRRType              contained AAAA nextgroup=zoneIP6Addr skipwhite
 syn keyword     zoneRRType              contained NS CNAME PTR DNAME nextgroup=zoneDomain skipwhite
+call s:createChain("OPENPGPKEY", ["zoneHex"])
 call s:createChain("MX", ["zoneNumber", "zoneDomain"])
 call s:createChain("SRV", ["zoneNumber", "zoneNumber", "zoneNumber", "zoneDomain"])
 call s:createChain("DS DLV TLSA NSEC3PARAM", ["zoneNumber", "zoneNumber", "zoneNumber", "zoneHex"])
@@ -136,7 +137,7 @@ syn keyword     zoneRRType              contained WKS HINFO RP
       \ AFSDB X25 ISDN RT NSAP NSAP-PTR SIG KEY PX GPOS LOC EID NIMLOC
       \ ATMA NAPTR KX CERT SINK OPT APL IPSECKEY
       \ DHCID HIP NINFO RKEY TALINK CDS SPF UINFO UID
-      \ GID UNSPEC NID L32 L64 LP URI CAA TA 
+      \ GID UNSPEC NID L32 L64 LP URI CAA TA OPENPGPKEY
       \ nextgroup=zoneRData skipwhite
 syn match       zoneRRType              contained /\vTYPE\d+/ nextgroup=zoneUnknownType1 skipwhite
 hi def link     zoneRRType              Type
