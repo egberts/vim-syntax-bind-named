@@ -136,8 +136,11 @@ call s:createChain("SOA", ["zoneDomain", "zoneDomain", "zoneSerial", "zoneTTL"])
 syn keyword     zoneRRType              contained WKS HINFO RP
       \ AFSDB X25 ISDN RT NSAP NSAP-PTR SIG KEY PX GPOS LOC EID NIMLOC
       \ ATMA NAPTR KX CERT SINK OPT APL IPSECKEY
-      \ DHCID HIP NINFO RKEY TALINK CDS SPF UINFO UID
-      \ GID UNSPEC NID L32 L64 LP URI CAA TA OPENPGPKEY
+      \ DHCID SMIMEA HIP NINFO RKEY TALINK CDS CDSNKEY CSYNC ZONEMD
+      \ SVCB HTTPS SPF UINFO UID
+      \ GID UNSPEC NID L32 L64 LP
+      \ TKEY TSIG IXFR AXFR
+      \ URI CAA AVC DOA AMTRELAY TA
       \ nextgroup=zoneRData skipwhite
 syn match       zoneRRType              contained /\vTYPE\d+/ nextgroup=zoneUnknownType1 skipwhite
 hi def link     zoneRRType              Type
