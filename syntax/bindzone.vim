@@ -2,7 +2,7 @@
 " Language:     BIND zone files (RFC1035)
 " Maintainer:   Mathieu Arnold <mat@mat.cc>
 " URL:          https://github.com/Absolight/vim-bind
-" Last Change:  Mon 2020-09-13 16:50:13 UTC
+" Last Change:  Mon 2020-09-14 21:21:13 UTC
 "
 " Based on an earlier version by Julian Mehnle, with heavy modifications.
 
@@ -39,7 +39,7 @@ hi def link     zoneSpecial             Special
 syn match       zoneTTL                 contained /\v<(\d[HhWwDd]?)*>/ nextgroup=zoneClass,zoneRRType skipwhite
 hi def link     zoneTTL                 Constant
 
-syn keyword     zoneClass               contained IN CHAOS nextgroup=zoneRRType,zoneTTL   skipwhite
+syn keyword     zoneClass               contained IN CHAOS CH HS ANY nextgroup=zoneRRType,zoneTTL   skipwhite
 hi def link     zoneClass               Include
 
 let s:dataRegexp = {}
