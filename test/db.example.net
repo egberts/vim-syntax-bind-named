@@ -1,0 +1,103 @@
+$ORIGIN example.tld.
+$TTL 86400
+$INCLUDE "no_such_file"
+; use `date +%s` command to get serial number
+example.tld.    86400   IN  SOA ns1.example.tld. admin.example.tld. (
+                                    2020092002 ; serial
+		                            1200       ; refresh (20 minutes)
+			                        180        ; retry (3 minutes)
+			                        1209600    ; expire (2 week, RFC1912)
+			                        10800      ; minimum (3 hours)
+                                )
+                            NS	ns1.example.tld.
+                            NS	ns1.isp.net.
+                            NS	ns2.isp.net.
+
+example.tld.                A   123.123.123.123
+ns1                         A   123.123.123.123
+mx1                         A	123.123.123.123
+
+example.tld.                HINFO   "PDP-11/E" "AP/L"
+example.tld.                MX	10  mx1.example.tld.
+example.tld.            IN  TXT     "mailconf=https://example.tld/.well-known/autoconfig/mail/config-v1.1.xml"
+                            TXT     "v=spf1 mx a:ns1.example.tld -all"
+
+                86400	    LOC	45 38 26.282 N 85 36 11.846 W 182.00m 10m 100m 10m
+
+; regenerate SSHFP keys using 'ssh-keygen -r example.tld'
+example.tld.            IN  SSHFP 1 1 0123456789abcdef0123456789abcdef01234567
+example.tld.            IN  SSHFP 1 2 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+example.tld.            IN  SSHFP 3 1 0123456789abcdef0123456789abcdef01234567
+example.tld.            IN  SSHFP 3 2 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+example.tld.            IN  SSHFP 4 1 09af09af09af09af09af09af09af09af09af09af
+example.tld.            IN  SSHFP 4 2 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+
+example.tld.            IN  DNSKEY 257 3 14 (
+                                D4ubdI/dt5C2taKEB1zKR61xdVdfnqt5qng1s8gzABya
+                                oorSXAOsdPB001GZlqUxzOecUPhc8W1cp9v4BKIcXpLk
+                                XLVRPzH9EHB6Kw+HtwtM6Fok yYRFals4eSkh8ysf 
+                                ) ; ZSK; alg =ECDSA386SHA386; key id = 28748
+
+example.tld.            IN  DNSKEY 257 3 14 (
+                                D4ubdI/dt5C2taKEB1zKR61xdVdfnqt5qng1s8gzABya
+                                oorSXAOsdPB001GZlqUxzOecUPhc8W1cp9v4BKIcXpLk
+                                XLVRPzH9EHB6Kw+HtwtM6FokyYRFals4eSkh8ysf
+                                ) ; KSK; alg = ECDSA386SHA386; key id = 28748
+                            CAA	0 issue "letsencrypt.org"
+                            CAA	0 issuewild "\;"
+                            CAA	0 iodef "mailto:admin+caa@example.tld"
+                            CAA	0 newtag  "newtag_value"
+
+_dmarc                      TXT "v=DMARC1; p=none; rua=mailto:dmarc@example.tld; fo=1"
+
+www                     IN  CNAME   example.tld.
+autodiscover            IN	CNAME	example.tld.
+autoconfig          	IN	CNAME	example.tld.
+smtp               		IN	CNAME	example.tld.
+imap            		IN	CNAME	example.tld.
+portal          		IN	CNAME	example.tld.
+
+;
+; Made with 'opendkim-genkey -S -r -s ns1 -d example.tld' command
+default._domainkey	        TXT	"v=DKIM1; k=rsa; p=aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+a" "Z09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ09/+aZ"
+
+; Taken from C3 that C1 cross-sign with into DER format then base64 output
+; # openssl x509 -in lets-encrypt-x3-cross-signed.pem.txt -outform DER | openssl dgst -sha256 -hex | awk '{print "le-ca TLSA 2 0 1", $NF}'
+; https://community.letsencrypt.org/t/making-a-dane-tlsa-to-work-with-le/2129
+_443._tcp               IN  TLSA 2 0 1 09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af
+_443._tcp               IN  TLSA 2 1 1 09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af
+_443._tc                IN  TLSA 3 0 2 09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af
+_443._tcp               IN  TLSA 3 0 0 3082054b30820433a003020102021203f29a4df26c31fc6370827ba2b3954f1eaa300d06092a864886f70d01010b0500304a310b300906035504061302555331163014060355040a130d4c6574277320456e6372797074312330210603550403131a4c6574277320456e637279707420417574686f72697479205833301e170d3230303432383232303033345a170d3230303732373232303033345a3015311330110603550403130a6567626572742e6e657430820122300d06092a864886f70d01010105000382010f003082010a0282010100a80ff746162b1953a2f1e0cf11702920ce4d15b4f8924683f78fe3c3b09381dbcdd0c0222a876e95a521176a36ef04c1d3a236853eb17e7ded40d5383a38f856968680c545ce4d641ffc1c19349d6c4f889df83587d8073c8ce27db7372376acae0f1ae817bd089bff09524c5bd577a2b79543e86215a05e8c61fc2f867f90a873970710564bd464975992cc42e261f6c0538efe433e747afc6e5c3f7e1fd769482eb439dd50868566b8c64d93a81c745cd40a0634e3b3bc2d5acdc4ad220fc243b0d72ef78ec4874c1c011ed93be07d3f4c9c5b667ee22406664fe4a03b9e9eb5312d34c7278256ac59c0eb53afb6cd06ffef4920d14b39bdb97161f212ea010203010001a382025e3082025a300e0603551d0f0101ff0404030205a0301d0603551d250416301406082b0601050507030106082b06010505070302300c0603551d130101ff04023000301d0603551d0e041604145d53a5ca32ea156039a064a6fefb232a77a0ece8301f0603551d23041830168014a84a6a63047dddbae6d139b7a64565eff3a8eca1306f06082b0601050507010104633061302e06082b060105050730018622687474703a2f2f6f6373702e696e742d78332e6c657473656e63727970742e6f7267302f06082b060105050730028623687474703a2f2f636572742e696e742d78332e6c657473656e63727970742e6f72672f30150603551d11040e300c820a6567626572742e6e6574304c0603551d20044530433008060667810c0102013037060b2b0601040182df130101013028302606082b06010505070201161a687474703a2f2f6370732e6c657473656e63727970742e6f726730820103060a2b06010401d6790204020481f40481f100ef007600f095a459f200d18240102d2f93888ead4bfe1d47e399e1d034a6b0a8aa8eb27300000171c305438c0000040300473045022003fd1892539218ca9ffafeb3919d74f573b6441a787da73f5a3ee93de78914c3022100a626919fcca57626a685f0968620f989a3f90d1c6d69545743bb3e9d7424eb2700750007b75c1be57d68fff1b0c61d2315c7bae6577c5794b76aeebc613a1a69d3a21c00000171c30543e0000004030046304402201373e22e89b47d59a65b5541f6074d4929936ae9c14afd7650f6af9e7acee3a8022003f00d5270b5838fb8fead4aef982e7a8c308b0f447b1677ff93b8ea8c4f2acd300d06092a864886f70d01010b05000382010100354ad165ae663f303c346a60ccdb126fa92b9af502c678c9823161e1b9abd79e7d2f2c16fb3f95ee2362b07309e4081990dec97afd21a3a65671de90a76c3518aca5d485d99824007853b2e102823d7c2f8c0b093102297c7c3c73deaa06dca072e182b2975954405db1eea5093ea56c6e65924a26c7edadb29b3fa38a85ddecddb00e81d8869cb7a8b5fb80b46e0f237bf4db1f92cc2cb276ee314630044fadaff02ab0d5d7d6e003da62c1ed19bdaf0a201eccfb784f5b739f4382ce13aa29eee66c6b5e2b708f7160dc1444c89c4d6843a609371d26bce803d1e9170dee73a252d9501f2402b5015e935709d2c3580969a2867dbb5f1f7c3f38b56a70eff9
+
+
+; smtp		25/tcp		mail
+_25._tcp                IN  TLSA 2 0 1 09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af
+_25._tcp                IN  TLSA 2 1 1 09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af
+
+; submissions	465/tcp		ssmtp smtps urd # Submission over TLS [RFC8314]
+_465._tcp               IN  TLSA 2 0 1 09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af
+_465._tcp               IN  TLSA 2 1 1 09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af
+
+; submission	587/tcp				# Submission [RFC4409]
+_587._tcp               IN  TLSA 2 0 1 09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af
+_587._tcp               IN  TLSA 2 1 1 09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af09af
+
+09af09af09af09af09af09af09af09af09af09af09af09af09af09af._openpgpkey.example.tld.  IN OPENPGPKEY ( aZ09aZ09aZ09aZ09aZ09aZ09aZ09aZ09aZ09aZ09aZ09 )
+
+09af09af09af09af09af09af09af09af09af09af09af09af09af09af._openpgpkey.example.tld. IN OPENPGPKEY (
+                  aZ09aZ09aZ09aZ09aZ09aZ09aZ09aZ09aZ09aZ09aZ09
+)
+
+_autodiscover._tcp          SRV	1 1 443 mx1.example.tld.
+
+; RFC 6186 SRV records for e-mail services
+_imap._tcp.mx1.example.tld. SRV	0 0 0 .
+_imaps._tcp.mx1.example.tld.    SRV	1 1 993 mx1.example.tld.
+_pop3._tcp.mx1.example.tld. SRV	0 0 0 .
+_pop3s._tcp.mx1.example.tld.    SRV	0 0 0 .
+_submission._tcp.mx1.example.tld.   SRV	1 1 587 mx1.example.tld.
+_submissions._tcp.mx1.example.tld.  SRV	1 1 465 mx1.example.tld.
+
+; BIMI 
+; a="self", "cert", "mva" or valid https URI.
+default._bimi.example.tld.   TXT "v=BIMI1;l=https://example.tld/images/bimi1_image.svg;a="
