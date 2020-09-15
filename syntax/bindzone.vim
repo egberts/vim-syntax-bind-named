@@ -12,6 +12,8 @@ endif
 
 syn case match
 
+syn sync fromstart
+
 " Directives
 syn region      zoneRRecord             start=/\v^/ end=/\v$/ contains=zoneOwnerName,zoneSpecial,zoneComment,zoneUnknown
 
@@ -33,6 +35,10 @@ hi def link     zoneOrigin              Statement
 syn match       zoneDomain              contained  /\v([^[:space:]!"#$%&'()*+,\/:;<=>?@[\]\^`{|}~]+|\@)(\s|;|$)@=/
 hi def link     zoneDomain              Underlined
 
+" syn match       zoneCAA_QuotedTagValue        contained  /\v"(([\x21-\x3a])|([\x37-\x7e])){1,255)"(\s|;|$)@=/
+syn match       zoneCAA_QuotedTagValue contained  /\v"(([\x21\x23-\x7e])){1,255}"/
+hi def link     zoneCAA_QuotedTagValue        String
+
 syn match       zoneSpecial             contained /\v^(\@|\*(\.\S*)?)\s@=/ nextgroup=zoneTTL,zoneClass,zoneRRType skipwhite
 hi def link     zoneSpecial             Special
 
@@ -41,6 +47,33 @@ hi def link     zoneTTL                 Constant
 
 syn keyword     zoneClass               contained IN CHAOS CH HS ANY nextgroup=zoneRRType,zoneTTL   skipwhite
 hi def link     zoneClass               Include
+
+syn match       zoneCAA_unknown_tag  contained 
+  \  /\v<[a-zA-Z0-9]{1,64}>/
+  \ skipwhite
+  \ nextgroup=zoneCAA_QuotedTagValue
+hi def link     zoneCAA_unknown_tag  Special
+
+syn match       zoneCAA_property_issue  contained /issue/ skipwhite
+\ nextgroup=zoneCAA_QuotedTagValue
+hi def link     zoneCAA_property_issue  Variable
+
+syn match       zoneCAA_property_issuewild contained /issuewild/ skipwhite
+\ nextgroup=zoneCAA_QuotedTagValue
+hi def link     zoneCAA_property_issuewild Variable
+
+syn match       zoneCAA_property_iodef  contained /iodef/ skipwhite
+\ nextgroup=zoneCAA_QuotedTagValue
+hi def link     zoneCAA_property_iodef  Variable
+
+syn match       zoneCAA_Number          contained  /\v\d{1,3}/ skipwhite
+  \ nextgroup=
+  \   zoneCAA_property_issue,
+  \   zoneCAA_property_issuewild,
+  \   zoneCAA_property_iodef,
+  \   zoneCAA_unknown_tag
+hi def link     zoneCAA_Number          Constant
+
 
 let s:dataRegexp = {}
 let s:dataRegexp["zoneNumber"] = "/\\v<[0-9]+>/"
@@ -122,6 +155,8 @@ endfunction
 syn keyword     zoneRRType              contained A nextgroup=zoneIPAddr skipwhite
 syn keyword     zoneRRType              contained AAAA nextgroup=zoneIP6Addr skipwhite
 syn keyword     zoneRRType              contained NS CNAME PTR DNAME nextgroup=zoneDomain skipwhite
+syn keyword     zoneRRType              contained CAA skipwhite
+\ nextgroup=zoneCAA_Number
 call s:createChain("OPENPGPKEY", ["zoneHex"])
 call s:createChain("MX", ["zoneNumber", "zoneDomain"])
 call s:createChain("SRV", ["zoneNumber", "zoneNumber", "zoneNumber", "zoneDomain"])
@@ -139,8 +174,8 @@ syn keyword     zoneRRType              contained WKS HINFO RP
       \ DHCID SMIMEA HIP NINFO RKEY TALINK CDS CDSNKEY CSYNC ZONEMD
       \ SVCB HTTPS SPF UINFO UID
       \ GID UNSPEC NID L32 L64 LP
-      \ TKEY TSIG IXFR AXFR
-      \ URI CAA AVC DOA AMTRELAY TA
+      \ TKEY TSIG IXFR AXFR 
+      \ URI AVC DOA AMTRELAY TA OPENPGPKEY
       \ nextgroup=zoneRData skipwhite
 syn match       zoneRRType              contained /\vTYPE\d+/ nextgroup=zoneUnknownType1 skipwhite
 hi def link     zoneRRType              Type
