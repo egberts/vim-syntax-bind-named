@@ -1073,8 +1073,8 @@ syn match named_E_SuffixDomain_SC contained /\<[0-9A-Za-z\._\-]{1,1023}[A-Za-z\.
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " We'll do error RED highlighting on all statement firstly, then later on
 " all the options, then all the clauses.
-hi link namedStmtKeywordUnknown namedHL_Error
-syn match namedStmtKeywordUnknown /\<\S\{1,64}\>/
+" hi link namedStmtKeywordUnknown namedHL_Error
+" syn match namedStmtKeywordUnknown /\<\S\{1,64}\>/
 
 
 hi link namedInclude namedHL_Include
@@ -1127,8 +1127,8 @@ syn match namedA_KeyName contained
 \ nextgroup=namedSemicolon
 
 hi link namedA_Key namedHL_Option
-syn keyword namedA_Key contained key skipwhite skipnl skipempty
-\ nextgroup=namedA_KeyName
+syn match namedA_Key contained /\<key\>/ skipwhite skipnl skipempty
+\ nextgroup=named_Keyname_SC 
 
 hi link namedA_AML_Nested_Semicolon namedHL_Type
 syn match namedA_AML_Nested_Semicolon contained 
@@ -2925,7 +2925,7 @@ syn keyword namedZ_Boolean_Group contained skipwhite
 
 hi link namedZ_File namedHL_Option
 syn keyword namedZ_File contained file skipwhite
-\ nextgroup=named_String_QuoteForced
+\ nextgroup=named_String_QuoteForced_SC,namedNotString
 
 hi link namedZ_InView namedHL_Option
 syn keyword namedZ_InView contained in-view 
@@ -5306,7 +5306,7 @@ syn keyword namedOVZ_OptATS contained
 \ nextgroup=namedOptATS_IP4wild 
 
 hi link namedOVZ_AutoDNSSEC namedHL_Option
-syn keyword namedOVZ_AutoDNSSEC contained auto-dnssec 
+syn match namedOVZ_AutoDNSSEC contained /\<auto\-dnssec\>/
 \ skipwhite skipnl skipempty
 \ nextgroup=
 \    named_AllowMaintainOff,
@@ -5886,11 +5886,41 @@ syn region namedOSVZ_Masters_MML contained start=/{/ end=/}/
 \    namedInclude,
 \    namedComment
 
+" 'dscp' added after `also-notify` at 9.9
+hi link namedAlsoNotify_DscpNumber namedHL_Number
+syn match namedAlsoNotify_DscpNumber contained /6[0-3]\|[0-5][0-9]\|[1-9]/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedAlsoNotify_Port,
+\    namedOSVZ_Masters_MML
+
+hi link namedAlsoNotify_Dscp namedHL_Option
+syn match namedAlsoNotify_Dscp contained skipwhite skipnl skipempty
+\    /\<dscp\>/
+\ nextgroup=
+\    namedAlsoNotify_DscpNumber
+
+" 'port' added after `also-notify` at 9.9
+hi link namedAlsoNotify_PortNumber namedHL_Number
+syn match namedAlsoNotify_PortNumber contained 
+\ /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedAlsoNotify_Dscp,
+\    namedOSVZ_Masters_MML
+
+hi link namedAlsoNotify_Port namedHL_Option
+syn match namedAlsoNotify_Port contained skipwhite skipnl skipempty
+\    /\<port\>/
+\ nextgroup=namedAlsoNotify_PortNumber
+
 hi link namedOSVZ_AlsoNotify namedHL_Option
 " In 'server', `also-notify` is no longer valid after 9.13
-syn keyword namedOSVZ_AlsoNotify contained skipwhite
-\    also-notify
+syn match namedOSVZ_AlsoNotify contained skipwhite
+\    /\<also\-notify\>/
 \ nextgroup=
+\    namedAlsoNotify_Dscp,
+\    namedAlsoNotify_Port,
 \    namedOSVZ_Masters_MML,
 \    namedInclude,
 \    namedComment,
