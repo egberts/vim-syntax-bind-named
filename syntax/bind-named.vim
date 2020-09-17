@@ -5317,7 +5317,7 @@ hi link namedOVZ_IgnoreWarnFail namedHL_Option
 syn keyword namedOVZ_IgnoreWarnFail contained 
 \    check-mx-cname
 \    check-mx
-\    check-srv-cnames
+\    check-srv-cname
 \    check-spf
 \ skipwhite skipnl skipempty
 \ nextgroup=named_IgnoreWarnFail_SC
