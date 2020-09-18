@@ -6089,9 +6089,9 @@ syn match namedOSVZ_NotifySource contained
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Not the same as 'check-names' in 'options' statement
 hi link namedVZ_CheckNames namedHL_Option
-syn keyword namedVZ_CheckNames contained 
-\    check-names
-\ skipwhite
+syn match namedVZ_CheckNames contained 
+\    /\<check\-names\>/
+\ skipwhite skipnl skipempty
 \ nextgroup=named_IgnoreWarnFail_SC
 
 " not the same as ixfr-from-differences in 'options' statement
