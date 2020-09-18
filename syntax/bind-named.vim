@@ -5319,13 +5319,9 @@ syn keyword namedOVZ_IgnoreWarnFail contained
 \    check-mx
 \    check-srv-cname
 \    check-spf
+\    check-dup-records
 \ skipwhite skipnl skipempty
 \ nextgroup=named_IgnoreWarnFail_SC
-
-hi link namedOVZ_IgnoreWarn namedHL_Option
-syn keyword namedOVZ_IgnoreWarn contained check-dup-records
-\ skipwhite skipnl skipempty
-\ nextgroup=named_IgnoreWarn_SC
 
 " <0-3660> days (dnskey-sig-validity)
 hi link named_Number_Max3660days namedHL_Number
