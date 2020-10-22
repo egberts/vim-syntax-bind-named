@@ -293,28 +293,29 @@ syn match namedNotNumber contained "[^  0-9;]\+"
 
 " <0-30000> (resolver-query-timeout in millisecond)
 hi link named_Interval_Max30ms_SC namedHL_Number
-syn match named_Interval_Max30ms_SC contained /\d\+/ 
+syn match named_Interval_Max30ms_SC contained 
+\    /\(30000\)\|\([1-2][0-9][0-9][0-9][0-9]\)\|\([1-9][0-9][0-9][0-9]\)\|\([1-9][0-9][0-9]\)\|\([1-9][0-9]\)\|\([0-9]\)/
 \ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
 
 " <0-30> (servfail-ttl)
 hi link named_Ttl_Max30sec_SC namedHL_Number
 syn match named_Ttl_Max30sec_SC contained 
-\     /\d\+/
+\     /\(30\)\|\([1-2][0-9]\)\|\([0-9]\)/
 \ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
 
 " <0-90> (min-cache-ttl)
 hi link named_Ttl_Max90sec_SC namedHL_Number
 syn match named_Ttl_Max90sec_SC contained 
-\     /\d\+/
+\     /\(90\)\|\([1-8][0-9]\)\|\([0-9]\)/
 \ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
 
 " <0-1200> ([max-]clients-per-query)
 hi link named_Number_Max20min_SC namedHL_Number
 syn match named_Number_Max20min_SC contained 
-\    "\d\{1,10}" 
+\     /\(1200\)\|\(1[0-1][0-9][0-9]\)\|\([1-9][0-9][0-9]\)\|\([1-9][0-9]\)\|\([0-9]\)/
 \ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
 
@@ -327,13 +328,13 @@ syn match named_Number_UdpSize contained skipwhite skipnl skipempty
 " TTL <0-10800> (max-ncache-ttl)
 hi link named_Ttl_Max3hour_SC namedHL_Number
 syn match named_Ttl_Max3hour_SC contained skipwhite skipnl skipempty
-\ /\d\+/
+\     /\(10800\)\|\(10[0-7][0-9][0-9]\)\|\([1-9][0-9][0-9][0-9]\)\|\([1-9][0-9][0-9]\)\|\([1-9][0-9]\)\|\([0-9]\)/
 \ nextgroup=namedSemicolon
 
 " TTL <0-1800> (lame-ttl)
 hi link named_Ttl_Max30min_SC namedHL_Number
 syn match named_Ttl_Max30min_SC contained skipwhite skipnl skipempty
-\ /\d\+/
+\     /\(1800\)\|\(1[0-7][0-9][0-9]\)\|\([1-9][0-9][0-9]\)\|\([1-9][0-9]\)\|\([0-9]\)/
 \ nextgroup=namedSemicolon
 
 " <0-3660> days (dnskey-sig-validity)
@@ -345,7 +346,7 @@ syn match named_Number_Max3660days contained skipwhite skipnl skipempty
 " <0-604800> (max-cache-ttl)
 hi link named_Ttl_Max1week_SC namedHL_Number
 syn match named_Ttl_Max1week_SC contained skipwhite  skipnl skipempty
-\ /\d\+/
+\     /\(604800\)\|\(604[1-7][0-9][0-9]\)\|\(60[1-3][0-9][0-9][0-9]\)\|\([1-4][0-9][0-9][0-9][0-9][0-9]\)\|\([1-9][0-9][0-9][0-9][0-9]\)\|\([1-9][0-9][0-9][0-9]\)\|\([1-9][0-9][0-9]\)\|\([1-9][0-9]\)\|\([0-9]\)/
 \ nextgroup=namedSemicolon
 
 " heartbeat-interval: range: 0-40320
@@ -358,32 +359,43 @@ syn match named_Number_Max28day_SC contained
 " <0-2419200> (max-refresh-time, min-refresh-time, min-retry-time,
 " max-retry-time)
 hi link named_Number_Max24week_SC namedHL_Number
-syn match named_Number_Max24week_SC contained "\d\{1,10}" skipwhite nextgroup=namedSemicolon
+syn match named_Number_Max24week_SC contained 
+\ /\%(2419200\)\|\%(2419[0-1][0-9][0-9]\)\|\%(241[0-8][0-9][0-9][0-9]\)\|\%(240[0-9][0-9][0-9]\)\|\%(23[0-9][0-9][0-9][0-9][0-9]\)\|\%(2[0-2][0-9][0-9][0-9][0-9][0-9]\)\|\%([1-2][0-9][0-9][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)/
+\ skipwhite nextgroup=namedSemicolon
 
+" <0-65535> Group ID (Unix-constraint)
 hi link named_Number_GID namedHL_Number
-syn match named_Number_GID contained "[0-6]\{0,1}[0-9]\{1,4}"
+syn match named_Number_GID contained 
+\    "\%(6553[0-5]\)\|\%([655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)"
 
+" <0-65535> User ID (Unix-constraint)
 hi link namedUserID namedHL_Number
-syn match namedUserID contained "[0-6]\{0,1}[0-9]\{1,4}"
+syn match namedUserID contained 
+\    "\%(6553[0-5]\)\|\%([655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)"
 
+" <0-3777> (octal) File Permission (Unix-constraint)
 hi link namedFilePerm   namedHL_Number
-syn match namedFilePerm contained "[0-7]\{3,4}"
+syn match namedFilePerm contained "\([0-3][0-7][0-7][0-7]\)\|\([0-7][0-7][0-7]\)"
 
 hi link namedDSCP   namedHL_Number
-syn match namedDSCP contained /6[0-3]\|[0-5][0-9]\|[1-9]/
+syn match namedDSCP contained /\(6[0-3]\)\|\([0-5][0-9]\)\|\([1-9]\)/
 
 hi link named_Port namedHL_Number
-syn match named_Port contained /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+syn match named_Port contained 
+\    /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)/
 hi link named_Port_SC namedHL_Number
-syn match named_Port_SC contained /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/ skipwhite nextgroup=namedSemicolon
+syn match named_Port_SC contained 
+\    /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)/
+\ skipwhite nextgroup=namedSemicolon
 
 hi link named_PortWild    namedHL_Builtin
-syn match named_PortWild contained /\*/
-syn match named_PortWild contained /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+syn match named_PortWild contained /\*\s*;/ skipwhite
+syn match named_PortWild contained 
+\    /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)/
 hi link namedElementPortWild namedHL_Number
 syn match namedElementPortWild contained /\*\s*;/ skipwhite
-"syn match namedElementPortWild contained /\d\{1,5}\s*;/hs=s,me=e-1
-syn match namedElementPortWild contained /\%([1-9]\|[1-5]\?[0-9]\{2,4}\|6[1-4][0-9]\{3}\|65[1-4][0-9]\{2}\|655[1-2][0-9]\|6553[1-5]\)\s*;/he=e-1
+syn match namedElementPortWild contained 
+\    /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)/
 \ contains=named_Port skipwhite
 
 hi link namedWildcard     namedHL_Builtin
@@ -950,9 +962,14 @@ hi link named_String_DQuoteForced_SC namedHL_String
 syn region named_String_DQuoteForced_SC start=/"/ skip=/\\"/ end=/"/ contained nextgroup=namedSemicolon
 hi link named_String_SQuoteForced_SC namedHL_String
 syn region named_String_SQuoteForced_SC start=/'/ skip=/\\'/ end=/'/ contained nextgroup=namedSemicolon
+
 hi link named_String_QuoteForced_SC namedHL_String
 syn region named_String_QuoteForced_SC start=/"/hs=s+1 skip=/\\"/ end=/"/he=e-1 contained nextgroup=namedSemicolon
 syn region named_String_QuoteForced_SC start=/'/hs=s+1 skip=/\\'/ end=/'/he=e-1 contained nextgroup=namedSemicolon
+
+hi link named_Filespec_QuoteForced_SC namedHL_Filespec
+syn region named_Filespec_QuoteForced_SC start=/"/hs=s+1 skip=/\\"/ end=/"/he=e-1 contained nextgroup=namedSemicolon
+syn region named_Filespec_QuoteForced_SC start=/'/hs=s+1 skip=/\\'/ end=/'/he=e-1 contained nextgroup=namedSemicolon
 
 " -- Identifier
 hi link namedTypeBase64 namedHL_Base64
@@ -1297,7 +1314,8 @@ syn match namedC_UnixOptKeysKeyword contained /\<keys\>/
 \ nextgroup=namedC_UnixOptKeysSection
 
 hi link namedC_UnixOptGroupInteger namedHL_Number
-syn match namedC_UnixOptGroupInteger contained /\d\{1,5}/ 
+syn match namedC_UnixOptGroupInteger contained 
+\    "\%(6553[0-5]\)\|\%([655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)"
 \ skipwhite skipnl skipempty
 \ contains=named_Number_GID
 \ nextgroup=
@@ -1314,7 +1332,8 @@ syn match namedC_UnixOptGroupKeyword contained /\<group\>/
 \    namedError
 
 hi link namedC_UnixOptOwnerInteger namedHL_Number
-syn match namedC_UnixOptOwnerInteger contained /\d\{1,5}/ 
+syn match namedC_UnixOptOwnerInteger contained 
+\    "\%(6553[0-5]\)\|\%([655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)"
 \ skipwhite skipnl skipempty
 \ contains=namedUserID
 \ nextgroup=
@@ -1329,7 +1348,8 @@ syn match namedC_UnixOptOwnerKeyword contained /\<owner\>/
 \    namedError
 
 hi link namedC_UnixOptPermInteger namedHL_Number
-syn match namedC_UnixOptPermInteger /\d\{1,4}/ contained skipwhite skipempty skipnl
+syn match namedC_UnixOptPermInteger contained skipwhite skipempty skipnl
+\     /\([0-3][0-7][0-7][0-7]\)\|\([0-7][0-7][0-7]\)/
 \ contains=namedFilePerm
 \ nextgroup=namedC_UnixOptOwnerKeyword,namedError
 
@@ -1412,7 +1432,8 @@ syn match namedC_InetOptPortWild contained /\*/
 \    namedC_InetOptAllowKeyword
 
 hi link namedC_InetOptPortNumber namedHL_Number
-syn match namedC_InetOptPortNumber contained /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+syn match namedC_InetOptPortNumber contained 
+\    /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)/
 \ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedC_InetOptAllowKeyword
@@ -1493,7 +1514,8 @@ syn match namedDpKs_AlgorithmSize contained /\d\{1,10}/
 \ nextgroup=namedSemicolon
 
 hi link namedDpKs_AlgorithmNumber namedHL_String
-syn match namedDpKs_AlgorithmNumber contained /\d\{1,5}/
+syn match namedDpKs_AlgorithmNumber contained 
+\    /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
 \ skipwhite skipnl skipempty
 \ nextgroup=namedDpKs_AlgorithmSize
 
@@ -1634,7 +1656,7 @@ syn keyword namedDp_DomainNameBuiltin contained
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within top-level 'dlz' statement
 " 
-" dlz <string> {
+" dlz ["]<string>["] {
 "        database <string>;
 "        search <boolean>;
 "     }; // may occur multiple times
@@ -1676,10 +1698,18 @@ syn region namedD_DlzSection contained start=+{+ end=+}+
 \    namedSemicolon,
 \    namedNotSemicolon
 
+hi link namedD_Identifier_Specific namedHL_Identifier
 hi link namedD_Identifier namedHL_Identifier
 syn match namedD_Identifier contained /\<[a-zA-Z0-9_\.\-]\{1,63}\>/ 
 \ skipwhite skipnl skipempty
 \ nextgroup=namedD_DlzSection
+syn region namedD_Identifier start=/"/hs=s+1 skip=/\\"/ end=/"/he=e-1 contained
+\ skipwhite skipnl skipempty
+\ nextgroup=namedD_DlzSection
+syn region namedD_Identifier start=/'/hs=s+1 skip=/\\'/ end=/'/he=e-1 contained
+\ skipwhite skipnl skipempty
+\ nextgroup=namedD_DlzSection
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Syntaxes that are found only within top-level 'dyndb' statement
@@ -1764,7 +1794,7 @@ syn region namedK_Section contained start=+{+ end=+}+
 \    namedSemicolon,
 \    namedNotSemicolon
 
-hi link namedStmtKeyIdent namedHL_Identifie
+hi link namedStmtKeyIdent namedHL_Identifier
 syn region namedStmtKeyIdent contained start=+"+ skip="\\'" end=+"+
 \ skipwhite skipnl skipempty
 \ nextgroup=
@@ -2162,7 +2192,8 @@ syn match namedM_Key contained /\<key\>/
 \    namedError
 
 hi link namedM_IPaddrPortNumber namedHL_Error
-syn match namedM_IPaddrPortNumber contained /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+syn match namedM_IPaddrPortNumber contained 
+\    /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)/
 \ skipwhite skipnl skipempty
 \ contains=named_Port
 \ nextgroup=
@@ -2223,7 +2254,8 @@ syn region namedM_MastersSection contained start=/{/ end=/}/
 \    namedComment
 
 hi link namedM_Dscp_Number namedHL_Number
-syn match namedM_Dscp_Number contained /6[0-3]\|[0-5][0-9]\|[1-9]/
+syn match namedM_Dscp_Number contained 
+\    /6[0-3]\|[1-5][0-9]\|[1-9]/
 \ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedM_Port,
@@ -2236,7 +2268,7 @@ syn match namedM_Dscp contained /\<dscp\>/ skipwhite skipnl skipempty
 
 hi link namedM_Port_Number namedHL_Number
 syn match namedM_Port_Number contained 
-\ /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+\    /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)/
 \ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedM_Dscp,
@@ -2314,7 +2346,7 @@ syn keyword namedO_String_QuoteForced contained skipwhite skipnl skipempty
 \    memstatistics-file
 \    named-xfer
 \ nextgroup=
-\    named_String_QuoteForced_SC,
+\    named_Filespec_QuoteForced_SC,
 \    namedNotString
 
 
@@ -2324,7 +2356,8 @@ syn keyword namedO_Filespec_None contained skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
 
 hi link namedO_ListenOn_DscpValue namedHL_Number
-syn match namedO_ListenOn_DscpValue contained /\d\{1,11}/
+syn match namedO_ListenOn_DscpValue contained 
+\    /6[0-3]\|[1-5][0-9]\|[1-9]/
 \ skipwhite skipnl skipempty
 \ nextgroup=namedA_AML
 
@@ -2333,7 +2366,8 @@ syn keyword namedO_ListenOn_Dscp contained dscp skipwhite skipnl skipempty
 \ nextgroup=namedO_ListenOn_DscpValue
 
 hi link namedO_ListenOn_PortValue namedHL_Number
-syn match namedO_ListenOn_PortValue contained /\d\{1,5}/
+syn match namedO_ListenOn_PortValue contained 
+\    /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)/
 \ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedA_AML,
@@ -2463,7 +2497,7 @@ syn keyword namedO_DnstapOutputVersionsBuiltin contained
 \     namedO_DnstapOutputSize,
 
 hi link namedO_DnstapOutputVersionsNumber namedHL_Number
-syn match namedO_DnstapOutputVersionsNumber contained /\d\+/
+syn match namedO_DnstapOutputVersionsNumber contained /\d{1,5}/
 \ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon,
 \    namedO_DnstapOutputSuffix,
@@ -2526,7 +2560,8 @@ syn keyword namedO_DnstapVersion contained
 \    named_E_Filespec_SC
 
 hi link namedO_DscpNumber namedHL_Number
-syn match namedO_DscpNumber contained /6[0-3]\|[0-5][0-9]\|[1-9]/
+syn match namedO_DscpNumber contained 
+\    /6[0-3]\|[1-5][0-9]\|[1-9]/
 \ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
 
@@ -2725,12 +2760,14 @@ syn keyword namedO_Version contained skipwhite skipnl skipempty
 \ nextgroup=
 \    namedO_TkeyDomainName
 
-syn match namedO_UUP_PortEnd contained /\d\{1,5}/ 
+syn match namedO_UUP_PortEnd contained 
+\    /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)/
 \ skipwhite skipnl skipempty
 \ contains=named_Port
 \ nextgroup=namedSemicolon
 
-syn match namedO_UUP_PortStart contained /\d\{1,5}/ 
+syn match namedO_UUP_PortStart contained 
+\    /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)/
 \ skipwhite skipnl skipempty
 \ contains=named_Port
 \ nextgroup=namedO_UUP_PortEnd
@@ -3259,7 +3296,7 @@ syn keyword namedOSV_QuerySource_Dscp contained dscp
 " Specifying port in query-source restricts port randomization, so error that
 hi link namedOSV_QuerySource_PortValue namedHL_Number
 syn match namedOSV_QuerySource_PortValue contained 
-\ /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+\    /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)/
 \ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedOSV_QuerySource_Dscp,
@@ -3974,7 +4011,7 @@ syn keyword namedOV_HeartbeatInterval contained skipwhite
 \    heartbeat-interval
 \ nextgroup=named_Number_Max28day_SC
 
-"  dual-stack-servers [ port <pg_num> ] 
+"  dual-stack-servers [ port [ <port_num> | * ] ] 
 "                     { ( <domain_name> [port <p_num>] |
 "                         <ipv4> [port <p_num>] | 
 "                         <ipv6> [port <p_num>] ); ... };
@@ -4002,15 +4039,22 @@ syn region namedOV_DualStack_Section start=+{+ end=/}/ contained
 \ skipwhite
 \ nextgroup=namedSemicolon
 
-hi link namedOV_DualStack_PortValue namedHL_Number
+hi link  namedOV_DualStack_PortWildcard namedHL_Wildcard
+syn match namedOV_DualStack_PortWildcard contained /\*/
+\ skipwhite skipnl skipempty
+\ nextgroup=namedOV_DualStack_Section
+
+hi link  namedOV_DualStack_PortValue namedHL_Number
 syn match namedOV_DualStack_PortValue contained 
-\ /\*\|\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+\    /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)/
 \ skipwhite skipnl skipempty
 \ nextgroup=namedOV_DualStack_Section
 
 hi link namedOV_DualStack_Port namedHL_Option
-syn keyword namedOV_DualStack_Port contained port contained 
-\ nextgroup=namedOV_DualStack_PortValue
+syn keyword namedOV_DualStack_Port contained port skipwhite
+\ nextgroup=
+\    namedOV_DualStack_PortValue,
+\    namedOV_DualStack_PortWildcard
 \ skipwhite
 
 hi link namedOV_DualStack namedHL_Option
@@ -4931,7 +4975,7 @@ syn match namedOZ_DialupOptBoolean contained /\S\+/
 
 hi link namedOZ_DialupOptBuiltin namedHL_Builtin
 syn match namedOZ_DialupOptBuiltin contained 
-\     /\%(notify\)\|\%(notify-passive\)\|\%(passive\)\|\%(refresh\)/
+\     /\%(notify\-passive\)\|\%(notify\)\|\%(passive\)\|\%(refresh\)/
 \ skipwhite
 \ nextgroup=namedSemicolon
 
@@ -5240,7 +5284,8 @@ syn keyword namedOVZ_Number_Max28days contained
 \ nextgroup=named_Number_Max28day_SC
 
 hi link namedOptATSClauseDscp  namedHL_Clause
-syn match namedOptATS_DSCP contained /6[0-3]\|[0-5][0-9]\|[1-9]/ 
+syn match namedOptATS_DSCP contained 
+\    /6[0-3]\|[1-5][0-9]\|[1-9]/
 \ skipwhite skipnl skipempty
 \ contains=namedDSCP 
 \ nextgroup=
@@ -5248,7 +5293,13 @@ syn match namedOptATS_DSCP contained /6[0-3]\|[0-5][0-9]\|[1-9]/
 \    namedSemicolon
 
 hi link namedOptATS_PortWild namedHL_Number
-syn match namedOptATS_PortWild contained /\*\|\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+syn match namedOptATS_PortWild contained /\*/
+\ skipwhite skipnl skipempty
+\ nextgroup=
+\    namedOptATSClauseDscp,
+hi link namedOptATS_Port namedHL_Wildcard
+syn match namedOptATS_Port contained 
+\    /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)/
 \ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedOptATSClauseDscp,
@@ -5303,7 +5354,9 @@ syn match namedOVZ_OptATS contained
 syn keyword namedOVZ_OptATS contained
 \    alt-transfer-source
 \ skipwhite skipnl skipempty
-\ nextgroup=namedOptATS_IP4wild 
+\ nextgroup=
+\    namedOptATS_IP4wild 
+\    namedOptATS_IP4
 
 hi link namedOVZ_AutoDNSSEC namedHL_Option
 syn match namedOVZ_AutoDNSSEC contained /\<auto\-dnssec\>/
@@ -5406,13 +5459,15 @@ syn keyword namedOVZ_Forward contained forward
 \ nextgroup=namedOVZ_ForwardOpt
 
 hi link namedOVZ_Forwarders_Opt_PortNumber namedHL_Error
-syn match namedOVZ_Forwarders_Opt_PortNumber contained /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+syn match namedOVZ_Forwarders_Opt_PortNumber contained 
+\    /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)/
 \ skipwhite skipnl skipempty
 \ contains=named_Port
 \ nextgroup=namedSemicolon
 
 hi link namedOVZ_Forwarders_Opt_DscpNumber namedHL_Number
-syn match namedOVZ_Forwarders_Opt_DscpNumber contained /6[0-3]\|[0-5][0-9]\|[1-9]/
+syn match namedOVZ_Forwarders_Opt_DscpNumber contained 
+\    /6[0-3]\|[1-5][0-9]\|[1-9]/
 \ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
 
@@ -5463,7 +5518,8 @@ syn region namedOVZ_Forwarders_Section contained start=/{/ end=/}/
 \    namedComment
 
 hi link namedOVZ_Forwarders_DscpNumber namedHL_Number
-syn match namedOVZ_Forwarders_DscpNumber contained /6[0-3]\|[0-5][0-9]\|[1-9]/
+syn match namedOVZ_Forwarders_DscpNumber contained 
+\    /6[0-3]\|[1-5][0-9]\|[1-9]/
 \ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedOVZ_Forwarders_Port,
@@ -5472,7 +5528,7 @@ syn match namedOVZ_Forwarders_DscpNumber contained /6[0-3]\|[0-5][0-9]\|[1-9]/
 
 hi link namedOVZ_Forwarders_PortNumber namedHL_Number
 syn match namedOVZ_Forwarders_PortNumber contained 
-\ /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+\    /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)/
 \ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedOVZ_Forwarders_Dscp,
@@ -5670,7 +5726,7 @@ syn keyword namedOSVZ_TransferSource_Dscp contained dscp
 
 hi link namedOSVZ_TransferSource_PortValue namedHL_Number
 syn match namedOSVZ_TransferSource_PortValue contained 
-\ /\*\|\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+\    /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)/
 \ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedOSVZ_TransferSource_Dscp,
@@ -5833,8 +5889,6 @@ syn match namedOSVZ_TransferSourceIP6 contained
 \    namedOSVZ_TransferSource_IP6Addr,
 \    namedOSVZ_TransferSource_IPWildcard
 
-syn match namedOptPortKeyval contained /port\s\+\d\\+/ms=s+5 contains=named_PortVal
-
 syn region named_PortSection contained start=+{+ end=+}+ skipwhite
 \ contains=
 \    namedElementPortWild,
@@ -5884,7 +5938,8 @@ syn region namedOSVZ_Masters_MML contained start=/{/ end=/}/
 
 " 'dscp' added after `also-notify` at 9.9
 hi link namedAlsoNotify_DscpNumber namedHL_Number
-syn match namedAlsoNotify_DscpNumber contained /6[0-3]\|[0-5][0-9]\|[1-9]/
+syn match namedAlsoNotify_DscpNumber contained 
+\    /6[0-3]\|[1-5][0-9]\|[1-9]/
 \ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedAlsoNotify_Port,
@@ -5899,7 +5954,7 @@ syn match namedAlsoNotify_Dscp contained skipwhite skipnl skipempty
 " 'port' added after `also-notify` at 9.9
 hi link namedAlsoNotify_PortNumber namedHL_Number
 syn match namedAlsoNotify_PortNumber contained 
-\ /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+\    /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)/
 \ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedAlsoNotify_Dscp,
@@ -5931,7 +5986,9 @@ syn match namedOSVZ_AlsoNotify contained skipwhite
 "              port ( * | <port> )
 "              [ dscp <dscp> ];
 hi link named_Dscp_SC namedHL_Number
-syn match named_Dscp_SC contained /\d\+/ skipwhite
+syn match named_Dscp_SC contained 
+\    /6[0-3]\|[1-5][0-9]\|[1-9]/
+\ skipwhite
 \ nextgroup=namedSemicolon
 
 hi link namedOSVZ_NotifySource_Dscp namedHL_Option
@@ -5940,7 +5997,7 @@ syn keyword namedOSVZ_NotifySource_Dscp contained dscp skipwhite
 
 hi link namedOSVZ_NotifySource_PortValue namedHL_Number
 syn match namedOSVZ_NotifySource_PortValue contained 
-\ /\*\|\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+\    /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)/
 \ skipwhite
 \ nextgroup=
 \    namedOSVZ_NotifySource_Dscp,
@@ -6320,7 +6377,8 @@ syn match namedSt_InetOptPortWild contained /\*/
 \ nextgroup=namedSt_InetOptAllowKeyword
 
 hi link namedSt_InetOptPortNumber namedHL_Number
-syn match namedSt_InetOptPortNumber contained /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9]\{3,3}\)\|\([1-5]\%([0-9]\{1,4}\)\)\|\%([0-9]\{1,4}\)/
+syn match namedSt_InetOptPortNumber contained 
+\    /\%(6553[0-5]\)\|\%(655[0-2][0-9]\)\|\%(65[0-4][0-9][0-9]\)\|\%(6[0-4][0-9][0-9][0-9]\)\|\%([1-5][0-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9][0-9]\)\|\%([1-9][0-9][0-9]\)\|\%([1-9][0-9]\)\|\%([0-9]\)/
 \ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedSt_InetOptAllowKeyword,
