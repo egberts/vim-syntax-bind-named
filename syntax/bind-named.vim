@@ -2725,6 +2725,17 @@ syn keyword namedO_TkeyDhkey contained skipwhite skipnl skipempty
 \ nextgroup=
 \    namedO_TkeyDhkeyName
 
+hi link namedO_TkeyFilespec namedHL_Filespec
+syn match namedO_TkeyFilespec contained skipwhite skipempty skipnl
+\ /'[ a-zA-Z\]\-\[0-9\._,:;\\/?<>|"`~!@#$%\^&*\\(\\)+{}]\{1,1024}'/hs=s+1,he=e-1
+\ nextgroup=namedSemicolon
+syn match namedO_TkeyFilespec contained skipwhite skipempty skipnl
+\ /"[ a-zA-Z\]\-\[0-9\._,:;\\/?<>|'`~!@#$%\^&*\\(\\)+{}]\{1,1024}"/hs=s+1,he=e-1
+\ nextgroup=namedSemicolon
+syn match namedO_Filespec contained skipwhite skipempty skipnl
+\ /[a-zA-Z\]\-\[0-9\._,:\\/?<>|'"`~!@#$%\^&*\\(\\)+]\{1,1024}/ 
+\ nextgroup=namedSemicolon
+
 hi link namedO_TkeyDomainName namedHL_String
 syn match namedO_TkeyDomainName contained skipwhite skipempty skipnl
 \ /'[ a-zA-Z\]\-\[0-9\._,:;\\/?<>|"`~!@#$%\^&*\\(\\)+{}]\{1,1024}'/hs=s+1,he=e-1
@@ -2752,7 +2763,7 @@ hi link namedO_TkeyGSSAPIKeytab namedHL_Option
 syn keyword namedO_TkeyGSSAPIKeytab contained skipwhite skipnl skipempty
 \    tkey-gssapi-keytab
 \ nextgroup=
-\    namedO_TkeyDomainName
+\    namedO_TkeyFilespec
 
 hi link namedO_Version namedHL_Option
 syn keyword namedO_Version contained skipwhite skipnl skipempty
