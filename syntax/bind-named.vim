@@ -127,7 +127,7 @@ endif
 
 syn case match
 
-" iskeyword severly impacts '\<' and '\>' atoms
+" iskeyword severly impacts '\w', '\<' and '\>' atoms, so don't change
 setlocal iskeyword=.,-,48-58,A-Z,a-z,_
 setlocal isident=.,-,48-58,A-Z,a-z,_
 
