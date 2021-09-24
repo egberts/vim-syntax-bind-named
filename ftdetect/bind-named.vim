@@ -11,4 +11,4 @@
 " Remarks:
 " See syntax/bind-named.vim for additional info.
 
-au! BufNewFile,BufRead named.conf,rndc.conf,rndc.key,*-named.conf,*_named.conf,*.named.conf,named-*.conf,named_*.conf,named.*.conf,rndc-*.conf,rndc_*.conf,rndc.*.conf,rndc.key,rndc-*.key,rndc_*.key,rndc.key,mz.*,sz.*,view.*,named.conf*  set filetype=bind-named
+au! BufNewFile,BufRead named.conf,rndc.conf,rndc.key,*-named.conf,*_named.conf,*.named.conf,named-*.conf,named_*.conf,named.*.conf,rndc-*.conf,rndc_*.conf,rndc.*.conf,rndc.key,rndc-*.key,rndc_*.key,rndc.key,mz.*,sz.*,view.*,named.conf*,*.zone*  set filetype=bind-named
