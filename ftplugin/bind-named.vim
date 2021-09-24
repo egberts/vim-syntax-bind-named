@@ -47,9 +47,9 @@ if namedindent_override_with_local_expandtab != 0
       " echomsg "Expandtabby..."
       setlocal expandtab
     endif
+else
+    setlocal expandtab
+    filetype plugin indent on
 endif
-
-setlocal expandtab
-filetype plugin indent on
 
 setlocal completefunc=syntaxcomplete#Complete
