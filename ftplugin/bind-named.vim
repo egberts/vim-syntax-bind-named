@@ -41,10 +41,10 @@ if namedindent_override_with_local_expandtab != 0
     if namedindent_disable_expandtab != 0
       " expandtab got defined elsewhere, so we use hard tab, locally
       setlocal noexpandtab
-      echomsg "No nein Expandtabby..."
+      " echomsg "No nein Expandtabby..."
     else
       " noexpandtab got defined elsewhere, so we use hard tab, locally
-      echomsg "Expandtabby..."
+      " echomsg "Expandtabby..."
       setlocal expandtab
     endif
 endif
