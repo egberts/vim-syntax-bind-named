@@ -1661,8 +1661,8 @@ syn keyword namedDp_DomainNameBuiltin contained
 "        search <boolean>;
 "     }; // may occur multiple times
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-hi link namedD_SearchBoolean namedHL_String
-syn match namedD_SearchBoolean contained /\i/ skipwhite
+hi link namedD_SearchBoolean namedHL_Error
+syn match namedD_SearchBoolean contained /\i\{1,16}/ skipwhite
 \ skipwhite skipnl skipempty
 \ contains=namedTypeBool
 \ nextgroup=
@@ -1914,7 +1914,7 @@ syn keyword namedL_ChannelSeverityType contained skipwhite
 \    namedSemicolon,
 \    namedError
 
-hi link namedL_ChannelOptNull namedHL_Clause
+hi link namedL_ChannelOptNull namedHL_Option
 syn keyword namedL_ChannelOptNull null contained skipwhite
 \ nextgroup=
 \    namedComment,
@@ -2033,16 +2033,6 @@ syn match namedL_ChannelFileOptSuffix contained /suffix/
 \    namedL_ChannelFileSuffixOpt,
 \    namedEParenError
 
-syn match namedL_ChannelFileIdent contained 
-\ /[a-zA-Z\]\-\[0-9\._,:\/?<>|'"`~!@#$%\^&*\\(\\)+]\{1,1024}/
-\ contained
-\ skipwhite skipnl skipempty
-\ nextgroup=
-\    namedL_ChannelFileOptSuffix,
-\    namedL_ChannelFileOptSize,
-\    namedL_ChannelFileOptVersions,
-\    namedSemicolon
-
 hi link namedL_ChannelFileIdent namedHL_String
 syn match namedL_ChannelFileIdent contained 
 \ /"[ a-zA-Z\]\-\[0-9\._,:;\/?<>|'`~!@#$%\^&*\\(\\)+{}]\{1,1024}"/hs=s+1,he=e-1
@@ -2053,16 +2043,27 @@ syn match namedL_ChannelFileIdent contained
 \    namedL_ChannelFileOptVersions,
 \    namedSemicolon
 
-syn match namedL_ChannelFileIdent contained 
-\ /'[ a-zA-Z\]\-\[0-9\._,:;\/?<>|"`~!@#$%\^&*\\(\\)+{}]\{1,1024}'/hs=s+1,he=e-1
-\ contained
-\ skipwhite skipnl skipempty
-\ contains=named_Filespec
-\ nextgroup=
-\    namedL_ChannelFileOptSuffix,
-\    namedL_ChannelFileOptSize,
-\    namedL_ChannelFileOptVersions,
-\    namedSemicolon
+" syn match namedL_ChannelFileIdent contained 
+" \ /'[ a-zA-Z\]\-\[0-9\._,:;\/?<>|"`~!@#$%\^&*\\(\\)+{}]\{1,1024}'/hs=s+1,he=e-1
+" \ contained
+" \ skipwhite skipnl skipempty
+" \ contains=named_Filespec
+" \ nextgroup=
+" \    namedL_ChannelFileOptSuffix,
+" \    namedL_ChannelFileOptSize,
+" \    namedL_ChannelFileOptVersions,
+" \    namedSemicolon
+
+" hi link namedL_ChannelFileIdent namedHL_Error
+" syn match namedL_ChannelFileIdent contained 
+" \ /[a-zA-Z\]\-\[0-9\._,:\/?<>|'"`~!@#$%\^&*\\(\\)+]\{1,1024}/
+" \ contained
+" \ skipwhite skipnl skipempty
+" \ nextgroup=
+" \    namedL_ChannelFileOptSuffix,
+" \    namedL_ChannelFileOptSize,
+" \    namedL_ChannelFileOptVersions,
+" \    namedSemicolon
 
 hi link namedL_ChannelOptFile namedHL_Option
 syn match namedL_ChannelOptFile /file/ contained 
@@ -2074,11 +2075,11 @@ syn match namedL_ChannelOptFile /file/ contained
 syn region namedL_ChannelSection contained start=+{+ end=+}+ 
 \ skipwhite skipnl skipempty
 \ contains=
+\    namedL_ChannelOptNull,
 \    namedL_ChannelOpts,
 \    namedL_ChannelOptFile,
 \    namedL_ChannelOptPrintTime,
 \    namedL_ChannelOptSyslog,
-\    namedL_ChannelOptNull,
 \    namedL_ChannelOptSeverity,
 \    namedComment,
 \    namedInclude,
@@ -3544,6 +3545,11 @@ syn match namedOV_DnssecLookasideOptKeyname contained
 \ nextgroup=namedSemicolon
 \ skipwhite skipnl skipempty
 
+hi link namedOV_DnssecLookasideOptAuto Special
+syn keyword namedOV_DnssecLookasideOptAuto contained auto
+\ skipwhite skipnl skipempty
+\ nextgroup=namedSemicolon
+
 hi link namedOV_DnssecLookasideOptTD namedHL_Clause
 syn keyword namedOV_DnssecLookasideOptTD contained 
 \ skipwhite skipnl skipempty
@@ -3556,11 +3562,6 @@ syn match namedOV_DnssecLookasideOptDomain contained
 \ nextgroup=namedOV_DnssecLookasideOptTD
 \ skipwhite skipnl skipempty
 
-hi link namedOV_DnssecLookasideOptAuto namedHL_Error
-syn keyword namedOV_DnssecLookasideOptAuto contained auto
-\ skipwhite skipnl skipempty
-\ nextgroup=namedSemicolon
-
 hi link namedOV_DnssecLookasideOpt namedHL_Type
 syn keyword namedOV_DnssecLookasideOpt contained no
 \ skipwhite skipnl skipempty
@@ -3572,9 +3573,9 @@ syn keyword namedOV_DnssecLookasideKeyword contained
 \    dnssec-lookaside
 \ skipwhite skipnl skipempty
 \ nextgroup=
-\    namedOV_DnssecLookasideOpt,
+\    namedOV_DnssecLookasideOptAuto,
 \    namedOV_DnssecLookasideOptDomain,
-\    namedOV_DnssecLookasideOptAuto
+\    namedOV_DnssecLookasideOpt
 
 hi link namedOV_Boolean_Group namedHL_Option
 syn match namedOV_Boolean_Group contained /rfc2308\-type1/
@@ -3587,7 +3588,6 @@ syn keyword namedOV_Boolean_Group contained
 \    auth-nxdomain 
 \    dnsrps-enable
 \    dnssec-accept-expired
-\    dnssec-enable
 \    empty-zones-enable
 \    fetch-glue
 \    glue-cache
@@ -5672,7 +5672,6 @@ syn keyword namedOSV_Boolean_Group contained
 \ skipwhite skipnl skipempty
 \    provide-ixfr
 \    request-nsid
-\    request-sit
 \    send-cookie
 \ nextgroup=@namedClusterBoolean_SC
 
@@ -6257,7 +6256,6 @@ syn region namedStmt_OptionsSection contained start=+{+ end=+}+
 \    namedOVZ_Number_Max28days,
 \    namedOV_NxdomainRedirect,
 \    namedOVZ_OptATS,
-\    namedOSV_OptAV6S,
 \    namedO_Port,
 \    namedOV_Prefetch,
 \    namedOV_QnameMin,
@@ -6302,11 +6300,10 @@ syn region namedStmt_OptionsSection contained start=+{+ end=+}+
 " server <namedStmt_ServerNameIdentifier> { <namedStmtServerKeywords>; };
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn region namedStmt_ServerSection contained start=+{+ end=+}+ 
-\ skipwhite skipempty
+\ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
 \ contains=
 \    namedComment,
-\    namedOSVZ_AlsoNotify,
 \    namedS_Bool_Group,
 \    namedOS_Boolean_Group,
 \    namedOSV_Boolean_Group,
@@ -6315,7 +6312,6 @@ syn region namedStmt_ServerSection contained start=+{+ end=+}+
 \    namedOSVZ_NotifySource,
 \    namedOSVZ_NotifySource_Dscp,
 \    namedS_NumberGroup,
-\    namedOSV_OptAV6S,
 \    namedOSV_QuerySource,
 \    namedOSV_QuerySourceIP6,
 \    namedOSV_TransferFormat,
@@ -6325,14 +6321,13 @@ syn region namedStmt_ServerSection contained start=+{+ end=+}+
 \    namedInclude,
 \    namedError
 
-
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " server <namedStmt_ServerNameIdentifier> { ... };
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 hi link namedStmt_ServerNameIdentifier namedHL_Identifier
 syn match namedStmt_ServerNameIdentifier contained
 \ /[0-9]\{1,3}\(\.[0-9]\{1,3}\)\{0,3}\([\/][0-9]\{1,3}\)\{0,1}/
-\ skipwhite
+\ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedComment,
 \    namedInclude,
