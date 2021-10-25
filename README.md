@@ -1,6 +1,12 @@
 vim-syntax-bind-named
 =====================
 
+Highlights your Bind9 `named.conf` (and zones and its include files) in
+vim editor session.
+
+Uses 4-bit (16-color) Vim color scheme.  Supports light/dark theme too.
+
+
 This project aims to replace the stock Vim syntax highlighting for ISC Bind
 (`named.vim`), by updating it to recognize the new RRs that came out in
 the last few decade and also to highlight more keywords that ISC Bind9/10 has
