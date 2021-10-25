@@ -165,9 +165,9 @@ hi link namedHL_Hexidecimal namedHL_Number
 hi link namedHL_Wildcard    namedHL_Builtin
 hi link namedHL_Base64      namedHL_Identifier "  RFC 3548
 hi link namedHL_ACLName     namedHL_Identifier
-hi link namedHL_Algorithm   namedHL_Identifier
+hi link namedHL_Algorithm   namedHL_Builtin
 hi link namedHL_ClassName   namedHL_Identifier
-hi link namedHL_Filespec    namedHL_Identifier
+hi link namedHL_Filespec    namedHL_Builtin
 hi link namedHL_KeyName     namedHL_Identifier
 hi link namedHL_MasterName  namedHL_Identifier
 hi link namedHL_ViewName    namedHL_Identifier
@@ -982,7 +982,14 @@ hi link namedKeyName namedHL_KeyName
 syn match namedKeyName contained /\<[0-9a-zA-Z\-_]\{1,63}/ skipwhite
 
 hi link namedKeyAlgorithmName namedHL_Algorithm
-syn match namedKeyAlgorithmName contained /\<[0-9A-Za-z\-_]\{1,4096}/ skipwhite
+syn match namedKeyAlgorithmName contained /hmac-md5/ skipwhite
+syn match namedKeyAlgorithmName contained /hmac-md5.sig-alg.reg.int/ skipwhite
+syn match namedKeyAlgorithmName contained /hmac-md5\.sig-alg\.reg\.int\./ skipwhite
+syn match namedKeyAlgorithmName contained /hmac-sha1/ skipwhite
+syn match namedKeyAlgorithmName contained /hmac-sha224/ skipwhite
+syn match namedKeyAlgorithmName contained /hmac-sha256/ skipwhite
+syn match namedKeyAlgorithmName contained /hmac-sha384/ skipwhite
+syn match namedKeyAlgorithmName contained /hmac-sha512/ skipwhite
 
 hi link namedMasterName namedHL_MasterName
 syn match namedMasterName contained /\<[0-9a-zA-Z\-_\.]\{1,64}/ skipwhite
@@ -2303,7 +2310,6 @@ syn keyword namedO_Boolean_Group contained skipwhite skipnl skipempty
 \     answer-cookie
 \     deallocate-on-exit
 \     fake-iquery
-\     geoip-use-ecs
 \     has-old-clients
 \     host-statistics
 \     flush-zones-on-shutdown
@@ -2415,20 +2421,27 @@ syn keyword namedO_CheckNames contained check-names skipwhite skipnl skipempty
 \    namedO_CheckNamesType,
 \    namedError
 
-hi link namedO_CookieAlgorithmChoicesObsoleted namedHL_Error
-syn match namedO_CookieAlgorithmChoicesObsoleted contained 
+hi link namedO_CookieAlgorithmChoices namedHL_Builtin
+syn match namedO_CookieAlgorithmChoices contained /siphash24/
 \ skipwhite skipnl skipempty
-\ /\%(aes\)\|\%(siphash24\)/
 \ nextgroup=namedSemicolon,namedError
-hi link namedO_CookieAlgorithmChoices namedHL_Type
-syn match namedO_CookieAlgorithmChoices contained skipwhite skipnl skipempty
-\ /\%(sha256\)\|\%(sha1\)/
+syn match namedO_CookieAlgorithmChoices contained /aes/
+\ skipwhite skipnl skipempty
+\ nextgroup=namedSemicolon,namedError
+"
+hi link namedO_CookieAlgorithmChoicesObsoleted namedHL_Error
+syn match namedO_CookieAlgorithmChoicesObsoleted contained /sha1/
+\ skipwhite skipnl skipempty
+\ nextgroup=namedSemicolon,namedError
+syn match namedO_CookieAlgorithmChoicesObsoleted contained /sha256/
+\ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon,namedError
 
 hi link namedO_CookieAlgs namedHL_Option
 syn keyword namedO_CookieAlgs contained cookie-algorithm
 \ skipwhite skipnl skipempty
 \ nextgroup=
+\    namedO_CookieAlgorithmChoicesObsoleted,
 \    namedO_CookieAlgorithmChoices
 
 hi link namedO_CookieSecretValue namedHL_Identifier
@@ -2523,6 +2536,14 @@ syn keyword namedO_DnstapOutputSuffix contained suffix
 \ skipwhite skipnl skipempty
 \ nextgroup=namedO_DnstapOutputSuffixType
 
+hi link namedO_DnstapOutputFilespecError namedHL_Error
+syn match namedO_DnstapOutputFilespecError contained /[a-zA-Z\]\-\[0-9\._,:;\/?<>|`~!@#$%\^&*\\(\\)+{}]\{1,256}/hs=s+1,he=e-1 
+\ skipwhite skipempty skipnl
+\ nextgroup=namedSemicolon,
+\    namedO_DnstapOutputSuffix,
+\    namedO_DnstapOutputSize,
+\    namedO_DnstapOutputVersions
+
 hi link namedO_DnstapOutputFilespec namedHL_String
 syn match namedO_DnstapOutputFilespec contained /'[ a-zA-Z\]\-\[0-9\._,:;\/?<>|`~!@#$%\^&*\\(\\)+{}]\{1,256}'/hs=s+1,he=e-1 
 \ skipwhite skipempty skipnl
@@ -2539,10 +2560,16 @@ syn match namedO_DnstapOutputFilespec contained /"[ a-zA-Z\]\-\[0-9\._,:;\/?<>|`
 \     namedO_DnstapOutputVersions
 
 hi link namedO_DnstapOutputType namedHL_Type
-syn keyword namedO_DnstapOutputType contained skipwhite skipnl skipempty
-\    file
-\    unix
-\ nextgroup=namedO_DnstapOutputFilespec
+syn match namedO_DnstapOutputType contained skipwhite skipnl skipempty
+\    /unix/
+\ nextgroup=
+\    namedO_DnstapOutputFilespecError,
+\    namedO_DnstapOutputFilespec
+syn match namedO_DnstapOutputType contained skipwhite skipnl skipempty
+\    /file/
+\ nextgroup=
+\    namedO_DnstapOutputFilespecError,
+\    namedO_DnstapOutputFilespec
 
 hi link namedO_DnstapOutput namedHL_Option
 syn keyword namedO_DnstapOutput contained
@@ -2550,7 +2577,8 @@ syn keyword namedO_DnstapOutput contained
 \ skipwhite skipnl skipempty
 \ nextgroup=
 \    namedO_DnstapOutputType,
-\    namedO_DnstapOutputFilespec
+\    namedO_DnstapOutputFilespec,
+\    namedError
 
 hi link namedO_DnstapVersion namedHL_Option
 syn keyword namedO_DnstapVersion contained
@@ -3537,7 +3565,7 @@ hi link namedOV_Hostname namedHL_Option
 syn keyword namedOV_Hostname contained hostname skipwhite skipnl skipempty
 \ nextgroup=
 \    named_Builtin_None_SC,
-\    named_QuotedDomain_SC
+\    named_String_QuoteForced
 
 hi link namedOV_DnssecLookasideOptKeyname namedHL_String
 syn match namedOV_DnssecLookasideOptKeyname contained 
@@ -3568,14 +3596,14 @@ syn keyword namedOV_DnssecLookasideOpt contained no
 \ nextgroup=namedSemicolon
 
 " dnssec-lookaside [ auto | no | <domain_name> trusted-anchor <key_name>];
-hi link namedOV_DnssecLookasideKeyword namedHL_Option
-syn keyword namedOV_DnssecLookasideKeyword contained
-\    dnssec-lookaside
-\ skipwhite skipnl skipempty
-\ nextgroup=
-\    namedOV_DnssecLookasideOptAuto,
-\    namedOV_DnssecLookasideOptDomain,
-\    namedOV_DnssecLookasideOpt
+" hi link namedOV_DnssecLookasideKeyword namedHL_Option
+" syn keyword namedOV_DnssecLookasideKeyword contained
+" \    dnssec-lookaside
+" \ skipwhite skipnl skipempty
+" \ nextgroup=
+" \    namedOV_DnssecLookasideOptAuto,
+" \    namedOV_DnssecLookasideOptDomain,
+" \    namedOV_DnssecLookasideOpt
 
 hi link namedOV_Boolean_Group namedHL_Option
 syn match namedOV_Boolean_Group contained /rfc2308\-type1/
@@ -4023,18 +4051,28 @@ syn keyword namedOV_HeartbeatInterval contained skipwhite
 \ nextgroup=named_Number_Max28day_SC
 
 "  dual-stack-servers [ port [ <port_num> | * ] ] 
-"                     { ( <domain_name> [port <p_num>] |
+"                     { ( <quoted_domain_name> [port <p_num>] |
 "                         <ipv4> [port <p_num>] | 
 "                         <ipv6> [port <p_num>] ); ... };
 "  /.\+/
 "  /\is*;/
 hi link namedOV_DualStack_E_Port namedHL_Option
-syn match namedOV_DualStack_E_Port contained /port/
+syn keyword namedOV_DualStack_E_Port contained port
 \ skipwhite skipnl skipempty
-\ nextgroup=namedElementPortWild
+\ nextgroup=namedElementPortWild,
+\    namedError
 
+hi link namedDSS_Element_IPAddrPort namedHL_Number
+syn match namedDSS_Element_IPAddrPort contained
+\ /\<\%(\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)\.\)\{3,3}\%(25[0-5]\|\%(2[0-4]\|1\{0,1}[0-9]\)\{0,1}[0-9]\)/
+\ nextgroup=
+\    namedOV_DualStack_E_Port,
+\    namedSemicolon,
+\    namedError
+
+hi link namedDSS_Element_DomainAddrPort namedHL_String
 syn match namedDSS_Element_DomainAddrPort 
-\ /\<[0-9A-Za-z\._\-]\+\>/ 
+\ /"\<[0-9A-Za-z\._\-]\+\>"/ 
 \ contained skipwhite
 \ contains=namedDomain
 \ nextgroup=
@@ -4044,9 +4082,10 @@ syn match namedDSS_Element_DomainAddrPort
 
 syn region namedOV_DualStack_Section start=+{+ end=/}/ contained 
 \ contains=
-\     namedDSS_Element_DomainAddrPort,
 \     namedInclude,
-\     namedComment
+\     namedComment,
+\     namedDSS_Element_IPAddrPort,
+\     namedDSS_Element_DomainAddrPort
 \ skipwhite
 \ nextgroup=namedSemicolon
 
@@ -4317,12 +4356,12 @@ hi link namedOV_Key namedHL_Option
 syn match namedOV_Key contained /\_^\_s*\<key\>/ skipwhite
 \ nextgroup=namedStmtKeyIdent
 
-hi link namedOV_RateLimit_AllPerSec namedHL_Clause
+hi link namedOV_RateLimit_AllPerSec namedHL_Option
 syn keyword namedOV_RateLimit_AllPerSec contained all-per-second skipwhite
 \ nextgroup=named_Number_SC
 \ containedin=namedOV_RateLimitSection
 
-hi link namedOV_RateLimit_ErrorsPerSec namedHL_Clause
+hi link namedOV_RateLimit_ErrorsPerSec namedHL_Option
 syn keyword namedOV_RateLimit_ErrorsPerSec contained skipwhite
 \    errors-per-second
 \ nextgroup=named_Number_SC
@@ -4342,76 +4381,76 @@ syn region namedOV_RateLimit_ExemptClientsSection contained start=/{/ end=/}/ sk
 \    namedComment 
 \ nextgroup=namedSemicolon
 
-hi link namedOV_RateLimit_ExemptClients namedHL_Clause
+hi link namedOV_RateLimit_ExemptClients namedHL_Option
 syn keyword namedOV_RateLimit_ExemptClients contained skipwhite
 \    exempt-clients
 \ nextgroup=namedOV_RateLimit_ExemptClientsSection
 \ containedin=namedOV_RateLimitSection
 
-hi link namedOV_RateLimit_IP4PrefixLen namedHL_Clause
+hi link namedOV_RateLimit_IP4PrefixLen namedHL_Option
 syn keyword namedOV_RateLimit_IP4PrefixLen contained skipwhite
 \     ipv4-prefix-length 
 \ nextgroup=named_Number_SC
 \ containedin=namedOV_RateLimitSection
 
-hi link namedOV_RateLimit_IP6PrefixLen namedHL_Clause
+hi link namedOV_RateLimit_IP6PrefixLen namedHL_Option
 syn keyword namedOV_RateLimit_IP6PrefixLen contained skipwhite
 \     ipv6-prefix-length 
 \ nextgroup=named_Number_SC
 \ containedin=namedOV_RateLimitSection
 
-hi link namedOV_RateLimit_LogOnly namedHL_Clause
+hi link namedOV_RateLimit_LogOnly namedHL_Option
 syn keyword namedOV_RateLimit_LogOnly contained skipwhite
 \     log-only
 \ nextgroup=@namedClusterBoolean_SC
 \ containedin=namedOV_RateLimitSection
 
-hi link namedOV_RateLimit_MaxTableSize namedHL_Clause
+hi link namedOV_RateLimit_MaxTableSize namedHL_Option
 syn keyword namedOV_RateLimit_MaxTableSize contained max-table-size skipwhite
 \ nextgroup=named_Number_SC
 \ containedin=namedOV_RateLimitSection
 
-hi link namedOV_RateLimit_MinTableSize namedHL_Clause
+hi link namedOV_RateLimit_MinTableSize namedHL_Option
 syn keyword namedOV_RateLimit_MinTableSize contained min-table-size skipwhite
 \ nextgroup=named_Number_SC
 \ containedin=namedOV_RateLimitSection
 
-hi link namedOV_RateLimit_NoDataPerSec namedHL_Clause
+hi link namedOV_RateLimit_NoDataPerSec namedHL_Option
 syn keyword namedOV_RateLimit_NoDataPerSec contained skipwhite
 \    nodata-per-second
 \ nextgroup=named_Number_SC
 \ containedin=namedOV_RateLimitSection
 
-hi link namedOV_RateLimit_NxdomainsPerSec namedHL_Clause
+hi link namedOV_RateLimit_NxdomainsPerSec namedHL_Option
 syn keyword namedOV_RateLimit_NxdomainsPerSec contained skipwhite
 \    nxdomains-per-second
 \ nextgroup=named_Number_SC
 \ containedin=namedOV_RateLimitSection
 
-hi link namedOV_RateLimit_QpsScale namedHL_Clause
+hi link namedOV_RateLimit_QpsScale namedHL_Option
 syn keyword namedOV_RateLimit_QpsScale contained qps-scale skipwhite
 \ nextgroup=named_Number_SC
 \ containedin=namedOV_RateLimitSection
 
-hi link namedOV_RateLimit_ReferralsPerSec namedHL_Clause
+hi link namedOV_RateLimit_ReferralsPerSec namedHL_Option
 syn keyword namedOV_RateLimit_ReferralsPerSec contained skipwhite
 \     referrals-per-second
 \ nextgroup=named_Number_SC
 \ containedin=namedOV_RateLimitSection
 
-hi link namedOV_RateLimit_ResponsesPerSec namedHL_Clause
+hi link namedOV_RateLimit_ResponsesPerSec namedHL_Option
 syn keyword namedOV_RateLimit_ResponsesPerSec contained skipwhite
 \    responses-per-second
 \ nextgroup=named_Number_SC
 \ containedin=namedOV_RateLimitSection
 
-hi link namedOV_RateLimit_Slip namedHL_Clause
+hi link namedOV_RateLimit_Slip namedHL_Option
 syn keyword namedOV_RateLimit_Slip contained skipwhite
 \    slip
 \ nextgroup=named_Number_SC
 \ containedin=namedOV_RateLimitSection
 
-hi link namedOV_RateLimit_Window namedHL_Clause
+hi link namedOV_RateLimit_Window namedHL_Option
 syn keyword namedOV_RateLimit_Window contained skipwhite
 \    window
 \ nextgroup=named_Number_SC
@@ -4419,7 +4458,7 @@ syn keyword namedOV_RateLimit_Window contained skipwhite
 
 
 syn region namedOV_RateLimitSection contained start=+{+ end=+}+ 
-\ skipwhite skipempty
+\ skipwhite skipempty 
 \ nextgroup=namedSemicolon
 
 hi link namedOV_RateLimit namedHL_Option
@@ -5004,11 +5043,12 @@ syn keyword namedOptionsDnstapIdentityOpts contained
 \ skipwhite
 \ nextgroup=namedSemicolon
 
-hi link namedOptionsDnstapIdentityDomain namedHL_String
-syn match namedOptionsDnstapIdentityDomain contained
-\    /\<[0-9A-Za-z\._\-]\{1,1023}\>/
+hi link namedOptionsDnstapIdentityDomainError namedHL_Error
+syn match namedOptionsDnstapIdentityDomainError contained
+\    /[0-9A-Za-z\.\-_]\{1,1023}/
 \ skipwhite
 \ nextgroup=namedSemicolon
+hi link namedOptionsDnstapIdentityDomain namedHL_String
 syn match namedOptionsDnstapIdentityDomain contained
 \    /'[0-9A-Za-z\.\-_]\{1,1023}'/
 \ skipwhite
@@ -5024,6 +5064,7 @@ syn keyword namedOZ_DnstapIdentity contained
 \ skipwhite
 \ nextgroup=
 \    namedOptionsDnstapIdentityOpts,
+\    namedOptionsDnstapIdentityDomainError,
 \    namedOptionsDnstapIdentityDomain
 
 hi link namedOZ_Files_Wildcard namedHL_Builtin
@@ -5377,12 +5418,18 @@ syn match namedOVZ_AutoDNSSEC contained /\<auto\-dnssec\>/
 \    namedComment,
 \    namedError 
 
+hi link namedOVZ_IgnoreWarn namedHL_Option
+syn keyword namedOVZ_IgnoreWarn contained 
+\    check-spf
+\ skipwhite skipnl skipempty
+\ nextgroup=named_IgnoreWarn_SC
+
+
 hi link namedOVZ_IgnoreWarnFail namedHL_Option
 syn keyword namedOVZ_IgnoreWarnFail contained 
 \    check-mx-cname
 \    check-mx
 \    check-srv-cname
-\    check-spf
 \    check-dup-records
 \ skipwhite skipnl skipempty
 \ nextgroup=named_IgnoreWarnFail_SC
@@ -5410,19 +5457,6 @@ hi link namedOVZ_DnssecLoadkeys namedHL_Option
 syn keyword namedOVZ_DnssecLoadkeys contained dnssec-loadkeys-interval
 \ skipwhite skipnl skipempty
 \ nextgroup=namedOVZ_DnssecLoadkeysInterval
-
-" cleaning-interval: range: 0-1440
-hi link namedOVZ_CleaningValue namedHL_Number
-syn match namedOVZ_CleaningValue contained
-\    /\(1440\)\|\(14[0-3][0-9]\)\|\([1[0-3][0-9][0-9]\)\|\([0-9][0-9][0-9]\)\|\([0-9][0-9]\)\|\([0-9]\)/
-\ skipwhite skipnl skipempty
-\ nextgroup=namedSemicolon
-
-hi link namedOVZ_CleaningInterval namedHL_Option
-syn keyword namedOVZ_CleaningInterval contained
-\    cleaning-interval
-\ skipwhite skipnl skipempty
-\ nextgroup=namedOVZ_CleaningValue
 
 " dnssec-must-be-secure <domain_name> <boolean>; [ Opt View ]  # v9.3.0+
 syn match namedDMBS_FQDN contained /\<[0-9A-Za-z\.\-_]\{1,1023}\>/
@@ -5661,11 +5695,6 @@ syn match named_A6orAAAA_SC contained /\caaaa/
 syn match named_A6orAAAA_SC contained /\ca6/ 
 \ skipwhite skipnl skipempty
 \ nextgroup=namedSemicolon
-
-hi link namedOSV_OptAV6S namedHL_Option
-syn match namedOSV_OptAV6S contained /\<allow\-v6\-synthesis\>/
-\ skipwhite skipnl skipempty
-\ nextgroup=named_A6orAAAA_SC 
 
 hi link namedOSV_Boolean_Group namedHL_Option
 syn keyword namedOSV_Boolean_Group contained 
@@ -6193,7 +6222,6 @@ syn region namedStmt_OptionsSection contained start=+{+ end=+}+
 \    namedOVZ_Boolean_Group,
 \    namedOV_CatalogZones,
 \    namedO_CheckNames,
-\    namedOVZ_CleaningInterval,
 \    namedO_CookieAlgs,
 \    namedO_CookieSecret,
 \    namedO_DefaultKey,
@@ -6507,7 +6535,6 @@ syn region namedStmt_ViewSection contained start=+{+ end=+}+
 \    namedV_Boolean_Group,
 \    namedOV_CatalogZones,
 \    namedVZ_CheckNames,
-\    namedOVZ_CleaningInterval,
 \    namedOV_DefaultUnlimitedSize_Group,
 \    namedOVZ_DefaultUnlimitedSize_Group,
 \    namedOV_DenyAnswerAddresses,
@@ -6555,7 +6582,6 @@ syn region namedStmt_ViewSection contained start=+{+ end=+}+
 \    namedOVZ_Number_Max28days,
 \    namedOV_NxdomainRedirect,
 \    namedOVZ_OptATS,
-\    namedOSV_OptAV6S,
 \    namedOV_Prefetch,
 \    namedV_Plugin,
 \    namedOV_QnameMin,
@@ -6619,7 +6645,6 @@ syn region namedStmt_ZoneSection contained start=+{+ end=+}+
 \    namedOSVZ_Boolean_Group,
 \    namedZ_Boolean_Group,
 \    namedVZ_CheckNames,
-\    namedOVZ_CleaningInterval,
 \    namedZ_Database,
 \    namedOVZ_DefaultUnlimitedSize_Group,
 \    namedOVZ_Dialup,

@@ -1,0 +1,7 @@
+
+
+dlz statement (in zone) got its entire block statement moved up to
+the new 'dlz' clause-level.  dlz statement just now reference only a dlz_label.
+ - Needs new 'dlz' clause/secton
+
+'dual-stack-servers' in options clause needs more fleshing out.
