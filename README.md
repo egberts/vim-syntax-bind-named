@@ -6,11 +6,16 @@ vim editor session.
 
 Uses 4-bit (16-color) Vim color scheme.  Supports light/dark theme too.
 
+To quickly see nearly all permutation of Bind9 named.conf configuration settings
+, run:
+
+   vim test/example-9.16-named.conf
+
+This is where most of my animated GIF came from.
 
 This project aims to replace the stock Vim syntax highlighting for ISC Bind
 (`named.vim`), by updating it to recognize the new RRs that came out in
-the last few decade and also to highlight more keywords that ISC Bind9/10 has
-incorporated as of late.
+the last few decade and also to highlight more clauses/statements/keywords that ISC Bind9 has incorporated as of late.
 
 ![Example](https://raw.githubusercontent.com/egberts/gist/master/vim-syntax-bind-named-front-page.png "Example")
 
@@ -23,6 +28,11 @@ takes final precedence here.
 FEATURES
 --------
 
+October 16, 2021
+* v9.16 supported
+* many filespec arguments are now forced double-quote syntax.
+
+Original release
 * new `named.conf` keywords supported
 * All 3 comment styles supported: C++, C, bash.
 * IPv6 syntax checking
