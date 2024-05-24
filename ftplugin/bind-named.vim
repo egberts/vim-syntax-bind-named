@@ -1,14 +1,26 @@
-" Vim ftplugin file for ISC BIND named configuration file
+" Vim ftplugin file for ISC BIND and named-related configuration file
 " Language:     ISC BIND named configuration file
+" Filename:     bind-named.conf
+" Path:         ~/.vim/ftpplugin
 " Maintainer:   egberts <egberts@github.com>
-" Last change:  2020-04-03
-" Filenames:    named.conf, rndc.conf
-" Filenames:    named[-_]*.conf, rndc[-_]*.conf
-" Filenames:    *[-_]named.conf
-" Location:     http://github.com/egberts/bind-named-vim-syntax
+" Last change:  2024-05-24
+" Filetypes:    named.conf, rndc.conf
+" Filetypes:    named[-_]*.conf, rndc[-_]*.conf
+" Filetypes:    *[-_]named.conf
+" Source:       http://github.com/egberts/bind-named-vim-syntax
 " License:      MIT license
 " Remarks:
+"               users can disable loading the default plugin completely by making a
+"               filetype plugin with only this line:
+"                   let ignore_bind_name = 1
 "
+"
+" Only do this when not done yet for this buffer
+if exists("b:ignore_bind_named")
+  finish
+endif
+let b:ignore_bind_named = 1
+
 let namedindent_override_with_local_expandtab = exists("g:namedident_override_with_local_expandtab")
 let namedindent_disable_expandtab = get(g:,"namedident_disable_expandtab", 0)
 

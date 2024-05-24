@@ -1,13 +1,20 @@
 " Vim syntax file for ISC BIND v9.16 named.conf configuration file
 " Language:     ISC BIND named.conf configuration file
+" Filename:     bind-named.conf
+" Path:         ~/.vim/syntax
 " Maintainer:   egberts <egberts@github.com>
-" Last change:  2020-04-24
-" Filenames:    named.conf, rndc.conf
-" Filenames:    named[-_]*.conf, rndc[-_]*.conf
-" Filenames:    *[-_]named.conf
+" Last change:  2024-05-24
+" Filetypes:    named.conf, rndc.conf
+" Filetypes:    named[-_]*.conf, rndc[-_]*.conf
+" Filetypes:    *[-_]named.conf
 " Location:     https://github.com/egberts/vim-syntax-bind-named
 " License:      MIT license
 " Remarks:
+"               users can disable loading the default plugin completely 
+"               by making a filetype plugin with only this line:
+"
+"                   let ignore_bind_named = 1
+"
 " Bug Report:   https://github.com/egberts/vim-syntax-bind-named/issues
 "
 "
